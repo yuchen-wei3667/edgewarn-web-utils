@@ -1,6 +1,6 @@
 {
   "name": "@edgewarn/decoders",
-  "version": "2026.11.7-alpha.0",
+  "version": "2026.11.8-alpha.0",
   "type": "module",
   "license": "MIT",
   "sideEffects": false,
