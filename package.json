@@ -3,6 +3,10 @@
   "version": "2026.11.8-alpha.1",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuchen-wei3667/edgewarn-web-utils.git"
+  },
   "sideEffects": false,
   "engines": {
     "node": ">=22.18"
