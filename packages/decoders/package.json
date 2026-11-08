@@ -1,0 +1,42 @@
+{
+  "name": "@edgewarn/decoders",
+  "version": "2026.11.7-alpha.0",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.18"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "NOTICE",
+    "EXTRACTION.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./grib2": {
+      "types": "./dist/grib2/index.d.ts",
+      "default": "./dist/grib2/index.js"
+    },
+    "./nexrad": {
+      "types": "./dist/nexrad/index.d.ts",
+      "default": "./dist/nexrad/index.js"
+    },
+    "./goes": {
+      "types": "./dist/goes/index.d.ts",
+      "default": "./dist/goes/index.js"
+    }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs test/models/*.test.mjs"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

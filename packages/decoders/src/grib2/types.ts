@@ -1,0 +1,12 @@
+import type { DecodeOptions, GridInfo, RowSink } from './mrms/types.ts';
+import type { DecodeLevelsOptions, ModelGrid } from './models/grib2.ts';
+import type { ValueTransform } from './models/types.ts';
+import type { LevelGrid } from './models/levelGrid.ts';
+export type MrmsDecodeOptions = DecodeOptions;
+export type MrmsModeOptions = DecodeOptions & { mode: 'mrms'; sink: RowSink };
+export type ModelHalfOptions = { mode: 'model'; output: 'half'; transform?: ValueTransform };
+export type ModelLevelsOptions = DecodeLevelsOptions & { mode: 'model'; output: 'levels' };
+export type Grib2Options = MrmsModeOptions | ModelHalfOptions | ModelLevelsOptions;
+export type MrmsDecodeResult = { grid: GridInfo; rowsRead: number; bytesRead: number; stopped: boolean };
+export type ModelHalfResult = { grid: ModelGrid; data: Uint16Array };
+export type ModelLevelsResult = { grid: ModelGrid; levels: LevelGrid[] };

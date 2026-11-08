@@ -44,3 +44,4 @@ node smoke.mjs
 printf '%s\n' '{"compilerOptions":{"noEmit":true,"strict":true,"module":"NodeNext","target":"ES2022","types":[]},"files":["consumer.ts"]}' > tsconfig.json
 node "$repo_dir/node_modules/typescript/bin/tsc" -p tsconfig.json
 printf '%s\n' 'External tarball runtime and strict declaration checks passed.'
+bash "$repo_dir/scripts/verify-decoders.sh"
