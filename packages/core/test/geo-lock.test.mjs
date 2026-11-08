@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import * as g from '@edgewarn/core/geo';
+import * as g from '@edgewarn/web-utils/geo';
 const ring = [[10,20],[14,20],[14,24],[10,24],[10,20]];
 const hole = [[11,21],[13,21],[13,23],[11,23],[11,21]];
 const polygon = { type:'Polygon', coordinates:[ring,hole] };

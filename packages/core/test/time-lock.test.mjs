@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import * as t from '@edgewarn/core/time';
+import * as t from '@edgewarn/web-utils/time';
 test('UTC conversion and distinct parser acceptance',()=>{
  const ts='20260102-030405', ms=Date.UTC(2026,0,2,3,4,5);
  assert.equal(t.timestampToMs(ts),ms); assert.equal(t.msToTimestamp(ms+999),ts);

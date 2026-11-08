@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
-import * as geo from '@edgewarn/core/geo';
-import * as time from '@edgewarn/core/time';
-import * as net from '@edgewarn/core/net';
+import * as geo from '@edgewarn/web-utils/geo';
+import * as time from '@edgewarn/web-utils/time';
+import * as net from '@edgewarn/web-utils/net';
 const root=new URL('../',import.meta.url);
 function files(dir) { return readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(new URL(e.name+'/',dir)):[new URL(e.name,dir)]); }
 test('source closure stays portable and free of application dependencies/configuration',()=>{
@@ -26,5 +26,5 @@ test('public barrels expose only documented runtime names and subpaths',async()=
  assert.deepEqual(Object.keys(geo).sort(),['toRad','clamp','normalizeLongitude','distanceMiles','calculateDestination','calculateBearing','pointInGeometry','geometryAreaM2','formatAlertCoverage','getPolygonCentroid','getConvexHull','getPolygonApproxRadius','projectAndScalePolygon','generatePolygonSegmentHulls'].sort());
  assert.deepEqual(Object.keys(time).sort(),['parseTimestampUTC','formatTimeLabel','findClosestTimestamp','formatExpiresIn','formatDateUTC','roundTimestampToHour','timestampToMs','msToTimestamp'].sort());
  assert.deepEqual(Object.keys(net).sort(),['EdgeWARNAPI','NWSAPI','setNwsUserAgent','normalizeStormcellFeatures','toNWSFeature','extractNWSAlertItems'].sort());
- for(const specifier of ['@edgewarn/core','@edgewarn/core/cache','@edgewarn/core/net/edgewarn/api','@edgewarn/core/dist/net/normalize.js']) await assert.rejects(import(specifier),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
+ for(const specifier of ['@edgewarn/web-utils/cache','@edgewarn/web-utils/net/edgewarn/api','@edgewarn/web-utils/dist/net/normalize.js']) await assert.rejects(import(specifier),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 });

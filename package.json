@@ -1,25 +1,72 @@
 {
-  "name": "edgewarn-web-utils",
-  "private": true,
+  "name": "@edgewarn/web-utils",
+  "version": "2026.11.8-alpha.0",
   "type": "module",
-  "workspaces": [
-    "packages/*"
-  ],
+  "license": "MIT",
+  "sideEffects": false,
   "engines": {
     "node": ">=22.18"
   },
+  "files": [
+    "packages/core/dist",
+    "packages/decoders/dist",
+    "packages/core/README.md",
+    "packages/decoders/README.md",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./packages/decoders/dist/index.d.ts",
+      "default": "./packages/decoders/dist/index.js"
+    },
+    "./geo": {
+      "types": "./packages/core/dist/geo/index.d.ts",
+      "default": "./packages/core/dist/geo/index.js"
+    },
+    "./time": {
+      "types": "./packages/core/dist/time/index.d.ts",
+      "default": "./packages/core/dist/time/index.js"
+    },
+    "./net": {
+      "types": "./packages/core/dist/net/index.d.ts",
+      "default": "./packages/core/dist/net/index.js"
+    },
+    "./grib2": {
+      "types": "./packages/decoders/dist/grib2/index.d.ts",
+      "default": "./packages/decoders/dist/grib2/index.js"
+    },
+    "./nexrad": {
+      "types": "./packages/decoders/dist/nexrad/index.d.ts",
+      "default": "./packages/decoders/dist/nexrad/index.js"
+    },
+    "./goes": {
+      "types": "./packages/decoders/dist/goes/index.d.ts",
+      "default": "./packages/decoders/dist/goes/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "tsc -b",
-    "test": "npm run build && npm test --workspaces --if-present",
-    "lint:pack": "npm exec --workspaces -- publint",
+    "test": "npm run build && node --test packages/core/test/*.test.mjs packages/decoders/test/*.test.mjs packages/decoders/test/models/*.test.mjs",
+    "lint:pack": "publint --pack=false",
     "changeset": "changeset",
-    "release": "npm run build && changeset publish",
-    "check:package": "npm run build && bash scripts/verify-package.sh",
-    "test:time": "TZ=UTC node --test packages/core/test/time-lock.test.mjs packages/core/test/timestamp.test.mjs && TZ=America/New_York node --test packages/core/test/time-lock.test.mjs packages/core/test/timestamp.test.mjs"
+    "release": "npm publish",
+    "check:package": "bash scripts/verify-package.sh",
+    "test:time": "TZ=UTC node --test packages/core/test/time-lock.test.mjs packages/core/test/timestamp.test.mjs && TZ=America/New_York node --test packages/core/test/time-lock.test.mjs packages/core/test/timestamp.test.mjs",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@types/geojson": "7946.0.16"
   },
   "devDependencies": {
     "typescript": "5.9.3",
     "publint": "^0.3",
     "@changesets/cli": "^2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

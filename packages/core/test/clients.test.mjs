@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { EdgeWARNAPI, NWSAPI, setNwsUserAgent, toNWSFeature, extractNWSAlertItems, normalizeStormcellFeatures } from '@edgewarn/core/net';
+import { EdgeWARNAPI, NWSAPI, setNwsUserAgent, toNWSFeature, extractNWSAlertItems, normalizeStormcellFeatures } from '@edgewarn/web-utils/net';
 import { createJsonRequester } from '../src/net/edgewarn/client.ts';
 const config={baseUrl:'https://example.test/',routes:{stormSnapshots:'/frames',cells:'/tracks',alerts:'/warnings',alertSnapshots:'/warning-frames',health:'/ready'},alertQuery:{origin:'test'},pageSize:7};
 const make=()=>new EdgeWARNAPI(config,{cache:()=>new Map()});
