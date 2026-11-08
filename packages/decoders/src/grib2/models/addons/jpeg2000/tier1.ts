@@ -23,7 +23,11 @@ function zeroContext(orient: Orient, h: number, v: number, d: number): number {
         return hv >= 2 ? 2 : hv;
     }
     // The HL table is the LL/LH one with horizontal and vertical swapped.
-    if (orient === Orient.HL) { const t = h; h = v; v = t; }
+    if (orient === Orient.HL) {
+        const t = h;
+        h = v;
+        v = t;
+    }
     if (h === 2) return 8;
     if (h === 1) return v >= 1 ? 7 : d >= 1 ? 6 : 5;
     if (v === 2) return 4;
@@ -46,11 +50,34 @@ const SIGN_XOR = [1, 1, 1, 1, 0, 0, 0, 0, 0];
  * signed coefficients in raster order.
  */
 
-export function decodeCodeBlock(data: Uint8Array, w: number, h: number, orient: Orient, numBitPlanes: number, passes: number): Int32Array;
+export function decodeCodeBlock(
+    data: Uint8Array,
+    w: number,
+    h: number,
+    orient: Orient,
+    numBitPlanes: number,
+    passes: number,
+): Int32Array;
 /** @internal */
 
-export function decodeCodeBlock(data: Uint8Array, w: number, h: number, orient: Orient, numBitPlanes: number, passes: number, memory?: Memory): Int32Array;
-export function decodeCodeBlock(data: Uint8Array, w: number, h: number, orient: Orient, numBitPlanes: number, passes: number, memory = new Memory()): Int32Array {
+export function decodeCodeBlock(
+    data: Uint8Array,
+    w: number,
+    h: number,
+    orient: Orient,
+    numBitPlanes: number,
+    passes: number,
+    memory?: Memory,
+): Int32Array;
+export function decodeCodeBlock(
+    data: Uint8Array,
+    w: number,
+    h: number,
+    orient: Orient,
+    numBitPlanes: number,
+    passes: number,
+    memory = new Memory(),
+): Int32Array {
     const stride = w + 2;
     const flags = memory.array(Uint8Array, stride * (h + 2));
     const magnitude = memory.array(Int32Array, w * h);
@@ -60,19 +87,33 @@ export function decodeCodeBlock(data: Uint8Array, w: number, h: number, orient: 
     const neighbours = (i: number): number => {
         const hh = (flags[i - 1] & SIG) + (flags[i + 1] & SIG);
         const vv = (flags[i - stride] & SIG) + (flags[i + stride] & SIG);
-        const dd = (flags[i - stride - 1] & SIG) + (flags[i - stride + 1] & SIG) + (flags[i + stride - 1] & SIG) + (flags[i + stride + 1] & SIG);
+        const dd =
+            (flags[i - stride - 1] & SIG) +
+            (flags[i - stride + 1] & SIG) +
+            (flags[i + stride - 1] & SIG) +
+            (flags[i + stride + 1] & SIG);
         return zeroContext(orient, hh, vv, dd);
     };
-    const anyNeighbour = (i: number): boolean => (
-        ((flags[i - 1] | flags[i + 1] | flags[i - stride] | flags[i + stride]
-            | flags[i - stride - 1] | flags[i - stride + 1] | flags[i + stride - 1] | flags[i + stride + 1]) & SIG) !== 0
-    );
+    const anyNeighbour = (i: number): boolean =>
+        ((flags[i - 1] |
+            flags[i + 1] |
+            flags[i - stride] |
+            flags[i + stride] |
+            flags[i - stride - 1] |
+            flags[i - stride + 1] |
+            flags[i + stride - 1] |
+            flags[i + stride + 1]) &
+            SIG) !==
+        0;
     const contribution = (f: number): number => ((f & SIG) === 0 ? 0 : (f & NEG) !== 0 ? -1 : 1);
 
     /** Decode a newly significant sample's sign and record it. */
     const becomeSignificant = (i: number, mIndex: number, plane: number): void => {
         const hc = Math.max(-1, Math.min(1, contribution(flags[i - 1]) + contribution(flags[i + 1])));
-        const vc = Math.max(-1, Math.min(1, contribution(flags[i - stride]) + contribution(flags[i + stride])));
+        const vc = Math.max(
+            -1,
+            Math.min(1, contribution(flags[i - stride]) + contribution(flags[i + stride])),
+        );
         const k = (hc + 1) * 3 + (vc + 1);
         const negative = mq.decode(SIGN_CONTEXT[k]) ^ SIGN_XOR[k];
         flags[i] |= negative ? SIG | NEG : SIG;

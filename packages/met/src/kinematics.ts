@@ -148,8 +148,11 @@ export function effectiveInflowLayer(col: Column): LayerBounds | null {
     for (let i = 0; i < col.p.length && col.p[i] >= searchTop; i++) {
         if (col.t[i] === 0 || col.td[i] === 0 || !finite(col.t[i]) || !finite(col.td[i])) continue;
         const pcl = capeCheckColumn(col, { p: col.p[i], t: col.t[i], td: col.td[i] });
-        const qualifies = finite(pcl.cape) && finite(pcl.cin)
-            && pcl.cape >= SOUNDING_EFFECTIVE_CAPE_JKG && pcl.cin > SOUNDING_EFFECTIVE_CIN_MAX_JKG;
+        const qualifies =
+            finite(pcl.cape) &&
+            finite(pcl.cin) &&
+            pcl.cape >= SOUNDING_EFFECTIVE_CAPE_JKG &&
+            pcl.cin > SOUNDING_EFFECTIVE_CIN_MAX_JKG;
         if (!finite(baseP)) {
             if (qualifies) baseP = col.p[i];
             continue;
@@ -165,7 +168,11 @@ export function effectiveInflowLayer(col: Column): LayerBounds | null {
  * Effective bulk wind difference (m/s, Thompson et al. 2007): shear from the effective base to the
  * level half-way to the MU parcel's EL height AGL.
  */
-export function effectiveBulkShear(col: Column, muElZagl: number | null, layer: LayerBounds | null): number | null {
+export function effectiveBulkShear(
+    col: Column,
+    muElZagl: number | null,
+    layer: LayerBounds | null,
+): number | null {
     if (!layer || muElZagl === null) return null;
     const baseZ = heightAglAt(col, layer.baseP);
     if (!finite(baseZ)) return null;
@@ -197,5 +204,5 @@ export function criticalAngle(col: Column, storm: Vec2): number | null {
     const m2 = Math.hypot(v2u, v2v);
     if (!(m1 * m2 > 0)) return null;
     const dot = Math.min(1, Math.max(-1, (v1u * v2u + v1v * v2v) / (m1 * m2)));
-    return Math.acos(dot) * 180 / Math.PI;
+    return (Math.acos(dot) * 180) / Math.PI;
 }

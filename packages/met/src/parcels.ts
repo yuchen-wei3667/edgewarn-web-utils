@@ -28,13 +28,23 @@ import {
 } from './constants.ts';
 import { equivalentPotentialTemperature, mixingRatioHpa } from './bolton.ts';
 import {
-    dryLift, wetLiftC, wetBulbC, thetaC, temperatureFromThetaC, virtualTemperatureC, tempAtMixratioC,
+    dryLift,
+    wetLiftC,
+    wetBulbC,
+    thetaC,
+    temperatureFromThetaC,
+    virtualTemperatureC,
+    tempAtMixratioC,
 } from './thermo.ts';
 import { interpolateLogP, heightAglAt, exactLayerMean } from './interp.ts';
 import type { Column } from './types.ts';
 
 /** Where a parcel is launched from: pressure hPa, temperature and dewpoint °C at that level. */
-export interface ParcelDefinition { p: number; t: number; td: number }
+export interface ParcelDefinition {
+    p: number;
+    t: number;
+    td: number;
+}
 
 /** Buoyancy integrator gravity used by SHARPpy `dcape` (kept for parity, unlike `GRAVITY`). */
 const DCAPE_GRAVITY = 9.8;
@@ -42,11 +52,13 @@ const DCAPE_GRAVITY = 9.8;
 const missing = (v: number): boolean => !Number.isFinite(v);
 
 /** Closure giving the environmental virtual temperature (°C) at any pressure. */
-const envTvOf = (col: Column) => (pHpa: number): number => {
-    const t = interpolateLogP(col.p, col.t, pHpa);
-    const td = interpolateLogP(col.p, col.td, pHpa);
-    return missing(t) ? NaN : virtualTemperatureC(pHpa, t, td);
-};
+const envTvOf =
+    (col: Column) =>
+    (pHpa: number): number => {
+        const t = interpolateLogP(col.p, col.t, pHpa);
+        const td = interpolateLogP(col.p, col.td, pHpa);
+        return missing(t) ? NaN : virtualTemperatureC(pHpa, t, td);
+    };
 
 /* ------------------------------------------------------------------ */
 /* Parcel definitions                                                  */
@@ -63,11 +75,7 @@ export function meanLayerParcelDef(col: Column, depthHpa = SOUNDING_ML_DEPTH_HPA
     const pBot = col.p[0];
     const pTop = pBot - depthHpa;
     const thetaOf = (pHpa: number): number => thetaC(pHpa, interpolateLogP(col.p, col.t, pHpa));
-    const meanTheta = exactLayerMean(
-        col, pBot, pTop,
-        (i) => thetaC(col.p[i], col.t[i]),
-        thetaOf,
-    );
+    const meanTheta = exactLayerMean(col, pBot, pTop, (i) => thetaC(col.p[i], col.t[i]), thetaOf);
     // Mean mixing ratio of the mixed air: pressure and dewpoint averaged first (SHARPpy
     // mean_mixratio), then the mixing ratio of the averaged air.
     const tdOf = (pHpa: number): number => interpolateLogP(col.p, col.td, pHpa);
@@ -88,7 +96,10 @@ export function meanLayerParcelDef(col: Column, depthHpa = SOUNDING_ML_DEPTH_HPA
 }
 
 /** MU parcel: the highest theta-e level (Bolton) in the lowest `depthHpa` hPa; NaN levels skipped. */
-export function mostUnstableParcelDef(col: Column, depthHpa = SOUNDING_MU_DEPTH_HPA): ParcelDefinition | null {
+export function mostUnstableParcelDef(
+    col: Column,
+    depthHpa = SOUNDING_MU_DEPTH_HPA,
+): ParcelDefinition | null {
     const bottom = col.p[0] - depthHpa;
     let best = NaN;
     let bestI = -1;
@@ -96,7 +107,7 @@ export function mostUnstableParcelDef(col: Column, depthHpa = SOUNDING_MU_DEPTH_
         if (col.p[i] < bottom) break;
         if (missing(col.t[i]) || missing(col.td[i])) continue;
         const theta = equivalentPotentialTemperature(col.p[i], col.t[i], col.td[i]);
-        if (!Number.isFinite(theta) || (!Number.isFinite(best) || theta > best)) {
+        if (!Number.isFinite(theta) || !Number.isFinite(best) || theta > best) {
             best = theta;
             bestI = i;
         }
@@ -121,7 +132,10 @@ export function effectiveParcelDef(col: Column, pBotHpa: number, pTopHpa: number
         const td = interpolateLogP(col.p, col.td, p);
         const theta = missing(t) ? NaN : thetaC(p, t);
         const ratio = missing(t) || missing(td) || p <= 0 ? NaN : mixingRatioHpa(p, td);
-        if (Number.isFinite(theta)) { thetaSum += theta * p; weight += p; }
+        if (Number.isFinite(theta)) {
+            thetaSum += theta * p;
+            weight += p;
+        }
         if (Number.isFinite(ratio)) ratioSum += ratio * p;
     }
     if (weight <= 0) return null;
@@ -157,7 +171,12 @@ function integrationGrid(col: Column, pHpaBase: number, pHpaTop: number, mesh: n
 }
 
 /** Parcel pressures/heights/temperatures walking the moist adiabat over a grid. */
-function moistTrace(col: Column, grid: Float32Array, lclP: number, lclT: number): { tp: Float64Array; ok: boolean } {
+function moistTrace(
+    col: Column,
+    grid: Float32Array,
+    lclP: number,
+    lclT: number,
+): { tp: Float64Array; ok: boolean } {
     const n = grid.length;
     const tp = new Float64Array(n).fill(NaN);
     let tPrev = wetLiftC(lclP, lclT, grid[0]);
@@ -165,7 +184,10 @@ function moistTrace(col: Column, grid: Float32Array, lclP: number, lclT: number)
     let ok = true;
     for (let i = 0; i < n; i++) {
         if (i > 0) tPrev = wetLiftC(grid[i - 1], tPrev, grid[i]);
-        if (missing(tPrev)) { ok = false; break; }
+        if (missing(tPrev)) {
+            ok = false;
+            break;
+        }
         tp[i] = tPrev;
     }
     return { tp, ok };
@@ -223,13 +245,17 @@ export function liftColumn(col: Column, def: ParcelDefinition, mesh = SOUNDING_S
         let tdefPrev = NaN;
         for (let k = 0; k < n; k++) {
             const p = k === n - 1 ? lclP : pStart - k * SOUNDING_LAYER_STEP_HPA;
-            const tvPar = virtualTemperatureC(p, temperatureFromThetaC(thetaParcelC, p), tempAtMixratioC(rLpl, p));
+            const tvPar = virtualTemperatureC(
+                p,
+                temperatureFromThetaC(thetaParcelC, p),
+                tempAtMixratioC(rLpl, p),
+            );
             const z = interpolateLogP(col.p, col.z, p);
             if (!Number.isFinite(tvPar) || missing(z)) break;
             const tvEnv = envTv(p);
             const tdef = missing(tvEnv) ? NaN : (tvPar - tvEnv) / (tvEnv + SOUNDING_KELVIN_OFFSET);
             if (Number.isFinite(tdef) && Number.isFinite(tdefPrev) && Number.isFinite(zPrev)) {
-                const lyre = SOUNDING_GRAVITY * (tdefPrev + tdef) / 2 * (z - zPrev);
+                const lyre = ((SOUNDING_GRAVITY * (tdefPrev + tdef)) / 2) * (z - zPrev);
                 if (lyre < 0) cinStrips.push(lyre); // SHARPpy sums this layer without the 500 hPa cap
             }
             trace.push({ p, tv: tvPar });
@@ -247,7 +273,10 @@ export function liftColumn(col: Column, def: ParcelDefinition, mesh = SOUNDING_S
     const tdef = new Float64Array(nGrid);
     for (let i = 0; i < nGrid; i++) {
         const te = envTv(grid[i]);
-        tdef[i] = missing(te) || missing(tp[i]) ? NaN : (virtualTemperatureC(grid[i], tp[i], tp[i]) - te) / (te + SOUNDING_KELVIN_OFFSET);
+        tdef[i] =
+            missing(te) || missing(tp[i])
+                ? NaN
+                : (virtualTemperatureC(grid[i], tp[i], tp[i]) - te) / (te + SOUNDING_KELVIN_OFFSET);
     }
     if (ok) {
         for (let i = 0; i < nGrid; i++) {
@@ -266,9 +295,13 @@ export function liftColumn(col: Column, def: ParcelDefinition, mesh = SOUNDING_S
     //    itself means LFC == LCL, as SHARPpy forces.
     let lfcIdx = -1;
     if (nGrid > 1 && tdef[0] > 0 && tdef[1] > 0) lfcIdx = 0;
-    else for (let i = 1; i < nGrid - 1; i++) {
-        if (tdef[i] > 0 && tdef[i + 1] > 0) { lfcIdx = i; break; }
-    }
+    else
+        for (let i = 1; i < nGrid - 1; i++) {
+            if (tdef[i] > 0 && tdef[i + 1] > 0) {
+                lfcIdx = i;
+                break;
+            }
+        }
     // -- EL: the highest crossing above the LFC (SHARPpy keeps the last one), so no break: the loop
     //    runs to the top and the surviving index is the final positive-to-negative return.
     let elIdx = -1;
@@ -329,15 +362,17 @@ export function liftColumn(col: Column, def: ParcelDefinition, mesh = SOUNDING_S
 
 /** Buoyancy work of strip `i` (between grid points i and i+1): J/kg, NaN when anything is missing. */
 function lyreAt(tdef: Float64Array, heights: Float64Array, i: number): number {
-    if (missing(tdef[i]) || missing(tdef[i + 1]) || missing(heights[i]) || missing(heights[i + 1])) return NaN;
-    return SOUNDING_GRAVITY * (tdef[i] + tdef[i + 1]) / 2 * (heights[i + 1] - heights[i]);
+    if (missing(tdef[i]) || missing(tdef[i + 1]) || missing(heights[i]) || missing(heights[i + 1]))
+        return NaN;
+    return ((SOUNDING_GRAVITY * (tdef[i] + tdef[i + 1])) / 2) * (heights[i + 1] - heights[i]);
 }
 
 /** Linear (log-p) value of a parcel trace at a pressure inside the grid. */
 function traceValueAt(grid: Float32Array, values: Float64Array, pHpa: number): number {
     for (let i = 0; i < grid.length - 1; i++) {
         if (grid[i] >= pHpa && grid[i + 1] <= pHpa) {
-            const w = (Math.log10(pHpa) - Math.log10(grid[i])) / (Math.log10(grid[i + 1]) - Math.log10(grid[i]));
+            const w =
+                (Math.log10(pHpa) - Math.log10(grid[i])) / (Math.log10(grid[i + 1]) - Math.log10(grid[i]));
             return values[i] + w * (values[i + 1] - values[i]);
         }
     }
@@ -348,17 +383,25 @@ function traceValueAt(grid: Float32Array, values: Float64Array, pHpa: number): n
 /* Cheap CAPE for the iterative layer searches                         */
 /* ------------------------------------------------------------------ */
 
-export interface CapeCheck { cape: number; cin: number } // NaN in both fields when undefined
+export interface CapeCheck {
+    cape: number;
+    cin: number;
+} // NaN in both fields when undefined
 
 /**
  * SHARPpy `cape()` equivalent for searches: every positive strip counts towards CAPE, the negative
  * ones below the cut-off towards CIN, on a coarse `mesh` grid, without LFC/EL bookkeeping. Undefined
  * parcels give NaN in both fields.
  */
-export function capeCheckColumn(col: Column, def: ParcelDefinition, mesh = SOUNDING_SEARCH_STRIP_HPA): CapeCheck {
+export function capeCheckColumn(
+    col: Column,
+    def: ParcelDefinition,
+    mesh = SOUNDING_SEARCH_STRIP_HPA,
+): CapeCheck {
     const fail = () => ({ cape: NaN, cin: NaN });
     if (!col.p || col.p.length < 2) return fail();
-    if (missing(def.p) || missing(def.t) || missing(def.td) || def.p <= 0 || def.p > col.p[0] + 1e-6) return fail();
+    if (missing(def.p) || missing(def.t) || missing(def.td) || def.p <= 0 || def.p > col.p[0] + 1e-6)
+        return fail();
     const lcl = dryLift(def.p, def.t, def.td);
     if (missing(lcl.p) || missing(lcl.t) || lcl.p <= 0 || lcl.p < col.p[col.p.length - 1]) return fail();
     const envTv = envTvOf(col);
@@ -374,13 +417,17 @@ export function capeCheckColumn(col: Column, def: ParcelDefinition, mesh = SOUND
         const n = Math.max(1, Math.round((def.p - lcl.p) / SOUNDING_LAYER_STEP_HPA) + 1);
         for (let k = 0; k < n; k++) {
             const p = k === n - 1 ? lcl.p : def.p - k * SOUNDING_LAYER_STEP_HPA;
-            const tvPar = virtualTemperatureC(p, temperatureFromThetaC(thetaParcelC, p), tempAtMixratioC(rLpl, p));
+            const tvPar = virtualTemperatureC(
+                p,
+                temperatureFromThetaC(thetaParcelC, p),
+                tempAtMixratioC(rLpl, p),
+            );
             const z = interpolateLogP(col.p, col.z, p);
             const tvEnv = envTv(p);
             if (!Number.isFinite(tvPar) || missing(z) || missing(tvEnv)) break;
             const tdef = (tvPar - tvEnv) / (tvEnv + SOUNDING_KELVIN_OFFSET);
             if (Number.isFinite(tdefPrev) && Number.isFinite(zPrev)) {
-                const lyre = SOUNDING_GRAVITY * (tdefPrev + tdef) / 2 * (z - zPrev);
+                const lyre = ((SOUNDING_GRAVITY * (tdefPrev + tdef)) / 2) * (z - zPrev);
                 if (lyre < 0) cin += lyre;
             }
             zPrev = z;
@@ -399,9 +446,11 @@ export function capeCheckColumn(col: Column, def: ParcelDefinition, mesh = SOUND
         const tePrev = envTv(grid[i - 1]);
         const te = envTv(grid[i]);
         if (missing(tePrev) || missing(te)) continue;
-        const tdefPrev = (virtualTemperatureC(grid[i - 1], tp[i - 1], tp[i - 1]) - tePrev) / (tePrev + SOUNDING_KELVIN_OFFSET);
+        const tdefPrev =
+            (virtualTemperatureC(grid[i - 1], tp[i - 1], tp[i - 1]) - tePrev) /
+            (tePrev + SOUNDING_KELVIN_OFFSET);
         const tdef = (virtualTemperatureC(grid[i], tp[i], tp[i]) - te) / (te + SOUNDING_KELVIN_OFFSET);
-        const y = SOUNDING_GRAVITY * (tdefPrev + tdef) / 2 * (heights[i] - heights[i - 1]);
+        const y = ((SOUNDING_GRAVITY * (tdefPrev + tdef)) / 2) * (heights[i] - heights[i - 1]);
         if (!Number.isFinite(y)) continue;
         if (y > 0) cape += y;
         else if ((grid[i] + grid[i - 1]) / 2 > SOUNDING_CIN_LIMIT_HPA) cin += y;
@@ -474,7 +523,8 @@ export function dcapeColumn(col: Column): number | null {
         const h2 = col.z[j];
         const tp2 = wetLiftC(pe1, tp1, pe2);
         const tdef1 = (tp1 - te1) / (te1 + SOUNDING_KELVIN_OFFSET);
-        const tdef2 = Number.isFinite(tp2) && Number.isFinite(te2) ? (tp2 - te2) / (te2 + SOUNDING_KELVIN_OFFSET) : NaN;
+        const tdef2 =
+            Number.isFinite(tp2) && Number.isFinite(te2) ? (tp2 - te2) / (te2 + SOUNDING_KELVIN_OFFSET) : NaN;
         const mid = (tdef1 + tdef2) / 2; // negative buoyancy: the parcel is colder than its environment
         const lyre = DCAPE_GRAVITY * mid * (h2 - h1); // h2 - h1 < 0 descending, so cold strips are positive
         if (Number.isFinite(lyre) && mid < 0) dcape += lyre;

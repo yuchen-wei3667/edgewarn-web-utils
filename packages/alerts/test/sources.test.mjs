@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { setTimeout as delay } from 'node:timers/promises';
-import { NWSAPI, WWAAPI, setNwsUserAgent } from '@edgewarn/web-utils/net';
+import { createNWSClient, createWWAClient } from '@edgewarn/web-utils/net';
 import { loadLocationAlerts, loadRegionAlerts, createEdgeWARNAlertSource, createNWSAlertSource, createWWAAlertSource } from '@edgewarn/web-utils/alerts/nws';
 import { sortDashboardAlerts } from '@edgewarn/web-utils/alerts';
 
@@ -18,31 +18,38 @@ function edge(features = [feature('duplicate')]) {
   };
 }
 const candidate = id => ({ type: 'Feature', geometry: polygon, properties: { cap_id: id } });
+// Per-test stub clients: each mock is an instance, never shared global state.
+const nwsClient = (methods = {}) => Object.assign(createNWSClient({ userAgent: 'source-tests/1.0' }), methods);
+const wwaClient = (methods = {}) => Object.assign(createWWAClient(), methods);
 
-test('default point selection uses EdgeWARN and NWS; selected sources merge in fixed first-wins order', async t => {
+test('default point selection uses EdgeWARN and NWS; selected sources merge in fixed first-wins order', async () => {
   let wwa = 0, nws = 0;
   const fromEdge = feature('duplicate', { marker: 'edgewarn' });
   const fromNws = feature('https://api.weather.gov/alerts/duplicate', { marker: 'nws' });
-  t.mock.method(NWSAPI, 'getAlerts', async () => { nws++; return { features: [fromNws, feature('nws')] }; });
-  t.mock.method(WWAAPI, 'getAlerts', async () => { wwa++; return { features: [candidate('duplicate'), candidate('wwa')] }; });
-  t.mock.method(NWSAPI, 'getAlertById', async id => feature(id, { marker: 'wwa' }));
+  const fakes = {
+    nws: nwsClient({
+      getAlerts: async () => { nws++; return { features: [fromNws, feature('nws')] }; },
+      getAlertById: async id => feature(id, { marker: 'wwa' }),
+    }),
+    wwa: wwaClient({ getAlerts: async () => { wwa++; return { features: [candidate('duplicate'), candidate('wwa')] }; } }),
+  };
   const api = edge([fromEdge]);
-  const defaults = await loadLocationAlerts(point, { edgewarn: api });
+  const defaults = await loadLocationAlerts(point, { edgewarn: api, ...fakes });
   assert.equal(wwa,0);
   assert.equal(nws,1);
   assert.equal(defaults.find(f=>f.id==='duplicate').marker,'edgewarn');
   for (const source of [['wwa','nws','edgewarn'],['nws','edgewarn','wwa']]) {
-    const result = await loadLocationAlerts(point, { edgewarn: api, source });
+    const result = await loadLocationAlerts(point, { edgewarn: api, source, ...fakes });
     assert.equal(result.length,3);
     assert.deepEqual(result.map(f=>f.id),['duplicate','nws','wwa']);
     assert.equal(result.find(f=>f.id==='duplicate').marker,'edgewarn');
     assert.deepEqual(result,sortDashboardAlerts(result));
   }
   for (const source of ['edgewarn','nws','wwa']) {
-    const result = await loadLocationAlerts(point, { edgewarn: api, source });
+    const result = await loadLocationAlerts(point, { edgewarn: api, source, ...fakes });
     assert.ok(result.length);
   }
-  const mixed = await loadLocationAlerts(point, { source: ['wwa','nws'] });
+  const mixed = await loadLocationAlerts(point, { source: ['wwa','nws'], ...fakes });
   assert.equal(mixed.find(f=>f.marker==='nws').id,fromNws.id);
 });
 
@@ -66,22 +73,21 @@ test('selection errors and unsupported regions reject before requests', async t 
   assert.equal(requests,0);
 });
 
-test('each source can fail alone, partial success survives, and all-selected failure throws', async t => {
+test('each source can fail alone, partial success survives, and all-selected failure throws', async () => {
   const fail = async () => { throw new Error('offline'); };
-  t.mock.method(NWSAPI,'getAlerts',fail);
-  t.mock.method(WWAAPI,'getAlerts',fail);
+  const fakes = { nws: nwsClient({ getAlerts: fail }), wwa: wwaClient({ getAlerts: fail }) };
   const api = edge();
-  assert.equal((await loadLocationAlerts(point,{edgewarn:api})).length,1);
-  for (const source of ['nws','wwa']) await assert.rejects(loadLocationAlerts(point,{source}), /No alert source/);
+  assert.equal((await loadLocationAlerts(point,{edgewarn:api, ...fakes})).length,1);
+  for (const source of ['nws','wwa']) await assert.rejects(loadLocationAlerts(point,{source, ...fakes}), /No alert source/);
   api.fetchNWSTimestamps = fail;
-  for (const source of ['edgewarn',['edgewarn','nws','wwa']]) await assert.rejects(loadLocationAlerts(point,{edgewarn:api,source}), /No alert source/);
-  NWSAPI.getAlerts = async () => ({ features: [feature('nws')] });
-  assert.equal((await loadLocationAlerts(point,{edgewarn:api}))[0].id,'nws');
-  NWSAPI.getAlerts = async () => ({ features: [] });
-  assert.deepEqual(await loadLocationAlerts(point,{edgewarn:api}),[]);
+  for (const source of ['edgewarn',['edgewarn','nws','wwa']]) await assert.rejects(loadLocationAlerts(point,{edgewarn:api,source, ...fakes}), /No alert source/);
+  fakes.nws.getAlerts = async () => ({ features: [feature('nws')] });
+  assert.equal((await loadLocationAlerts(point,{edgewarn:api, ...fakes}))[0].id,'nws');
+  fakes.nws.getAlerts = async () => ({ features: [] });
+  assert.deepEqual(await loadLocationAlerts(point,{edgewarn:api, ...fakes}),[]);
 });
 
-test('EdgeWARN and WWA hydration are bounded to eight concurrent requests', async t => {
+test('EdgeWARN and WWA hydration are bounded to eight concurrent requests', async () => {
   const features = Array.from({length:19},(_,i)=>feature(String(i)));
   let active = 0, peak = 0;
   const hydrate = async id => { active++; peak = Math.max(peak,active); await delay(1); active--; return feature(id); };
@@ -90,46 +96,54 @@ test('EdgeWARN and WWA hydration are bounded to eight concurrent requests', asyn
   assert.equal((await loadLocationAlerts(point,{edgewarn:api,source:'edgewarn'})).length,19);
   assert.equal(peak,8);
   peak = 0;
-  t.mock.method(WWAAPI,'getAlerts',async()=>({features:features.map(f=>candidate(f.id))}));
-  t.mock.method(NWSAPI,'getAlertById',hydrate);
-  assert.equal((await loadLocationAlerts(point,{source:'wwa'})).length,19);
+  const fakes = {
+    wwa: wwaClient({ getAlerts: async()=>({features:features.map(f=>candidate(f.id))}) }),
+    nws: nwsClient({ getAlertById: hydrate }),
+  };
+  assert.equal((await loadLocationAlerts(point,{source:'wwa', ...fakes})).length,19);
   assert.equal(peak,8);
   api.downloadNWSAlert = async () => null;
   assert.deepEqual(await loadLocationAlerts(point,{edgewarn:api,source:'edgewarn'}),sortDashboardAlerts(features));
 });
 
-test('WWA hydration fills absent geometry, drops failed alerts, and rejects total hydration failure', async t => {
-  t.mock.method(WWAAPI,'getAlerts',async()=>({features:[candidate('good'),candidate('bad')]}));
-  t.mock.method(NWSAPI,'getAlertById',async id=> { if(id==='bad')throw Error('missing'); return feature(id,{geometry:null}); });
-  const result = await loadLocationAlerts(point,{source:'wwa'});
+test('WWA hydration fills absent geometry, drops failed alerts, and rejects total hydration failure', async () => {
+  const fakes = {
+    wwa: wwaClient({ getAlerts: async()=>({features:[candidate('good'),candidate('bad')]}) }),
+    nws: nwsClient({ getAlertById: async id=> { if(id==='bad')throw Error('missing'); return feature(id,{geometry:null}); } }),
+  };
+  const result = await loadLocationAlerts(point,{source:'wwa', ...fakes});
   assert.equal(result.length,1);
   assert.deepEqual(result[0].geometry,polygon);
-  NWSAPI.getAlertById = async id => id === 'good' ? {} : feature(id);
-  assert.deepEqual((await createWWAAlertSource().forPoint(point)).map(f=>f.id),['bad']);
-  NWSAPI.getAlertById = async()=>{throw Error('missing');};
-  await assert.rejects(createWWAAlertSource().forPoint(point),/All WWA alert hydration failed/);
-  WWAAPI.getAlerts = async()=>({features:[]});
-  assert.deepEqual(await loadLocationAlerts(point,{source:'wwa'}),[]);
+  fakes.nws.getAlertById = async id => id === 'good' ? {} : feature(id);
+  assert.deepEqual((await createWWAAlertSource(fakes.wwa, fakes.nws).forPoint(point)).map(f=>f.id),['bad']);
+  fakes.nws.getAlertById = async()=>{throw Error('missing');};
+  await assert.rejects(createWWAAlertSource(fakes.wwa, fakes.nws).forPoint(point),/All WWA alert hydration failed/);
+  fakes.wwa.getAlerts = async()=>({features:[]});
+  assert.deepEqual(await loadLocationAlerts(point,{source:'wwa', ...fakes}),[]);
 });
 
-test('region routing invokes only supporting sources and retains deterministic precedence', async t => {
+test('region routing invokes only supporting sources and retains deterministic precedence', async () => {
   const calls=[];
-  t.mock.method(NWSAPI,'getRegionAlerts',async region=>{calls.push(region);return {features:[feature('nws')]};});
-  t.mock.method(WWAAPI,'getRegionAlerts',async region=>{calls.push(region);return {features:[candidate('duplicate'),candidate('wwa')]};});
-  t.mock.method(NWSAPI,'getAlertById',async id=>feature(id,{marker:'wwa'}));
+  const fakes = {
+    nws: nwsClient({
+      getRegionAlerts: async region=>{calls.push(region);return {features:[feature('nws')]};},
+      getAlertById: async id=>feature(id,{marker:'wwa'}),
+    }),
+    wwa: wwaClient({ getRegionAlerts: async region=>{calls.push(region);return {features:[candidate('duplicate'),candidate('wwa')]};} }),
+  };
   const api=edge([feature('duplicate',{marker:'edgewarn'})]);
   for(const kind of ['area','region','zone']) {
     const region={[kind]:['TX']};
-    assert.equal((await loadRegionAlerts(region,{edgewarn:api}))[0].id,'nws');
+    assert.equal((await loadRegionAlerts(region,{edgewarn:api, ...fakes}))[0].id,'nws');
     assert.deepEqual(calls.at(-1),region);
   }
-  assert.equal((await loadRegionAlerts({wfo:['KFWD']},{source:'wwa'})).length,2);
-  const result=await loadRegionAlerts({bbox:[-99,31,-91,39]},{edgewarn:api,source:['wwa','nws','edgewarn']});
+  assert.equal((await loadRegionAlerts({wfo:['KFWD']},{source:'wwa', ...fakes})).length,2);
+  const result=await loadRegionAlerts({bbox:[-99,31,-91,39]},{edgewarn:api,source:['wwa','nws','edgewarn'], ...fakes});
   assert.equal(result.length,2);
   assert.equal(result.find(f=>f.id==='duplicate').marker,'edgewarn');
-  WWAAPI.getRegionAlerts = async()=>{throw Error('offline');};
-  assert.equal((await loadRegionAlerts({bbox:[-99,31,-91,39]},{edgewarn:api,source:['edgewarn','wwa']})).length,1);
-  await assert.rejects(loadRegionAlerts({wfo:['KFWD']},{source:'wwa'}), /No alert source/);
+  fakes.wwa.getRegionAlerts = async()=>{throw Error('offline');};
+  assert.equal((await loadRegionAlerts({bbox:[-99,31,-91,39]},{edgewarn:api,source:['edgewarn','wwa'], ...fakes})).length,1);
+  await assert.rejects(loadRegionAlerts({wfo:['KFWD']},{source:'wwa', ...fakes}), /No alert source/);
 });
 
 test('EdgeWARN bbox uses actual geometry intersection, including holes and crossing edges, without hydration', async () => {
@@ -147,27 +161,30 @@ test('EdgeWARN bbox uses actual geometry intersection, including holes and cross
   assert.deepEqual(ids,['crossing','enclosing','touching']);
 });
 
-test('abort is not swallowed by source fallback or WWA hydration', async t => {
+test('abort is not swallowed by source fallback or WWA hydration', async () => {
   const controller=new AbortController();
   const api=edge();
   api.downloadNWSAlert=async()=>{controller.abort();return null;};
-  t.mock.method(NWSAPI,'getAlerts',async()=>({features:[]}));
-  await assert.rejects(loadLocationAlerts(point,{edgewarn:api,signal:controller.signal}),{name:'AbortError'});
+  const fakes = { nws: nwsClient({ getAlerts: async()=>({features:[]}) }) };
+  await assert.rejects(loadLocationAlerts(point,{edgewarn:api,signal:controller.signal, ...fakes}),{name:'AbortError'});
   const other=new AbortController();
-  t.mock.method(WWAAPI,'getAlerts',async()=>({features:[candidate('a')]}));
-  t.mock.method(NWSAPI,'getAlertById',async()=>{other.abort();throw other.signal.reason;});
-  await assert.rejects(loadLocationAlerts(point,{source:'wwa',signal:other.signal}),{name:'AbortError'});
+  const abortFakes = {
+    wwa: wwaClient({ getAlerts: async()=>({features:[candidate('a')]}) }),
+    nws: nwsClient({ getAlertById: async()=>{other.abort();throw other.signal.reason;} }),
+  };
+  await assert.rejects(loadLocationAlerts(point,{source:'wwa',signal:other.signal, ...abortFakes}),{name:'AbortError'});
 });
 
-test('NWS source uses core headers and propagates caller signal to fetch', async t => {
+test('NWS source uses per-client headers and propagates caller signal to fetch', async t => {
   const controller=new AbortController();
-  setNwsUserAgent('source-tests/1.0');
   t.mock.method(globalThis,'fetch',async(url,options)=>{
     assert.equal(options.headers['User-Agent'],'source-tests/1.0');
     controller.abort();
     assert.equal(options.signal.aborted,true);
     throw options.signal.reason;
   });
-  try { await assert.rejects(loadLocationAlerts(point,{source:'nws',signal:controller.signal}),{name:'AbortError'}); }
-  finally { setNwsUserAgent('edgewarn-core (https://github.com/yuchen-wei3667/edgewarn-web-utils)'); }
+  await assert.rejects(loadLocationAlerts(point,{
+    source:'nws', signal:controller.signal,
+    nws: createNWSClient({ userAgent: 'source-tests/1.0' }),
+  }),{name:'AbortError'});
 });

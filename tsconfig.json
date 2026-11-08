@@ -1,17 +1,17 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./packages/core"
-    },
-    {
-      "path": "./packages/alerts"
-    },
-    {
-      "path": "./packages/decoders"
-    },
-    {
-      "path": "./packages/met"
-    }
-  ]
+    "files": [],
+    "references": [
+        {
+            "path": "./packages/core"
+        },
+        {
+            "path": "./packages/alerts"
+        },
+        {
+            "path": "./packages/decoders"
+        },
+        {
+            "path": "./packages/met"
+        }
+    ]
 }

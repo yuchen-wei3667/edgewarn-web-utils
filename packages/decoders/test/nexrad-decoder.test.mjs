@@ -1,15 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { NexradDecoder, readVcpFromPrefix } from '../dist/nexrad/decoder/decoder.js';
+import { readVcpFromPrefix } from '../dist/nexrad/decoder/decoder.js';
 import { parseVcp } from '../dist/nexrad/decoder/vcp.js';
 import { CutAssembler, buildAzimuthLut, AZIMUTH_MISSING } from '../dist/nexrad/decoder/cutAssembler.js';
 
 const fixture = (name) => new Uint8Array(readFileSync(new URL(`./fixtures/nexrad/${name}`, import.meta.url)));
-const synthetic = fixture('synthetic.ar2v');
 const ktlxPrefix = fixture('ktlx-first-4k.bin');
-// Must match make_synthetic.py
-const code = (cut, row, gate) => (cut * 7 + row * 3 + gate) % 250 + 2;
 
 function vcpOf(bytes) {
     const vcp = readVcpFromPrefix(bytes);

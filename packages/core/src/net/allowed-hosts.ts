@@ -29,9 +29,7 @@ export function resolveAllowedFeedUrl(value: unknown): string | null {
     parsed.protocol = 'https:';
 
     const host = parsed.hostname.toLowerCase();
-    const allowed = ALLOWED_HOST_SUFFIXES.some(
-        (suffix) => host === suffix.slice(1) || host.endsWith(suffix),
-    );
+    const allowed = ALLOWED_HOST_SUFFIXES.some((suffix) => host === suffix.slice(1) || host.endsWith(suffix));
 
     return allowed ? parsed.toString() : null;
 }

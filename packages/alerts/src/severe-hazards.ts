@@ -11,9 +11,9 @@ export function extractSevereHazards(feature: NWSAlertFeature): ParsedSevereHaza
     const props = feature.properties;
 
     if (
-        props.event !== 'Severe Thunderstorm Warning'
-        && props.event !== 'Tornado Warning'
-        && props.event !== 'Special Weather Statement'
+        props.event !== 'Severe Thunderstorm Warning' &&
+        props.event !== 'Tornado Warning' &&
+        props.event !== 'Special Weather Statement'
     ) {
         return { wind: null, hail: null, hazard: null, tornadoConfirmation: null };
     }

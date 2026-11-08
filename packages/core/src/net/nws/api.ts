@@ -4,6 +4,9 @@
  */
 
 import { fetchWithTimeout } from '../fetch-with-timeout.ts';
+import { DEFAULT_NWS_USER_AGENT, nwsHeaders, normalizeUpstreamBaseUrl } from '../http-config.ts';
+
+export { DEFAULT_NWS_USER_AGENT };
 
 interface NWSAlertFeature {
     id: string;
@@ -162,75 +165,106 @@ interface NWSGridDataResponse {
     };
 }
 
-// NWS asks every client for a User-Agent and can refuse Node's default one.
-// Browsers forbid setting the header, so it is sent from the server only.
-let userAgent = 'edgewarn-core (https://github.com/yuchen-wei3667/edgewarn-web-utils)';
-export function setNwsUserAgent(value: string): void { userAgent = value; }
-
-export const nwsHeaders = (): Record<string, string> => typeof window === 'undefined'
-    ? { Accept: 'application/geo+json', 'User-Agent': userAgent }
-    : { Accept: 'application/geo+json' };
+export interface NWSClientConfig {
+    /** User-Agent sent on every request. Defaults to {@link DEFAULT_NWS_USER_AGENT}. */
+    userAgent?: string;
+    /** Upstream origin override (no trailing slash needed). Defaults to api.weather.gov. */
+    baseUrl?: string;
+}
 
 export type NWSAlertRegion = { area: string[] } | { region: string[] } | { zone: string[] };
 
+/**
+ * NWS API client. Each instance carries its own User-Agent and upstream
+ * base URL — create one per consumer with {@link createNWSClient}.
+ * Instances are immutable after construction, so clients never share state.
+ */
 export class NWSAPI {
-    static async getRegionAlerts<T = NWSAlertsResponse>(region: NWSAlertRegion, signal?: AbortSignal): Promise<T> {
+    private readonly userAgent: string;
+    private readonly baseUrl: string;
+
+    constructor(config: NWSClientConfig = {}) {
+        this.userAgent = config.userAgent ?? DEFAULT_NWS_USER_AGENT;
+        this.baseUrl = normalizeUpstreamBaseUrl(config.baseUrl, 'https://api.weather.gov');
+    }
+
+    async getRegionAlerts<T = NWSAlertsResponse>(region: NWSAlertRegion, signal?: AbortSignal): Promise<T> {
         const entries = Object.entries(region);
-        if (entries.length !== 1 || !['area', 'region', 'zone'].includes(entries[0][0])) throw new Error('unsupported region type');
+        if (entries.length !== 1 || !['area', 'region', 'zone'].includes(entries[0][0]))
+            throw new Error('unsupported region type');
         const [kind, values] = entries[0];
-        if (!Array.isArray(values) || !values.length || values.some(v => typeof v !== 'string' || !v.trim())) throw new Error('Region requires non-empty codes');
-        return this.getResource<T>(`https://api.weather.gov/alerts/active?${kind}=${encodeURIComponent(values.join(','))}`, signal);
+        if (
+            !Array.isArray(values) ||
+            !values.length ||
+            values.some((v) => typeof v !== 'string' || !v.trim())
+        )
+            throw new Error('Region requires non-empty codes');
+        return this.getResource<T>(
+            `${this.baseUrl}/alerts/active?${kind}=${encodeURIComponent(values.join(','))}`,
+            signal,
+        );
     }
 
-    static async getAlertById<T = import('../types.ts').NWSAlertFeature>(capId: string, signal?: AbortSignal): Promise<T> {
+    async getAlertById<T = import('../types.ts').NWSAlertFeature>(
+        capId: string,
+        signal?: AbortSignal,
+    ): Promise<T> {
         if (!capId.trim()) throw new Error('Alert ID must not be empty');
-        return this.getResource<T>(`https://api.weather.gov/alerts/${encodeURIComponent(capId)}`, signal);
+        return this.getResource<T>(`${this.baseUrl}/alerts/${encodeURIComponent(capId)}`, signal);
     }
 
-    static async getResource<T>(url: string, signal?: AbortSignal): Promise<T> {
-        const response = await fetchWithTimeout(url, { headers: nwsHeaders(), signal });
+    async getResource<T>(url: string, signal?: AbortSignal): Promise<T> {
+        const response = await fetchWithTimeout(url, { headers: nwsHeaders(this.userAgent), signal });
         if (!response.ok) {
             throw new Error(`NWS request failed (${response.status}) for ${url}`);
         }
-        return await response.json() as T;
+        return (await response.json()) as T;
     }
 
     /**
      * Get metadata for a lat/lon point
      */
-    static async getPoint<T = NWSPointMetadata>(lat: number, lon: number, signal?: AbortSignal): Promise<T> {
+    async getPoint<T = NWSPointMetadata>(lat: number, lon: number, signal?: AbortSignal): Promise<T> {
         // NWS API uses 4 decimal places of precision max recommended
         const latStr = lat.toFixed(4);
         const lonStr = lon.toFixed(4);
 
-        return this.getResource<T>(`https://api.weather.gov/points/${latStr},${lonStr}`, signal);
+        return this.getResource<T>(`${this.baseUrl}/points/${latStr},${lonStr}`, signal);
     }
 
     /**
      * Get forecast from a URL provided by getPoint
      */
-    static async getForecast<T = NWSForecastResponse>(url: string, signal?: AbortSignal): Promise<T> {
+    async getForecast<T = NWSForecastResponse>(url: string, signal?: AbortSignal): Promise<T> {
         return this.getResource<T>(url, signal);
     }
 
-    static async getHourlyForecast<T = NWSHourlyForecastResponse>(url: string, signal?: AbortSignal): Promise<T> {
+    async getHourlyForecast<T = NWSHourlyForecastResponse>(url: string, signal?: AbortSignal): Promise<T> {
         return this.getResource<T>(url, signal);
     }
 
-    static async getGridData<T = NWSGridDataResponse>(url: string, signal?: AbortSignal): Promise<T> {
+    async getGridData<T = NWSGridDataResponse>(url: string, signal?: AbortSignal): Promise<T> {
         return this.getResource<T>(url, signal);
     }
 
-    static async getStations<T>(url: string, signal?: AbortSignal): Promise<T> {
+    async getStations<T>(url: string, signal?: AbortSignal): Promise<T> {
         return this.getResource<T>(url, signal);
     }
 
-    static async getLatestObservation<T>(stationId: string, signal?: AbortSignal): Promise<T> {
-        return this.getResource<T>(`https://api.weather.gov/stations/${encodeURIComponent(stationId)}/observations/latest`, signal);
+    async getLatestObservation<T>(stationId: string, signal?: AbortSignal): Promise<T> {
+        return this.getResource<T>(
+            `${this.baseUrl}/stations/${encodeURIComponent(stationId)}/observations/latest`,
+            signal,
+        );
     }
 
-    static async getAlerts<T = NWSAlertsResponse>(lat: number, lon: number, signal?: AbortSignal): Promise<T> {
+    async getAlerts<T = NWSAlertsResponse>(lat: number, lon: number, signal?: AbortSignal): Promise<T> {
         const point = `${lat.toFixed(4)},${lon.toFixed(4)}`;
-        return this.getResource<T>(`https://api.weather.gov/alerts/active?point=${point}`, signal);
+        return this.getResource<T>(`${this.baseUrl}/alerts/active?point=${point}`, signal);
     }
+}
+
+/** Create an NWS client with its own User-Agent and optional base-URL override. */
+export function createNWSClient(config: NWSClientConfig = {}): NWSAPI {
+    return new NWSAPI(config);
 }

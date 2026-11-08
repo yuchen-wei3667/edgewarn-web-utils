@@ -189,7 +189,11 @@ function decodeCcsdsFieldImpl(field: PackedField, sink: ValueSink): void;
 function decodeCcsdsFieldImpl(field: PackedField, sink: ValueSink, memory?: Memory): void;
 function decodeCcsdsFieldImpl(field: PackedField, sink: ValueSink, memory = new Memory()): void {
     const { s5, s7, nValues, nbits, base, step } = field;
-    const samples = decodeCcsds(s7, { bitsPerSample: nbits, flags: s5[21], blockSize: s5[22], rsi: u16(s5, 23), nSamples: nValues }, memory);
+    const samples = decodeCcsds(
+        s7,
+        { bitsPerSample: nbits, flags: s5[21], blockSize: s5[22], rsi: u16(s5, 23), nSamples: nValues },
+        memory,
+    );
     for (let i = 0; i < nValues; i++) sink.value(base + samples[i] * step);
     memory.release(samples);
 }

@@ -4,7 +4,18 @@ import type { MrmsDecodeResult, ModelHalfResult, ModelLevelsResult } from './gri
 import type { decodeLevel3Radial } from './nexrad/level3/digitalRadial.ts';
 import type { TvsProduct } from './nexrad/level3/tvs.ts';
 import type { AbiGrid } from './goes/abi.ts';
-import type { DecoderBudget, DecodeOptions, DecodeResult, Grib2MrmsOptions, Grib2HalfOptions, Grib2LevelsOptions, NexradLevel2Options, NexradRadialOptions, NexradTvsOptions, GoesOptions } from './types.ts';
+import type {
+    DecoderBudget,
+    DecodeOptions,
+    DecodeResult,
+    Grib2MrmsOptions,
+    Grib2HalfOptions,
+    Grib2LevelsOptions,
+    NexradLevel2Options,
+    NexradRadialOptions,
+    NexradTvsOptions,
+    GoesOptions,
+} from './types.ts';
 export type * from './types.ts';
 export { DecodeBudgetExceededError } from './internal/memory.ts';
 
@@ -16,7 +27,8 @@ export class EdgeWARNDecoder {
     private active = false;
     constructor(budget: DecoderBudget) {
         const limitBytes = budget?.memoryLimitBytes;
-        if (!Number.isSafeInteger(limitBytes) || limitBytes <= 0) throw new RangeError('memoryLimitBytes must be a positive safe integer');
+        if (!Number.isSafeInteger(limitBytes) || limitBytes <= 0)
+            throw new RangeError('memoryLimitBytes must be a positive safe integer');
         this.limitBytes = limitBytes;
     }
     decode(input: ReadableStream<Uint8Array>, options: Grib2MrmsOptions): Promise<MrmsDecodeResult>;
@@ -36,7 +48,12 @@ export class EdgeWARNDecoder {
             if (options.format === 'grib2') {
                 if (options.mode === 'mrms') {
                     const { decodeGrib2 } = await import('./grib2/mrms/decode.ts');
-                    return await decodeGrib2(input as ReadableStream<Uint8Array>, options.sink, options, memory);
+                    return await decodeGrib2(
+                        input as ReadableStream<Uint8Array>,
+                        options.sink,
+                        options,
+                        memory,
+                    );
                 }
                 const model = await import('./grib2/models/grib2.ts');
                 return options.output === 'half'
@@ -52,7 +69,9 @@ export class EdgeWARNDecoder {
                         decoder.push(input);
                     } else {
                         const reader = (input as ReadableStream<Uint8Array>).getReader();
-                        const abort = () => { void reader.cancel(options.signal?.reason).catch(() => {}); };
+                        const abort = () => {
+                            void reader.cancel(options.signal?.reason).catch(() => {});
+                        };
                         options.signal?.addEventListener('abort', abort, { once: true });
                         try {
                             for (;;) {
@@ -60,7 +79,8 @@ export class EdgeWARNDecoder {
                                 const { value, done } = await reader.read();
                                 options.signal?.throwIfAborted();
                                 if (done) break;
-                                if (!(value instanceof Uint8Array)) throw new TypeError('Expected byte stream');
+                                if (!(value instanceof Uint8Array))
+                                    throw new TypeError('Expected byte stream');
                                 decoder.push(value);
                             }
                         } finally {
@@ -81,7 +101,7 @@ export class EdgeWARNDecoder {
             }
             const { AbiFile } = await import('./goes/abi.ts');
             const { BytesSource } = await import('./goes/source.ts');
-            const source = input instanceof Uint8Array ? new BytesSource(input) : input as ByteSource;
+            const source = input instanceof Uint8Array ? new BytesSource(input) : (input as ByteSource);
             const file = await AbiFile.open(source, options.signal, options.dependencies, memory);
             return await file.read(options);
         } catch (error) {
@@ -100,11 +120,28 @@ function validate(input: Input, options: DecodeOptions): void {
     const bytes = input instanceof Uint8Array;
     const stream = input instanceof ReadableStream;
     if (options.format === 'grib2') {
-        if (options.mode === 'mrms' && stream && typeof options.sink?.begin === 'function' && typeof options.sink?.row === 'function') return;
-        if (options.mode === 'model' && bytes && (options.output === 'half' || options.output === 'levels')) return;
+        if (
+            options.mode === 'mrms' &&
+            stream &&
+            typeof options.sink?.begin === 'function' &&
+            typeof options.sink?.row === 'function'
+        )
+            return;
+        if (options.mode === 'model' && bytes && (options.output === 'half' || options.output === 'levels'))
+            return;
     } else if (options.format === 'nexrad') {
         if (options.level === 2 && (bytes || stream) && typeof options.onRadial === 'function') return;
-        if (options.level === 3 && bytes && (options.product === 'tvs' || (options.product === 'radial' && typeof options.moment === 'string'))) return;
-    } else if (options.format === 'goes' && (bytes || (input && typeof (input as ByteSource).read === 'function'))) return;
+        if (
+            options.level === 3 &&
+            bytes &&
+            (options.product === 'tvs' ||
+                (options.product === 'radial' && typeof options.moment === 'string'))
+        )
+            return;
+    } else if (
+        options.format === 'goes' &&
+        (bytes || (input && typeof (input as ByteSource).read === 'function'))
+    )
+        return;
     throw new TypeError('Invalid decoder format, mode, output, or input');
 }

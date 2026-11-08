@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { parseIdx, parseEcmwfIndex, decodeGrib2 } from '../dist/grib2/index.js';
+import { parseIdx, parseEcmwfIndex } from '../dist/grib2/index.js';
 import { AbiFile, BytesSource } from '../dist/goes/index.js';
 import { ExpiringMap, CACHE_RETENTION_MS } from './helpers/expiringMap.mjs';
 const fixture=new Uint8Array(readFileSync(new URL('./fixtures/goes/abi-mini.nc',import.meta.url)));

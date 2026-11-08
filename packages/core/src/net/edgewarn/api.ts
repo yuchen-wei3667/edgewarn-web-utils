@@ -28,7 +28,7 @@ export class EdgeWARNAPI {
     private readonly requestJson: <T>(
         path: string,
         params?: Record<string, string | number | undefined>,
-        options?: RequestOptions
+        options?: RequestOptions,
     ) => Promise<T>;
 
     /**
@@ -43,22 +43,40 @@ export class EdgeWARNAPI {
         this.requestJson = createJsonRequester(this.baseUrl);
     }
 
-    private async resource<T>(path: string, params?: Record<string, string | number | undefined>, options?: RequestOptions): Promise<T> {
-        const envelope = await this.requestJson<{ data: T; meta?: Record<string, unknown> }>(path, params, options);
+    private async resource<T>(
+        path: string,
+        params?: Record<string, string | number | undefined>,
+        options?: RequestOptions,
+    ): Promise<T> {
+        const envelope = await this.requestJson<{ data: T; meta?: Record<string, unknown> }>(
+            path,
+            params,
+            options,
+        );
         if (!envelope || typeof envelope !== 'object' || !('data' in envelope)) {
             throw new Error(`Invalid resource envelope from ${path}`);
         }
         return envelope.data;
     }
 
-    private async collection<T>(path: string, params: Record<string, string | number | undefined> = {}, options?: RequestOptions): Promise<T[]> {
+    private async collection<T>(
+        path: string,
+        params: Record<string, string | number | undefined> = {},
+        options?: RequestOptions,
+    ): Promise<T[]> {
         const all: T[] = [];
         const seen = new Set<string>();
         let cursor: string | undefined;
         do {
-            const envelope = await this.requestJson<{ data: T[]; meta?: { nextCursor?: string | null } }>(path, {
-                ...params, limit: this.config.pageSize, cursor,
-            }, options);
+            const envelope = await this.requestJson<{ data: T[]; meta?: { nextCursor?: string | null } }>(
+                path,
+                {
+                    ...params,
+                    limit: this.config.pageSize,
+                    cursor,
+                },
+                options,
+            );
             if (!Array.isArray(envelope?.data)) throw new Error(`Invalid collection envelope from ${path}`);
             all.push(...envelope.data);
             const next = envelope.meta?.nextCursor ?? null;
@@ -76,7 +94,11 @@ export class EdgeWARNAPI {
      * to legacy filename-safe IDs for backward compatibility.
      */
     private async fetchNWSAlertPayloadById(alertId: string, options?: RequestOptions): Promise<unknown> {
-        return await this.resource<unknown>(`${this.config.routes.alerts}/${encodeURIComponent(alertId)}`, this.config.alertQuery, options);
+        return await this.resource<unknown>(
+            `${this.config.routes.alerts}/${encodeURIComponent(alertId)}`,
+            this.config.alertQuery,
+            options,
+        );
     }
 
     /**
@@ -103,14 +125,24 @@ export class EdgeWARNAPI {
         try {
             let request = this.stormSnapshotCache.get(timestamp);
             if (!request) {
-                request = this.resource<{ cells?: unknown }>(`${this.config.routes.stormSnapshots}/${encodeURIComponent(timestamp)}`, undefined, { cache: 'no-store' });
+                request = this.resource<{ cells?: unknown }>(
+                    `${this.config.routes.stormSnapshots}/${encodeURIComponent(timestamp)}`,
+                    undefined,
+                    { cache: 'no-store' },
+                );
                 this.stormSnapshotCache.set(timestamp, request);
-                request.catch(() => { if (this.stormSnapshotCache.get(timestamp) === request) this.stormSnapshotCache.delete(timestamp); });
+                request.catch(() => {
+                    if (this.stormSnapshotCache.get(timestamp) === request)
+                        this.stormSnapshotCache.delete(timestamp);
+                });
             }
             const snapshot = await request;
             return (snapshot?.cells ?? snapshot) as StormCellList | Cell[];
         } catch (error) {
-            console.error(`[EdgeWARNAPI] Failed to download stormcell list for timestamp ${timestamp}:`, error);
+            console.error(
+                `[EdgeWARNAPI] Failed to download stormcell list for timestamp ${timestamp}:`,
+                error,
+            );
             throw error;
         }
     }
@@ -133,9 +165,15 @@ export class EdgeWARNAPI {
         }
 
         try {
-            const value = await this.resource<Cell[] | Cell | { history?: Cell[] }>(`${this.config.routes.cells}/${encodeURIComponent(normalized)}`);
+            const value = await this.resource<Cell[] | Cell | { history?: Cell[] }>(
+                `${this.config.routes.cells}/${encodeURIComponent(normalized)}`,
+            );
             if (Array.isArray(value)) return value as Cell[];
-            if (value && typeof value === 'object' && Array.isArray((value as { history?: Cell[] }).history)) {
+            if (
+                value &&
+                typeof value === 'object' &&
+                Array.isArray((value as { history?: Cell[] }).history)
+            ) {
                 return (value as { history: Cell[] }).history;
             }
             return value ? [value as Cell] : [];
@@ -163,23 +201,34 @@ export class EdgeWARNAPI {
      * @returns Array of timestamps
      */
     async fetchNWSTimestamps(options?: RequestOptions): Promise<string[]> {
-        return this.collection<string>(`${this.config.routes.alertSnapshots}`, this.config.alertQuery, options);
+        return this.collection<string>(
+            `${this.config.routes.alertSnapshots}`,
+            this.config.alertQuery,
+            options,
+        );
     }
 
     /**
      * Fetch the complete alert list for a specific NWS timestamp.
      * @param timestamp - Timestamp in YYYYMMDD-HHMMSS format
      */
-    async fetchNWSAlertList(timestamp: string, options?: RequestOptions): Promise<NWSData['data']['features']> {
+    async fetchNWSAlertList(
+        timestamp: string,
+        options?: RequestOptions,
+    ): Promise<NWSData['data']['features']> {
         assertValidTimestamp(timestamp);
 
-        const snapshot = await this.resource<{ alerts?: unknown[] }>(`${this.config.routes.alertSnapshots}/${encodeURIComponent(timestamp)}`, this.config.alertQuery, options);
+        const snapshot = await this.resource<{ alerts?: unknown[] }>(
+            `${this.config.routes.alertSnapshots}/${encodeURIComponent(timestamp)}`,
+            this.config.alertQuery,
+            options,
+        );
         const payload = snapshot.alerts ?? [];
 
         const rawItems = extractNWSAlertItems(payload);
 
         return rawItems
-            .map(item => toNWSFeature(item, ''))
+            .map((item) => toNWSFeature(item, ''))
             .filter((f): f is NWSData['data']['features'][number] => Boolean(f));
     }
 
@@ -187,13 +236,15 @@ export class EdgeWARNAPI {
      * Download a single NWS alert feature by alert ID.
      * @param alertId - Official alert OID
      */
-    async downloadNWSAlert(alertId: string, options?: RequestOptions): Promise<NWSData['data']['features'][number] | null> {
+    async downloadNWSAlert(
+        alertId: string,
+        options?: RequestOptions,
+    ): Promise<NWSData['data']['features'][number] | null> {
         const normalizedAlertId = String(alertId).trim();
         if (!normalizedAlertId) {
             console.warn('[EdgeWARNAPI] downloadNWSAlert called with empty ID');
             return null;
         }
-
 
         // Always attempt to fetch fresh data for hydration since the API
         // returns full data when queried by ID (unlike the list endpoint)
@@ -221,7 +272,7 @@ export class EdgeWARNAPI {
      */
     async downloadNWS(
         timestamp: string,
-        onFeatureDownloaded?: (feature: NWSData['data']['features'][number]) => void | Promise<void>
+        onFeatureDownloaded?: (feature: NWSData['data']['features'][number]) => void | Promise<void>,
     ): Promise<NWSData> {
         assertValidTimestamp(timestamp);
 
@@ -235,9 +286,7 @@ export class EdgeWARNAPI {
                 const features = await this.fetchNWSAlertList(timestamp);
 
                 if (onFeatureDownloaded) {
-                    await Promise.allSettled(
-                        features.map(f => onFeatureDownloaded(f))
-                    );
+                    await Promise.allSettled(features.map((f) => onFeatureDownloaded(f)));
                 }
 
                 return {
@@ -245,20 +294,21 @@ export class EdgeWARNAPI {
                     timestamp,
                     data: {
                         type: 'FeatureCollection',
-                        features
-                    }
+                        features,
+                    },
                 };
-
             } catch (err) {
                 if (attempts > maxRetries) {
                     throw err;
                 }
 
-                console.warn(`[EdgeWARNAPI] downloadNWS failed (Attempt ${attempts}/${maxRetries + 1}). Retrying... Error: ${(err as Error).message}`);
+                console.warn(
+                    `[EdgeWARNAPI] downloadNWS failed (Attempt ${attempts}/${maxRetries + 1}). Retrying... Error: ${(err as Error).message}`,
+                );
 
                 // Exponential backoff
                 const delay = baseDelay * Math.pow(2, attempts - 1);
-                await new Promise(resolve => setTimeout(resolve, delay));
+                await new Promise((resolve) => setTimeout(resolve, delay));
             }
         }
     }

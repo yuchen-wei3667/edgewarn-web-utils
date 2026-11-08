@@ -52,5 +52,7 @@ export function formatNwsAlertText(feature: NWSAlertFeature): string {
         props.headline ? `\n${props.headline}` : '',
         props.description ? `\n${props.description}` : '',
         props.instruction ? `\nInstructions:\n${props.instruction}` : '',
-    ].filter(Boolean).join('\n');
+    ]
+        .filter(Boolean)
+        .join('\n');
 }

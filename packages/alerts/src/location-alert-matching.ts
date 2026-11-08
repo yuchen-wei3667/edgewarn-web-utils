@@ -8,10 +8,12 @@ export interface LocationAlert {
     isCritical: boolean;
 }
 
-export type LocationAlertFeatureInput = NWSAlertFeature | {
-    feature: NWSAlertFeature;
-    geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon;
-};
+export type LocationAlertFeatureInput =
+    | NWSAlertFeature
+    | {
+          feature: NWSAlertFeature;
+          geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon;
+      };
 
 export type LocationAlertMinimumSeverity = 'Extreme' | 'Severe' | 'Moderate' | 'Minor' | 'Unknown';
 
@@ -24,7 +26,7 @@ const SEVERITY_RANK: Record<LocationAlertMinimumSeverity, number> = {
 };
 
 function isPolygonGeometry(
-    geometry: GeoJSON.Geometry | GeoJSON.Polygon | GeoJSON.MultiPolygon | null | undefined
+    geometry: GeoJSON.Geometry | GeoJSON.Polygon | GeoJSON.MultiPolygon | null | undefined,
 ): geometry is GeoJSON.Polygon | GeoJSON.MultiPolygon {
     if (!geometry) {
         return false;
@@ -87,7 +89,7 @@ export function findAlertsAtPoint(
     lat: number,
     lon: number,
     alertFeatures: LocationAlertFeatureInput[],
-    minimumSeverity: LocationAlertMinimumSeverity = 'Unknown'
+    minimumSeverity: LocationAlertMinimumSeverity = 'Unknown',
 ): LocationAlert[] {
     if (!Array.isArray(alertFeatures) || alertFeatures.length === 0) {
         return [];

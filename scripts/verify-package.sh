@@ -44,7 +44,7 @@ assert.deepEqual(await nwsAlerts.loadRegionAlerts({area:['TX']},{source:'nws'}),
 globalThis.fetch = () => { throw Error('unexpected request'); };
 assert.equal(Object.keys(geo).length,14);
 assert.equal(Object.keys(time).length,8);
-assert.equal(Object.keys(net).length,7);
+assert.equal(Object.keys(net).length,11);
 assert.equal(geo.distanceMiles(0,0,0,0),0);
 assert.equal(time.msToTimestamp(0),'19700101-000000');
 for (const path of ['@edgewarn/web-utils/cache','@edgewarn/web-utils/net/normalize','@edgewarn/web-utils/alerts/alert-id','@edgewarn/web-utils/alerts/dist/index.js','@edgewarn/web-utils/packages/alerts/dist/index.js']) {
@@ -83,7 +83,7 @@ const invalidColumn: Column = {...soundingColumn, p: [1000, 900]};
 import type * as GeoJSON from 'geojson';
 import { pointInGeometry } from '@edgewarn/web-utils/geo';
 import { timestampToMs } from '@edgewarn/web-utils/time';
-import { EdgeWARNAPI, NWSAPI, setNwsUserAgent, normalizeStormcellFeatures, toNWSFeature, extractNWSAlertItems } from '@edgewarn/web-utils/net';
+import { EdgeWARNAPI, NWSAPI, createNWSClient, createWWAClient, normalizeStormcellFeatures, toNWSFeature, extractNWSAlertItems } from '@edgewarn/web-utils/net';
 import type { EdgeWARNApiConfig, EdgeWARNApiDeps, ExpiryCache, RequestOptions, Cell, StormCellList, NWSForecastPeriod, NWSAlertProperties, NWSAlertFeature, NWSData } from '@edgewarn/web-utils/net';
 import { compareAlertPriority, findAlertsAtPoint } from '@edgewarn/web-utils/alerts';
 import type { NWSAlertFeature as AlertFeature, SPCWatchDetails, ParsedSevereHazards, LocationAlert } from '@edgewarn/web-utils/alerts';
@@ -116,7 +116,9 @@ declare const config: EdgeWARNApiConfig;
 const api = new EdgeWARNAPI(config,deps);
 const requestOptions: RequestOptions = {signal: new AbortController().signal};
 const cells: Promise<Cell[]> = api.downloadCellHistory(1);
-const forecast: Promise<{properties:{periods:NWSForecastPeriod[]}}> = NWSAPI.getForecast('https://example.test');
+const nwsClient = createNWSClient({ userAgent: 'consumer/1.0' });
+const forecast: Promise<{properties:{periods:NWSForecastPeriod[]}}> = nwsClient.getForecast('https://example.test');
+const wwaClient = createWWAClient();
 import { EdgeWARNDecoder, DecodeBudgetExceededError } from '@edgewarn/web-utils';
 import type * as Root from '@edgewarn/web-utils';
 import * as Grib from '@edgewarn/web-utils/grib2';

@@ -28,13 +28,16 @@ const COC = 0xff53;
 const QCC = 0xff5d;
 const UNSUPPORTED_MARKERS: Record<number, string> = {
     0xff5e: 'region of interest (RGN)',
-    0xff5f: 'progression order change (POC)', 0xff60: 'packed packet headers (PPM)', 0xff61: 'packed packet headers (PPT)',
+    0xff5f: 'progression order change (POC)',
+    0xff60: 'packed packet headers (PPM)',
+    0xff61: 'packed packet headers (PPT)',
 };
 
 const ceilDiv = (a: number, b: number): number => (a <= 0 ? 0 : Math.ceil(a / b));
 
 const u16 = (d: Uint8Array, o: number): number => (d[o] << 8) | d[o + 1];
-const u32 = (d: Uint8Array, o: number): number => ((d[o] << 24) | (d[o + 1] << 16) | (d[o + 2] << 8) | d[o + 3]) >>> 0;
+const u32 = (d: Uint8Array, o: number): number =>
+    ((d[o] << 24) | (d[o + 1] << 16) | (d[o + 2] << 8) | d[o + 3]) >>> 0;
 
 interface CodingStyle {
     levels: number;
@@ -58,7 +61,8 @@ class HeaderBits {
     }
     bit(): number {
         if (this.left === 0) {
-            if (this.pos >= this.data.length) throw new Error('JPEG 2000 packet header runs past the end of the stream');
+            if (this.pos >= this.data.length)
+                throw new Error('JPEG 2000 packet header runs past the end of the stream');
             this.cur = this.data[this.pos++];
             this.left = this.afterFF ? 7 : 8;
             this.afterFF = this.cur === 0xff;
@@ -84,9 +88,14 @@ class TagTree {
     private readonly widths: number[] = [];
     private readonly values: Int32Array[] = [];
     private readonly lows: Int32Array[] = [];
-    release(memory: Memory): void { for (const a of [...this.values, ...this.lows]) memory.release(a); this.values.length = 0; this.lows.length = 0; }
+    release(memory: Memory): void {
+        for (const a of [...this.values, ...this.lows]) memory.release(a);
+        this.values.length = 0;
+        this.lows.length = 0;
+    }
     constructor(w: number, h: number, memory: Memory) {
-        let lw = w, lh = h;
+        let lw = w,
+            lh = h;
         for (;;) {
             this.widths.push(lw);
             this.values.push(memory.array(Int32Array, lw * lh).fill(0x7fffffff));
@@ -103,9 +112,11 @@ class TagTree {
             const i = (y >> k) * this.widths[k] + (x >> k);
             const lows = this.lows[k];
             const values = this.values[k];
-            if (low > lows[i]) lows[i] = low; else low = lows[i];
+            if (low > lows[i]) lows[i] = low;
+            else low = lows[i];
             while (low < threshold && low < values[i]) {
-                if (bits.bit()) values[i] = low; else low++;
+                if (bits.bit()) values[i] = low;
+                else low++;
             }
             lows[i] = low;
         }
@@ -134,15 +145,21 @@ interface Block {
 }
 
 function parseSize(d: Uint8Array, o: number) {
-    const x = u32(d, o + 6), y = u32(d, o + 10);
-    const x0 = u32(d, o + 14), y0 = u32(d, o + 18);
-    const tx = u32(d, o + 22), ty = u32(d, o + 26);
-    const tx0 = u32(d, o + 30), ty0 = u32(d, o + 34);
+    const x = u32(d, o + 6),
+        y = u32(d, o + 10);
+    const x0 = u32(d, o + 14),
+        y0 = u32(d, o + 18);
+    const tx = u32(d, o + 22),
+        ty = u32(d, o + 26);
+    const tx0 = u32(d, o + 30),
+        ty0 = u32(d, o + 34);
     const components = u16(d, o + 38);
     if (components !== 1) throw new Error(`JPEG 2000 with ${components} components not supported`);
-    if (x0 !== 0 || y0 !== 0 || tx0 !== 0 || ty0 !== 0 || tx < x || ty < y) throw new Error('JPEG 2000 with an image offset or several tiles not supported');
+    if (x0 !== 0 || y0 !== 0 || tx0 !== 0 || ty0 !== 0 || tx < x || ty < y)
+        throw new Error('JPEG 2000 with an image offset or several tiles not supported');
     const ssiz = d[o + 40];
-    if (d[o + 41] !== 1 || d[o + 42] !== 1) throw new Error('JPEG 2000 with subsampled components not supported');
+    if (d[o + 41] !== 1 || d[o + 42] !== 1)
+        throw new Error('JPEG 2000 with subsampled components not supported');
     return { width: x, height: y, precision: (ssiz & 0x7f) + 1, signed: (ssiz & 0x80) !== 0 };
 }
 
@@ -151,7 +168,10 @@ function parseCodingParams(d: Uint8Array, scod: number, sp: number): CodingStyle
     const levels = d[sp];
     const xcb = (d[sp + 1] & 0x0f) + 2;
     const ycb = (d[sp + 2] & 0x0f) + 2;
-    if (d[sp + 3] !== 0) throw new Error(`JPEG 2000 code-block style 0x${d[sp + 3].toString(16)} not supported (default style only)`);
+    if (d[sp + 3] !== 0)
+        throw new Error(
+            `JPEG 2000 code-block style 0x${d[sp + 3].toString(16)} not supported (default style only)`,
+        );
     if (d[sp + 4] !== 1) throw new Error('JPEG 2000 irreversible (9/7) wavelet not supported');
     const ppx: number[] = [];
     const ppy: number[] = [];
@@ -168,7 +188,10 @@ function parseCoding(d: Uint8Array, o: number): CodingStyle {
     const scod = d[o + 4];
     if ((scod & 0x06) !== 0) throw new Error('JPEG 2000 with SOP or EPH markers not supported');
     // With one layer and one component, layer-resolution and resolution-layer order are the same packet order.
-    if (d[o + 5] > 1) throw new Error('JPEG 2000 progression order not supported (layer-resolution or resolution-layer only)');
+    if (d[o + 5] > 1)
+        throw new Error(
+            'JPEG 2000 progression order not supported (layer-resolution or resolution-layer only)',
+        );
     if (u16(d, o + 6) !== 1) throw new Error('JPEG 2000 with several quality layers not supported');
     if (d[o + 8] !== 0) throw new Error('JPEG 2000 with a multiple component transform not supported');
     return parseCodingParams(d, scod, o + 9);
@@ -181,7 +204,11 @@ function parseComponentCoding(d: Uint8Array, o: number): CodingStyle {
 }
 
 /** Exponent per subband from a no-quantization (reversible) QCD marker, and the guard bits. */
-function parseQuantization(d: Uint8Array, o: number, component = false): { guard: number; exponents: number[] } {
+function parseQuantization(
+    d: Uint8Array,
+    o: number,
+    component = false,
+): { guard: number; exponents: number[] } {
     // QCC names its component first (one octet below 257 components); component 0 is the only one here.
     if (component && d[o + 4] !== 0) throw new Error('JPEG 2000 quantization for another component');
     const at = component ? o + 5 : o + 4;
@@ -216,8 +243,14 @@ export function decodeCodestream(data: Uint8Array, memory?: Memory): DecodedImag
 export function decodeCodestream(data: Uint8Array, memory = new Memory()): DecodedImage {
     if (u16(data, 0) !== SOC) throw new Error('Not a JPEG 2000 code stream');
     // Kept in one object because the marker reader below assigns them, which TypeScript does not see through a closure.
-    const header: { size: ReturnType<typeof parseSize> | null; style: CodingStyle | null; quant: ReturnType<typeof parseQuantization> | null } = {
-        size: null, style: null, quant: null,
+    const header: {
+        size: ReturnType<typeof parseSize> | null;
+        style: CodingStyle | null;
+        quant: ReturnType<typeof parseQuantization> | null;
+    } = {
+        size: null,
+        style: null,
+        quant: null,
     };
     /** A marker of the main or the tile-part header; the later ones override the earlier. */
     const readMarker = (marker: number, at: number): void => {
@@ -226,7 +259,8 @@ export function decodeCodestream(data: Uint8Array, memory = new Memory()): Decod
         else if (marker === COC) header.style = parseComponentCoding(data, at);
         else if (marker === QCD) header.quant = parseQuantization(data, at);
         else if (marker === QCC) header.quant = parseQuantization(data, at, true);
-        else if (UNSUPPORTED_MARKERS[marker]) throw new Error(`JPEG 2000 ${UNSUPPORTED_MARKERS[marker]} not supported`);
+        else if (UNSUPPORTED_MARKERS[marker])
+            throw new Error(`JPEG 2000 ${UNSUPPORTED_MARKERS[marker]} not supported`);
     };
     let o = 2;
     for (;;) {
@@ -240,7 +274,8 @@ export function decodeCodestream(data: Uint8Array, memory = new Memory()): Decod
 
     // The one tile-part: its header, then SOD, then the packets.
     const sotStart = o;
-    if (data[o + 10] !== 0 || data[o + 11] > 1) throw new Error('JPEG 2000 with several tile-parts not supported');
+    if (data[o + 10] !== 0 || data[o + 11] > 1)
+        throw new Error('JPEG 2000 with several tile-parts not supported');
     const psot = u32(data, o + 6);
     o += 2 + u16(data, o + 2);
     while (u16(data, o) !== SOD) {
@@ -264,8 +299,17 @@ export function decodeCodestream(data: Uint8Array, memory = new Memory()): Decod
     const bands: Band[][] = [];
     for (let r = 0; r <= levels; r++) {
         if (r === 0) {
-            const w = resW(0), h = resH(0);
-            bands.push([{ orient: Orient.LL, index: 0, width: w, height: h, coefficients: memory.array(Int32Array, w * h) }]);
+            const w = resW(0),
+                h = resH(0);
+            bands.push([
+                {
+                    orient: Orient.LL,
+                    index: 0,
+                    width: w,
+                    height: h,
+                    coefficients: memory.array(Int32Array, w * h),
+                },
+            ]);
             continue;
         }
         const nb = levels - r + 1;
@@ -276,7 +320,11 @@ export function decodeCodestream(data: Uint8Array, memory = new Memory()): Decod
             return { orient, index, width: w, height: h, coefficients: memory.array(Int32Array, w * h) };
         };
         const base = 3 * (r - 1) + 1;
-        bands.push([make(Orient.HL, 1, 0, base), make(Orient.LH, 0, 1, base + 1), make(Orient.HH, 1, 1, base + 2)]);
+        bands.push([
+            make(Orient.HL, 1, 0, base),
+            make(Orient.LH, 0, 1, base + 1),
+            make(Orient.HH, 1, 1, base + 2),
+        ]);
     }
 
     let pos = o;
@@ -293,17 +341,22 @@ export function decodeCodestream(data: Uint8Array, memory = new Memory()): Decod
                 const blocks: Block[] = [];
                 if (bits.bit() === 1) {
                     for (const band of bands[r]) {
-                        const bx0 = px * 2 ** (ppx[r] - shift), bx1 = Math.min(band.width, (px + 1) * 2 ** (ppx[r] - shift));
-                        const by0 = py * 2 ** (ppy[r] - shift), by1 = Math.min(band.height, (py + 1) * 2 ** (ppy[r] - shift));
+                        const bx0 = px * 2 ** (ppx[r] - shift),
+                            bx1 = Math.min(band.width, (px + 1) * 2 ** (ppx[r] - shift));
+                        const by0 = py * 2 ** (ppy[r] - shift),
+                            by1 = Math.min(band.height, (py + 1) * 2 ** (ppy[r] - shift));
                         if (bx0 >= bx1 || by0 >= by1) continue;
-                        const col0 = Math.floor(bx0 / 2 ** cbX), col1 = Math.ceil(bx1 / 2 ** cbX);
-                        const row0 = Math.floor(by0 / 2 ** cbY), row1 = Math.ceil(by1 / 2 ** cbY);
+                        const col0 = Math.floor(bx0 / 2 ** cbX),
+                            col1 = Math.ceil(bx1 / 2 ** cbX);
+                        const row0 = Math.floor(by0 / 2 ** cbY),
+                            row1 = Math.ceil(by1 / 2 ** cbY);
                         const inclusion = new TagTree(col1 - col0, row1 - row0, memory);
                         const zeroPlanes = new TagTree(col1 - col0, row1 - row0, memory);
                         const lblock = memory.array(Int32Array, (col1 - col0) * (row1 - row0)).fill(3);
                         for (let row = row0; row < row1; row++) {
                             for (let col = col0; col < col1; col++) {
-                                const cx = col - col0, cy = row - row0;
+                                const cx = col - col0,
+                                    cy = row - row0;
                                 if (!inclusion.decode(bits, cx, cy, 1)) continue;
                                 let planes = 1;
                                 while (!zeroPlanes.decode(bits, cx, cy, planes)) planes++;
@@ -322,9 +375,14 @@ export function decodeCodestream(data: Uint8Array, memory = new Memory()): Decod
                                 while (bits.bit()) lblock[li]++;
                                 const length = bits.bits(lblock[li] + Math.floor(Math.log2(passes)));
                                 blocks.push({
-                                    band, x0: Math.max(col * 2 ** cbX, bx0), y0: Math.max(row * 2 ** cbY, by0),
-                                    x1: Math.min((col + 1) * 2 ** cbX, bx1), y1: Math.min((row + 1) * 2 ** cbY, by1),
-                                    zeroPlanes: planes - 1, passes, length,
+                                    band,
+                                    x0: Math.max(col * 2 ** cbX, bx0),
+                                    y0: Math.max(row * 2 ** cbY, by0),
+                                    x1: Math.min((col + 1) * 2 ** cbX, bx1),
+                                    y1: Math.min((row + 1) * 2 ** cbY, by1),
+                                    zeroPlanes: planes - 1,
+                                    passes,
+                                    length,
                                 });
                             }
                         }
@@ -336,15 +394,29 @@ export function decodeCodestream(data: Uint8Array, memory = new Memory()): Decod
                 bits.align();
                 pos = bits.pos;
                 for (const block of blocks) {
-                    if (pos + block.length > packets.length) throw new Error('JPEG 2000 code block runs past the end of the stream');
+                    if (pos + block.length > packets.length)
+                        throw new Error('JPEG 2000 code block runs past the end of the stream');
                     const exponent = quant.exponents[block.band.index];
-                    if (exponent === undefined) throw new Error('JPEG 2000 quantization marker has too few subbands');
+                    if (exponent === undefined)
+                        throw new Error('JPEG 2000 quantization marker has too few subbands');
                     const planes = quant.guard + exponent - 1 - block.zeroPlanes;
-                    const w = block.x1 - block.x0, h = block.y1 - block.y0;
+                    const w = block.x1 - block.x0,
+                        h = block.y1 - block.y0;
                     if (planes > 0) {
-                        const coefficients = decodeCodeBlock(packets.subarray(pos, pos + block.length), w, h, block.band.orient, planes, block.passes, memory);
+                        const coefficients = decodeCodeBlock(
+                            packets.subarray(pos, pos + block.length),
+                            w,
+                            h,
+                            block.band.orient,
+                            planes,
+                            block.passes,
+                            memory,
+                        );
                         for (let y = 0; y < h; y++) {
-                            block.band.coefficients.set(coefficients.subarray(y * w, (y + 1) * w), (block.y0 + y) * block.band.width + block.x0);
+                            block.band.coefficients.set(
+                                coefficients.subarray(y * w, (y + 1) * w),
+                                (block.y0 + y) * block.band.width + block.x0,
+                            );
                         }
                         memory.release(coefficients);
                     }
@@ -358,12 +430,14 @@ export function decodeCodestream(data: Uint8Array, memory = new Memory()): Decod
     let plane = bands[0][0].coefficients;
     bands[0] = [];
     for (let r = 1; r <= levels; r++) {
-        const w = resW(r), h = resH(r);
+        const w = resW(r),
+            h = resH(r);
         const next = memory.array(Int32Array, w * h);
         const lw = resW(r - 1);
         const [hl, lh, hh] = bands[r];
         const place = (src: Int32Array, sw: number, sh: number, xo: number, yo: number): void => {
-            for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) next[(2 * y + yo) * w + 2 * x + xo] = src[y * sw + x];
+            for (let y = 0; y < sh; y++)
+                for (let x = 0; x < sw; x++) next[(2 * y + yo) * w + 2 * x + xo] = src[y * sw + x];
         };
         place(plane, lw, resH(r - 1), 0, 0);
         place(hl.coefficients, hl.width, hl.height, 1, 0);

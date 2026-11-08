@@ -40,7 +40,7 @@ across DST/timezones. Rounding uses UTC and rounds half-hours upward. UTC date
 labels use en-US. Invalid values retain each helper's original fallback behavior.
 
 ```js
-import { EdgeWARNAPI, NWSAPI, setNwsUserAgent } from '@edgewarn/web-utils/net';
+import { EdgeWARNAPI, createNWSClient } from '@edgewarn/web-utils/net';
 const api = new EdgeWARNAPI({
   baseUrl: 'https://your-server.example',
   routes: {
@@ -50,8 +50,8 @@ const api = new EdgeWARNAPI({
   alertQuery: { source: 'official' }, pageSize: 1000
 }, { cache: () => new Map() });
 const timestamps = await api.fetchTimestamps();
-setNwsUserAgent('my-app (contact@example.com)');
-const point = await NWSAPI.getPoint(40, -74);
+const nws = createNWSClient({ userAgent: 'my-app (contact@example.com)' });
+const point = await nws.getPoint(40, -74);
 ```
 
 Supply a fresh cache per factory call. The caller owns eviction/retention; a plain
@@ -62,8 +62,11 @@ times after its initial attempt; asynchronous callback failures are settled
 individually. API routes, page sizes, filters and deployment URLs belong to callers.
 Do not mutate a configuration while its client is in use.
 
-NWS rounds coordinates to four decimal places. Its configurable User-Agent is
-sent on servers, omitted in browsers, and defaults to this library's identity.
+NWS rounds coordinates to four decimal places. Each client carries its own
+User-Agent (`createNWSClient` / `createWWAClient`, or pass clients via the
+alerts loaders' `nws` / `wwa` options) and an optional `baseUrl` override.
+The default User-Agent is shared by all upstream clients; no state is shared
+between clients in one process, and no environment sniffing is performed.
 NWS retains its own nullable response types alongside shared NWS wire types.
 `loadLocationAlerts` belongs to the separate alerts package and is outside core.
 

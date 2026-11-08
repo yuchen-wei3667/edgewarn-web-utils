@@ -22,7 +22,8 @@ const EARTH_RADIUS_MILES = 3958.8;
 export function distanceMiles(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
-    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+    const a =
+        Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
     return EARTH_RADIUS_MILES * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
@@ -34,7 +35,12 @@ function toDeg(rad: number): number {
 /**
  * Calculates a new coordinate given a starting point, distance, and bearing.
  */
-export function calculateDestination(lat: number, lon: number, distance: number, bearing: number): [number, number] {
+export function calculateDestination(
+    lat: number,
+    lon: number,
+    distance: number,
+    bearing: number,
+): [number, number] {
     const earthRadiusMeters = 6371e3;
     const radLat = toRad(lat);
     const radLon = toRad(lon);
@@ -43,13 +49,15 @@ export function calculateDestination(lat: number, lon: number, distance: number,
 
     const newLat = Math.asin(
         Math.sin(radLat) * Math.cos(angularDist) +
-        Math.cos(radLat) * Math.sin(angularDist) * Math.cos(radBearing)
+            Math.cos(radLat) * Math.sin(angularDist) * Math.cos(radBearing),
     );
 
-    const newLon = radLon + Math.atan2(
-        Math.sin(radBearing) * Math.sin(angularDist) * Math.cos(radLat),
-        Math.cos(angularDist) - Math.sin(radLat) * Math.sin(newLat)
-    );
+    const newLon =
+        radLon +
+        Math.atan2(
+            Math.sin(radBearing) * Math.sin(angularDist) * Math.cos(radLat),
+            Math.cos(angularDist) - Math.sin(radLat) * Math.sin(newLat),
+        );
 
     return [toDeg(newLat), toDeg(newLon)];
 }
@@ -61,8 +69,7 @@ export function calculateBearing(lat1: number, lon1: number, lat2: number, lon2:
     const deltaLambda = toRad(lon2 - lon1);
 
     const y = Math.sin(deltaLambda) * Math.cos(phi2);
-    const x = Math.cos(phi1) * Math.sin(phi2) -
-        Math.sin(phi1) * Math.cos(phi2) * Math.cos(deltaLambda);
+    const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(deltaLambda);
 
     const theta = Math.atan2(y, x);
     return (toDeg(theta) + 360) % 360;

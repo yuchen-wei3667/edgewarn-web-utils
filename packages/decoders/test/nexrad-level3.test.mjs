@@ -60,16 +60,3 @@ test('damaged products throw, and a wrong packet is refused', () => {
     assert.throws(() => decodeLevel3Radial(new Uint8Array(300), 'ZDR'), /Not a Level III radial product/);
 });
 
-const ID = '20261020-000935';
-/** Serves products by key; every other key is a 404. */
-function level3Fetch(products, calls = []) {
-    return async (url, init = {}) => {
-        const key = new URL(url).pathname.slice(1);
-        calls.push({ key, range: init.headers?.Range });
-        const bytes = products[key];
-        if (!bytes) return new Response('', { status: 404 });
-        return new Response(init.headers?.Range ? bytes.slice(0, 256) : bytes, { status: init.headers?.Range ? 206 : 200 });
-    };
-}
-const job = (moments, angle = 0.5, extra = {}) => ({ jobId: 1, site: 'KTLX', volumeId: ID, source: { kind: 'level3' }, moments, elevation: { angle }, ...extra });
-const products = { TLX_N0G_2026_10_20_00_09_35: VEL, TLX_N1X_2026_10_20_00_09_35: ZDR };

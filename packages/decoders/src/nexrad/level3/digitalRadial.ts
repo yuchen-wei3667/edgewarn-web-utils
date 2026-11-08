@@ -52,7 +52,10 @@ function messageStartOf(bytes: Uint8Array): number {
     for (let line = 0; line < 2; line++) {
         let found = -1;
         for (let i = at; i + WMO_LINE_END.length <= Math.min(bytes.length, 64); i++) {
-            if (bytes[i] === 13 && bytes[i + 1] === 13 && bytes[i + 2] === 10) { found = i; break; }
+            if (bytes[i] === 13 && bytes[i + 1] === 13 && bytes[i + 2] === 10) {
+                found = i;
+                break;
+            }
         }
         if (found < 0) return -1;
         at = found + WMO_LINE_END.length;
@@ -101,7 +104,6 @@ export function parseLevel3Header(bytes: Uint8Array): Level3Header | null {
     };
 }
 
-
 /** The blocks after the description block, decompressed when the product is. */
 function blocksOf(bytes: Uint8Array, header: Level3Header, memory: Memory): Uint8Array {
     const body = bytes.subarray(header.messageStart + header.symbologyOffset);
@@ -120,23 +122,35 @@ function blocksOf(bytes: Uint8Array, header: Level3Header, memory: Memory): Uint
 
 /** Decode a whole product file into the cut it holds. */
 
-export function decodeLevel3Radial(bytes: Uint8Array, moment: string): {
+export function decodeLevel3Radial(
+    bytes: Uint8Array,
+    moment: string,
+): {
     header: Level3Header;
     field: CutField;
 };
 /** @internal */
 
-export function decodeLevel3Radial(bytes: Uint8Array, moment: string, memory?: Memory): {
+export function decodeLevel3Radial(
+    bytes: Uint8Array,
+    moment: string,
+    memory?: Memory,
+): {
     header: Level3Header;
     field: CutField;
 };
-export function decodeLevel3Radial(bytes: Uint8Array, moment: string, memory = new Memory()): { header: Level3Header; field: CutField } {
+export function decodeLevel3Radial(
+    bytes: Uint8Array,
+    moment: string,
+    memory = new Memory(),
+): { header: Level3Header; field: CutField } {
     const header = parseLevel3Header(bytes);
     if (!header) throw new Error('Not a Level III radial product');
     const body = blocksOf(bytes, header, memory);
     const view = new DataView(body.buffer, body.byteOffset, body.byteLength);
     // Symbology block: divider, id, length, layer count; then the layer: divider, length; then the packet.
-    if (body.length < 30 || view.getInt16(0) !== -1 || view.getInt16(2) !== 1) throw new Error('Invalid Level III symbology block');
+    if (body.length < 30 || view.getInt16(0) !== -1 || view.getInt16(2) !== 1)
+        throw new Error('Invalid Level III symbology block');
     if (view.getUint16(16) !== RADIAL_PACKET) throw new Error('Unsupported Level III packet');
     const firstBin = view.getUint16(18);
     const gates = view.getUint16(20);

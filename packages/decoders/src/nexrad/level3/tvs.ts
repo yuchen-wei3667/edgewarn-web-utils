@@ -56,25 +56,34 @@ const RADIANS = Math.PI / 180;
 
 /** `Date/Time  10:21:26/00:22:53` is MM:DD:YY/HH:MM:SS in UTC. */
 const DATE_TIME = /Date\/Time\s+(\d\d):(\d\d):(\d\d)\/(\d\d):(\d\d):(\d\d)/;
-const NUM ='(-?\\d+(?:\\.\\d+)?)';
+const NUM = '(-?\\d+(?:\\.\\d+)?)';
 /** `TVS B2 320/ 36 35 51 51/ 2.7 > 5.3 < 2.7/ 8.0 22/ 2.7` */
 const ROW = new RegExp(
-    `\\b(ETVS|TVS)\\s+(\\S+)\\s+${NUM}\\/\\s*${NUM}\\s+${NUM}\\s+${NUM}\\s+${NUM}\\/\\s*${NUM}`
-    + `\\s+[><]?\\s*${NUM}\\s+<?\\s*${NUM}\\/\\s*${NUM}\\s+${NUM}\\/\\s*${NUM}`,
+    `\\b(ETVS|TVS)\\s+(\\S+)\\s+${NUM}\\/\\s*${NUM}\\s+${NUM}\\s+${NUM}\\s+${NUM}\\/\\s*${NUM}` +
+        `\\s+[><]?\\s*${NUM}\\s+<?\\s*${NUM}\\/\\s*${NUM}\\s+${NUM}\\/\\s*${NUM}`,
     'g',
 );
 
 /** The point `rangeM` metres from `lat`/`lon` along `bearingDeg`, on a sphere. */
-export function destinationPoint(lat: number, lon: number, bearingDeg: number, rangeM: number): { lat: number; lon: number } {
+export function destinationPoint(
+    lat: number,
+    lon: number,
+    bearingDeg: number,
+    rangeM: number,
+): { lat: number; lon: number } {
     const delta = rangeM / EARTH_RADIUS_M;
     const bearing = bearingDeg * RADIANS;
     const lat1 = lat * RADIANS;
     const lon1 = lon * RADIANS;
-    const lat2 = Math.asin(Math.sin(lat1) * Math.cos(delta) + Math.cos(lat1) * Math.sin(delta) * Math.cos(bearing));
-    const lon2 = lon1 + Math.atan2(
-        Math.sin(bearing) * Math.sin(delta) * Math.cos(lat1),
-        Math.cos(delta) - Math.sin(lat1) * Math.sin(lat2),
+    const lat2 = Math.asin(
+        Math.sin(lat1) * Math.cos(delta) + Math.cos(lat1) * Math.sin(delta) * Math.cos(bearing),
     );
+    const lon2 =
+        lon1 +
+        Math.atan2(
+            Math.sin(bearing) * Math.sin(delta) * Math.cos(lat1),
+            Math.cos(delta) - Math.sin(lat1) * Math.sin(lat2),
+        );
     return { lat: lat2 / RADIANS, lon: ((lon2 / RADIANS + 540) % 360) - 180 };
 }
 
@@ -100,11 +109,19 @@ export function parseTvsProduct(bytes: Uint8Array): TvsProduct | null {
     const printable = text.slice(start + MESSAGE_HEADER_BYTES).replace(/[^\x20-\x7e]/g, ' ');
     const stamp = DATE_TIME.exec(printable);
     const scanMs = stamp
-        ? Date.UTC(2000 + Number(stamp[3]), Number(stamp[1]) - 1, Number(stamp[2]), Number(stamp[4]), Number(stamp[5]), Number(stamp[6]))
+        ? Date.UTC(
+              2000 + Number(stamp[3]),
+              Number(stamp[1]) - 1,
+              Number(stamp[2]),
+              Number(stamp[4]),
+              Number(stamp[5]),
+              Number(stamp[6]),
+          )
         : issuedMs;
     const detections: TvsDetection[] = [];
     for (const match of printable.matchAll(ROW)) {
-        const [, kind, stormId, az, ran, avgDv, llDv, mxDv, mxDvHgt, depth, base, top, shear, shearHgt] = match;
+        const [, kind, stormId, az, ran, avgDv, llDv, mxDv, mxDvHgt, depth, base, top, shear, shearHgt] =
+            match;
         const azimuthDeg = Number(az);
         const rangeNm = Number(ran);
         const point = destinationPoint(radarLat, radarLon, azimuthDeg, rangeNm * NM_TO_M);

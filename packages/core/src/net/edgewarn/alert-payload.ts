@@ -93,7 +93,5 @@ export function extractNWSAlertItems(alertIdsPayload: unknown): unknown[] {
 
     const wrapped = asObject(alertIdsPayload);
     const wrappedData = asObject(wrapped?.data);
-    return asArray(wrapped?.ids).length > 0
-        ? asArray(wrapped?.ids)
-        : asArray(wrappedData?.ids);
+    return asArray(wrapped?.ids).length > 0 ? asArray(wrapped?.ids) : asArray(wrappedData?.ids);
 }

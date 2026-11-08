@@ -1,0 +1,16 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "composite": false,
+        "declaration": false,
+        "declarationMap": false,
+        "allowJs": true,
+        "checkJs": true,
+        "allowImportingTsExtensions": true,
+        "strict": false,
+        "noImplicitAny": false,
+        "types": ["geojson", "node"]
+    },
+    "include": ["packages/*/test/**/*.mjs"]
+}

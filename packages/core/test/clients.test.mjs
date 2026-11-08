@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { EdgeWARNAPI, NWSAPI, setNwsUserAgent, toNWSFeature, extractNWSAlertItems, normalizeStormcellFeatures } from '@edgewarn/web-utils/net';
+import { EdgeWARNAPI, createNWSClient, toNWSFeature, extractNWSAlertItems, normalizeStormcellFeatures } from '@edgewarn/web-utils/net';
 import { createJsonRequester } from '../src/net/edgewarn/client.ts';
 const config={baseUrl:'https://example.test/',routes:{stormSnapshots:'/frames',cells:'/tracks',alerts:'/warnings',alertSnapshots:'/warning-frames',health:'/ready'},alertQuery:{origin:'test'},pageSize:7};
 const make=()=>new EdgeWARNAPI(config,{cache:()=>new Map()});
@@ -98,19 +98,35 @@ test('parsers preserve alert envelopes, coercion and stormcell shapes',()=>{
  for(const payload of [[{id:1}],{features:{x:{id:1}}},{content:{features:[{id:1}]}},{cells:{features:[{id:1}]}},{cells:{x:{id:1}}}]) assert.deepEqual(normalizeStormcellFeatures(payload),[{id:1}]);
  assert.deepEqual(normalizeStormcellFeatures(null),[]);
 });
-test('NWS precision, server/browser headers, passthroughs and status errors',async t=>{
+test('NWS precision, per-client headers, passthroughs and status errors',async t=>{
  const calls=[];
  t.mock.method(globalThis,'fetch',async(url,init)=>{calls.push([url,init]); return json({ok:true});});
- setNwsUserAgent('test-agent');
- await NWSAPI.getPoint(12.345678,-98.765432); await NWSAPI.getAlerts(12.345678,-98.765432);
- await NWSAPI.getLatestObservation('A/B');
- for(const method of ['getForecast','getHourlyForecast','getGridData','getStations']) await NWSAPI[method]('https://test/'+method);
+ const nws = createNWSClient({ userAgent: 'test-agent' });
+ await nws.getPoint(12.345678,-98.765432); await nws.getAlerts(12.345678,-98.765432);
+ await nws.getLatestObservation('A/B');
+ for(const method of ['getForecast','getHourlyForecast','getGridData','getStations']) await nws[method]('https://test/'+method);
  assert.equal(calls[0][0],'https://api.weather.gov/points/12.3457,-98.7654');
  assert.equal(calls[1][0],'https://api.weather.gov/alerts/active?point=12.3457,-98.7654');
  assert.equal(calls[2][0],'https://api.weather.gov/stations/A%2FB/observations/latest');
  assert.equal(calls[0][1].headers['User-Agent'],'test-agent');
  assert.equal(calls[0][1].headers.Accept,'application/geo+json');
+ // User-Agent is sent unconditionally; browsers drop the forbidden header,
+ // so a global window must not change request headers.
  globalThis.window={};
- try { await NWSAPI.getPoint(0,0); assert.equal(calls.at(-1)[1].headers['User-Agent'],undefined); } finally { delete globalThis.window; }
- globalThis.fetch=async()=>new Response('',{status:404}); await assert.rejects(NWSAPI.getPoint(0,0),/NWS request failed \(404\)/);
+ try { await nws.getPoint(0,0); assert.equal(calls.at(-1)[1].headers['User-Agent'],'test-agent'); } finally { delete globalThis.window; }
+ globalThis.fetch=async()=>new Response('',{status:404}); await assert.rejects(nws.getPoint(0,0),/NWS request failed \(404\)/);
+});
+test('two NWS clients keep their own User-Agent and base URL',async t=>{
+ const calls=[];
+ t.mock.method(globalThis,'fetch',async(url,init)=>{calls.push([url,init]); return json({ok:true});});
+ const a = createNWSClient({ userAgent: 'agent-a', baseUrl: 'https://mirror-a.example.gov/' });
+ const b = createNWSClient({ userAgent: 'agent-b' });
+ await a.getAlerts(35,-97); await b.getAlerts(35,-97);
+ assert.equal(calls[0][0],'https://mirror-a.example.gov/alerts/active?point=35.0000,-97.0000');
+ assert.equal(calls[0][1].headers['User-Agent'],'agent-a');
+ assert.equal(calls[1][0],'https://api.weather.gov/alerts/active?point=35.0000,-97.0000');
+ assert.equal(calls[1][1].headers['User-Agent'],'agent-b');
+ // Class instances are per-consumer, not shared globals.
+ assert.notEqual(a, b);
+ assert.throws(() => createNWSClient({ baseUrl: 'http://insecure.example' }), /https/);
 });

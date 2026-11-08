@@ -20,7 +20,10 @@ function decodeJpeg2000FieldImpl(field: PackedField, sink: ValueSink, memory = n
         return;
     }
     const { samples } = decodeCodestream(s7, memory);
-    if (samples.length < nValues) throw new Error(`JPEG 2000 code stream holds ${samples.length} samples, the message declares ${nValues}`);
+    if (samples.length < nValues)
+        throw new Error(
+            `JPEG 2000 code stream holds ${samples.length} samples, the message declares ${nValues}`,
+        );
     for (let i = 0; i < nValues; i++) sink.value(base + samples[i] * step);
     memory.release(samples);
 }

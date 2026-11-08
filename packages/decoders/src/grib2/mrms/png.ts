@@ -11,9 +11,14 @@ export interface SectionResult {
 
 function unfilter(ft: number, c: Uint8Array, p: Uint8Array, bpp: number, n: number): void {
     switch (ft) {
-        case 0: return;
-        case 1: for (let i = bpp; i < n; i++) c[i] = c[i] + c[i - bpp]; return;
-        case 2: for (let i = 0; i < n; i++) c[i] = c[i] + p[i]; return;
+        case 0:
+            return;
+        case 1:
+            for (let i = bpp; i < n; i++) c[i] = c[i] + c[i - bpp];
+            return;
+        case 2:
+            for (let i = 0; i < n; i++) c[i] = c[i] + p[i];
+            return;
         case 3:
             for (let i = 0; i < bpp; i++) c[i] = c[i] + (p[i] >> 1);
             for (let i = bpp; i < n; i++) c[i] = c[i] + ((c[i - bpp] + p[i]) >> 1);
@@ -21,24 +26,43 @@ function unfilter(ft: number, c: Uint8Array, p: Uint8Array, bpp: number, n: numb
         case 4:
             for (let i = 0; i < bpp; i++) c[i] = c[i] + p[i]; // paeth(0, up, 0) = up
             for (let i = bpp; i < n; i++) {
-                const a = c[i - bpp], b = p[i], cc = p[i - bpp];
-                const pa = Math.abs(b - cc), pb = Math.abs(a - cc), pc = Math.abs(a + b - 2 * cc);
+                const a = c[i - bpp],
+                    b = p[i],
+                    cc = p[i - bpp];
+                const pa = Math.abs(b - cc),
+                    pb = Math.abs(a - cc),
+                    pc = Math.abs(a + b - 2 * cc);
                 c[i] = c[i] + (pa <= pb && pa <= pc ? a : pb <= pc ? b : cc);
             }
             return;
-        default: throw new Error(`Bad PNG filter type ${ft}`);
+        default:
+            throw new Error(`Bad PNG filter type ${ft}`);
     }
 }
 
 /** GRIB2 PNG packing stores X big-endian across all channels of a pixel. */
 function unpackRow(b: Uint8Array, out: PackedRow, w: number, depth: number, ch: number): void {
     const bits = depth * ch;
-    if (bits === 16) { for (let x = 0, j = 0; x < w; x++, j += 2) out[x] = (b[j] << 8) | b[j + 1]; return; }
-    if (bits === 8) { for (let x = 0; x < w; x++) out[x] = b[x]; return; }
-    if (bits === 24) { for (let x = 0, j = 0; x < w; x++, j += 3) out[x] = (b[j] << 16) | (b[j + 1] << 8) | b[j + 2]; return; }
-    if (bits === 32) { for (let x = 0, j = 0; x < w; x++, j += 4) out[x] = ((b[j] << 24) >>> 0) + (b[j + 1] << 16) + (b[j + 2] << 8) + b[j + 3]; return; }
+    if (bits === 16) {
+        for (let x = 0, j = 0; x < w; x++, j += 2) out[x] = (b[j] << 8) | b[j + 1];
+        return;
+    }
+    if (bits === 8) {
+        for (let x = 0; x < w; x++) out[x] = b[x];
+        return;
+    }
+    if (bits === 24) {
+        for (let x = 0, j = 0; x < w; x++, j += 3) out[x] = (b[j] << 16) | (b[j + 1] << 8) | b[j + 2];
+        return;
+    }
+    if (bits === 32) {
+        for (let x = 0, j = 0; x < w; x++, j += 4)
+            out[x] = ((b[j] << 24) >>> 0) + (b[j + 1] << 16) + (b[j + 2] << 8) + b[j + 3];
+        return;
+    }
     // 1/2/4-bit grayscale
-    const per = 8 / bits, mask = (1 << bits) - 1;
+    const per = 8 / bits,
+        mask = (1 << bits) - 1;
     for (let x = 0; x < w; x++) out[x] = (b[(x / per) | 0] >> ((per - 1 - (x % per)) * bits)) & mask;
 }
 
@@ -68,7 +92,11 @@ export async function decodePngSection(
     let len = u32(hdr, 0);
     if (String.fromCharCode(hdr[4], hdr[5], hdr[6], hdr[7]) !== 'IHDR') throw new Error('PNG missing IHDR');
     const ih = await need(len + 4);
-    const width = u32(ih, 0), height = u32(ih, 4), depth = ih[8], ctype = ih[9], interlace = ih[12];
+    const width = u32(ih, 0),
+        height = u32(ih, 4),
+        depth = ih[8],
+        ctype = ih[9],
+        interlace = ih[12];
     if (interlace) throw new Error('Interlaced PNG not supported');
     const channels = ctype === 0 ? 1 : ctype === 2 ? 3 : ctype === 6 ? 4 : ctype === 4 ? 2 : 0;
     if (!channels) throw new Error(`PNG color type ${ctype} not supported`);
@@ -78,8 +106,10 @@ export async function decodePngSection(
 
     if ((await onBegin(width, height)) === 'stop') return { width, height, rowsRead: 0, stopped: true };
 
-    const outRow: PackedRow = bitsPP > 16 ? rd.memory.array(Uint32Array, width) : rd.memory.array(Uint16Array, width);
-    let prev = rd.memory.array(Uint8Array, rowBytes), cur = rd.memory.array(Uint8Array, rowBytes);
+    const outRow: PackedRow =
+        bitsPP > 16 ? rd.memory.array(Uint32Array, width) : rd.memory.array(Uint16Array, width);
+    let prev = rd.memory.array(Uint8Array, rowBytes),
+        cur = rd.memory.array(Uint8Array, rowBytes);
 
     let stopped = false;
     let rowsRead = 0;
@@ -130,14 +160,20 @@ export async function decodePngSection(
 
     const drain = (async () => {
         try {
-            let y = 0, pos = -1, ft = 0; // pos -1 = waiting for filter byte
+            let y = 0,
+                pos = -1,
+                ft = 0; // pos -1 = waiting for filter byte
             for (;;) {
                 const { value: c, done } = await inflated.read();
                 if (done) break;
                 let i = 0;
                 const n = c.length;
                 while (i < n && y < height) {
-                    if (pos < 0) { ft = c[i++]; pos = 0; continue; }
+                    if (pos < 0) {
+                        ft = c[i++];
+                        pos = 0;
+                        continue;
+                    }
                     const k = Math.min(rowBytes - pos, n - i);
                     cur.set(c.subarray(i, i + k), pos);
                     pos += k;
@@ -145,19 +181,28 @@ export async function decodePngSection(
                     if (pos === rowBytes) {
                         unfilter(ft, cur, prev, bpp, rowBytes);
                         unpackRow(cur, outRow, width, depth, channels);
-                        const t = prev; prev = cur; cur = t;
+                        const t = prev;
+                        prev = cur;
+                        cur = t;
                         y++;
                         pos = -1;
                         rowsRead = y;
-                        if ((await sink.row(y - 1, outRow)) === 'stop') { halt(); return; }
+                        if ((await sink.row(y - 1, outRow)) === 'stop') {
+                            halt();
+                            return;
+                        }
                         if (stopped) return;
                     }
                 }
                 if (y >= height) break;
             }
-            if (!stopped && rowsRead !== height) throw new Error(`PNG ended after ${rowsRead}/${height} rows`);
+            if (!stopped && rowsRead !== height)
+                throw new Error(`PNG ended after ${rowsRead}/${height} rows`);
         } catch (e) {
-            if (!stopped) { stopped = true; writer.abort(e).catch(() => {}); }
+            if (!stopped) {
+                stopped = true;
+                writer.abort(e).catch(() => {});
+            }
             throw e;
         }
     })();

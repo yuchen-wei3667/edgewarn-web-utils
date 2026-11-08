@@ -1,6 +1,8 @@
 import type * as GeoJSON from 'geojson';
 import type { NWSAlertFeature } from '@edgewarn/web-utils/net';
-function mergeAlertGeometries(geometries: Array<GeoJSON.Polygon | GeoJSON.MultiPolygon>): GeoJSON.MultiPolygon | null {
+function mergeAlertGeometries(
+    geometries: Array<GeoJSON.Polygon | GeoJSON.MultiPolygon>,
+): GeoJSON.MultiPolygon | null {
     const allPolygons: number[][][][] = [];
 
     for (const geometry of geometries) {
@@ -17,7 +19,7 @@ function mergeAlertGeometries(geometries: Array<GeoJSON.Polygon | GeoJSON.MultiP
 
     return {
         type: 'MultiPolygon',
-        coordinates: allPolygons
+        coordinates: allPolygons,
     };
 }
 
@@ -72,7 +74,7 @@ function parseCustomPolygon(customPolygon: unknown): GeoJSON.Polygon[] {
 
         polygons.push({
             type: 'Polygon',
-            coordinates: [normalizedRing]
+            coordinates: [normalizedRing],
         });
     }
 
@@ -84,7 +86,10 @@ export function normalizeAlertGeometry(feature: NWSAlertFeature): GeoJSON.MultiP
     const geometries: Array<GeoJSON.Polygon | GeoJSON.MultiPolygon> = [];
     let geometryHandled = false;
 
-    if (feature.geometry && (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon')) {
+    if (
+        feature.geometry &&
+        (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon')
+    ) {
         geometries.push(feature.geometry as GeoJSON.Polygon | GeoJSON.MultiPolygon);
         geometryHandled = true;
     }
@@ -100,4 +105,3 @@ export function normalizeAlertGeometry(feature: NWSAlertFeature): GeoJSON.MultiP
 
     return mergeAlertGeometries(geometries);
 }
-

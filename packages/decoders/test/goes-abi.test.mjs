@@ -113,29 +113,11 @@ test('8-bit DQF decodes to Uint8Array, and output buffers are reused', async () 
     await assert.rejects(file.read({ output: new Uint16Array(10) }), /output holds/);
 });
 
-/** Fake S3: honours Range like the real bucket, or ignores it and sends the whole object. */
-function fakeFetch(bytes, { honourRange = true } = {}) {
-    const calls = [];
-    const fetcher = async (_url, init) => {
-        const [, a, b] = /bytes=(\d+)-(\d*)/.exec(init.headers.Range);
-        const last = b === '' ? bytes.length - 1 : Number(b);
-        calls.push([Number(a), last]);
-        const body = honourRange ? bytes.slice(Number(a), Math.min(bytes.length, last + 1)) : bytes.slice();
-        // Deliver in small pieces so chunks straddle stream reads.
-        const stream = new ReadableStream({
-            start(c) { for (let i = 0; i < body.length; i += 97) c.enqueue(body.subarray(i, i + 97)); c.close(); },
-        });
-        return new Response(stream, { status: honourRange ? 206 : 200 });
-    };
-    return { fetcher, calls };
-}
-
 /** Serve a `bandRange` result from the fixture, in pieces of `step` bytes (Infinity: whole range). */
 const servePieces = (bytes, step) => (range) => (async function* () {
     for (let p = range.start; p < range.end; p += step) yield bytes.subarray(p, Math.min(range.end, p + step));
 })();
 
-/** Collects rows from readRows into a full image, checking they arrive in ascending order. */
 function rowCollector(width, height) {
     const image = new Uint16Array(width * height).fill(0xffff);
     const views = new Set();

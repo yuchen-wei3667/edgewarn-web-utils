@@ -34,7 +34,11 @@ export interface CutField {
 export function buildAzimuthLut(azimuths: ArrayLike<number>, rows: number): Uint16Array;
 /** @internal */
 export function buildAzimuthLut(azimuths: ArrayLike<number>, rows: number, memory?: Memory): Uint16Array;
-export function buildAzimuthLut(azimuths: ArrayLike<number>, rows: number, memory = new Memory()): Uint16Array {
+export function buildAzimuthLut(
+    azimuths: ArrayLike<number>,
+    rows: number,
+    memory = new Memory(),
+): Uint16Array {
     const lut = memory.array(Uint16Array, AZIMUTH_BINS).fill(AZIMUTH_MISSING);
     if (!rows) return lut;
     const order = Array.from({ length: rows }, (_, i) => i).sort((a, b) => azimuths[a] - azimuths[b]);

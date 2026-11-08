@@ -27,7 +27,10 @@ export type StormMotion =
     | { kind: 'mean-wind' }
     | { kind: 'user'; dirDeg: number; speedMs: number }; // direction the storm moves FROM, meteorological
 
-export interface Vec2 { u: number; v: number }
+export interface Vec2 {
+    u: number;
+    v: number;
+}
 
 export type ParcelKey = 'sb' | 'ml' | 'mu' | 'eff';
 
@@ -53,7 +56,10 @@ export interface AnalysisOptions {
 }
 
 /** Pressure bounds of the effective inflow layer (hPa), null when the layer is undefined. */
-export interface LayerBounds { baseP: number; topP: number }
+export interface LayerBounds {
+    baseP: number;
+    topP: number;
+}
 
 export interface SoundingAnalysis {
     parcels: Record<ParcelKey, ParcelResult>;

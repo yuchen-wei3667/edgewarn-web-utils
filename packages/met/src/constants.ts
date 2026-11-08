@@ -105,4 +105,3 @@ export const SOUNDING_BRN_TOP_M = 6000;
 
 /** Memoisation of `analyzeSounding` results per column hash. */
 export const SOUNDING_ANALYSIS_CACHE_SIZE = 32;
-

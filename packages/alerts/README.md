@@ -122,6 +122,8 @@ and omit alerts without polygon geometry. UGC/zone matching is not provided.
 WWA queries NOAA's fixed layer 1 endpoint, then hydrates CAP IDs through NWS.
 Failed or invalid hydration is dropped; if every candidate fails, the source
 rejects. A missing hydrated geometry receives the WWA polygon. Truncated WWA
-responses reject. NWS and WWA share core's configured User-Agent; server callers
-can set it with `setNwsUserAgent` from `/net`. Source constructors use core's
-HTTP clients; they introduce no cache or polling state.
+responses reject. NWS and WWA clients each carry their own User-Agent
+(`createNWSClient` / `createWWAClient` from `/net`); pass clients via the
+loaders' `nws` / `wwa` options, or to `createNWSAlertSource` /
+`createWWAAlertSource`. Source constructors introduce no cache or polling
+state, and independent consumers never share a client.

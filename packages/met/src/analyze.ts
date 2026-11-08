@@ -7,26 +7,66 @@
  * into the result.
  */
 
-import {
-    SOUNDING_SHEAR_LAYERS_M,
-    SOUNDING_SRH_LAYERS_M,
-    SOUNDING_ANALYSIS_CACHE_SIZE,
-} from './constants.ts';
+import { SOUNDING_SHEAR_LAYERS_M, SOUNDING_SRH_LAYERS_M, SOUNDING_ANALYSIS_CACHE_SIZE } from './constants.ts';
 import { mixingRatioHpa } from './bolton.ts';
 import { interpolateLogP, heightAglAt, pressureAtAgl } from './interp.ts';
-import { surfaceParcelDef, meanLayerParcelDef, mostUnstableParcelDef, effectiveParcelDef, liftColumn, dcapeColumn } from './parcels.ts';
-import { bulkShear, meanWind, bunkersMotion, helicity, effectiveInflowLayer, effectiveBulkShear, criticalAngle } from './kinematics.ts';
-import { lapseRatePressure, lapseRateHeight, precipitableWater, kIndex, totalTotals, showalter, freezingLevelAgl, wetBulbZeroAgl, bulkRichardson, type LiftFn } from './indices.ts';
+import {
+    surfaceParcelDef,
+    meanLayerParcelDef,
+    mostUnstableParcelDef,
+    effectiveParcelDef,
+    liftColumn,
+    dcapeColumn,
+} from './parcels.ts';
+import {
+    bulkShear,
+    meanWind,
+    bunkersMotion,
+    helicity,
+    effectiveInflowLayer,
+    effectiveBulkShear,
+    criticalAngle,
+} from './kinematics.ts';
+import {
+    lapseRatePressure,
+    lapseRateHeight,
+    precipitableWater,
+    kIndex,
+    totalTotals,
+    showalter,
+    freezingLevelAgl,
+    wetBulbZeroAgl,
+    bulkRichardson,
+    type LiftFn,
+} from './indices.ts';
 import { stpFixed, stpEffective, scp, ship, ehi } from './composites.ts';
-import type { Column, ParcelResult, ParcelKey, SoundingAnalysis, AnalysisOptions, StormMotion, Vec2, LayerBounds } from './types.ts';
+import type {
+    Column,
+    ParcelResult,
+    ParcelKey,
+    SoundingAnalysis,
+    AnalysisOptions,
+    StormMotion,
+    Vec2,
+    LayerBounds,
+} from './types.ts';
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
 const emptyParcel: ParcelResult = {
-    cape: null, cin: null, lclP: null, lclZagl: null, lfcP: null, lfcZagl: null,
-    elP: null, elZagl: null, li: null, cape03: null, trace: [],
+    cape: null,
+    cin: null,
+    lclP: null,
+    lclZagl: null,
+    lfcP: null,
+    lfcZagl: null,
+    elP: null,
+    elZagl: null,
+    li: null,
+    cape03: null,
+    trace: [],
 };
 
 const analyseParcel = (col: Column, def: { p: number; t: number; td: number } | null): ParcelResult => {
@@ -55,16 +95,24 @@ const hashColumn = (col: Column, optionsKey: string): string =>
         col.validMs,
         optionsKey,
         col.p.length,
-        hashArray(col.p), hashArray(col.z), hashArray(col.t), hashArray(col.td), hashArray(col.u), hashArray(col.v),
+        hashArray(col.p),
+        hashArray(col.z),
+        hashArray(col.t),
+        hashArray(col.td),
+        hashArray(col.u),
+        hashArray(col.v),
     ].join('-');
 
 /** Resolves the options' storm motion into a vector, defaulting to the Bunkers right mover. */
-export const resolveMotion = (motion: StormMotion | undefined, bunkers: { right: Vec2 | null; left: Vec2 | null; mean06: Vec2 | null }): Vec2 | null => {
+export const resolveMotion = (
+    motion: StormMotion | undefined,
+    bunkers: { right: Vec2 | null; left: Vec2 | null; mean06: Vec2 | null },
+): Vec2 | null => {
     if (!motion || motion.kind === 'bunkers-right') return bunkers.right;
     if (motion.kind === 'bunkers-left') return bunkers.left;
     if (motion.kind === 'mean-wind') return bunkers.mean06;
     if (!finite(motion.dirDeg) || !finite(motion.speedMs)) return null;
-    const rad = motion.dirDeg * Math.PI / 180; // `dirDeg` is the direction the storm moves FROM
+    const rad = (motion.dirDeg * Math.PI) / 180; // `dirDeg` is the direction the storm moves FROM
     return { u: -motion.speedMs * Math.sin(rad), v: -motion.speedMs * Math.cos(rad) };
 };
 
@@ -173,7 +221,13 @@ function computeAnalysis(col: Column, options: AnalysisOptions): SoundingAnalysi
     /* Composites from the pieces above. */
     const composites = {
         stpFixed: stpFixed(parcels.sb.cape, parcels.sb.lclZagl, kinematics.srh01, kinematics.shear06),
-        stpEff: stpEffective(parcels.ml.cape, kinematics.esrh, kinematics.ebwd, parcels.ml.lclZagl, parcels.ml.cin),
+        stpEff: stpEffective(
+            parcels.ml.cape,
+            kinematics.esrh,
+            kinematics.ebwd,
+            parcels.ml.lclZagl,
+            parcels.ml.cin,
+        ),
         scp: scp(parcels.mu.cape, kinematics.esrh, kinematics.ebwd),
         ship: ship(
             parcels.mu.cape,

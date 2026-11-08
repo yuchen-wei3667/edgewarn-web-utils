@@ -38,7 +38,7 @@ export function lapseRatePressure(col: Column, pBotHpa: number, pTopHpa: number)
     const tv1 = envTv(col, pBotHpa);
     const tv2 = envTv(col, pTopHpa);
     if (!finite(z1) || !finite(z2) || !finite(tv1) || !finite(tv2) || !(z2 - z1 > 0)) return null;
-    return (tv2 - tv1) / (z2 - z1) * -1000;
+    return ((tv2 - tv1) / (z2 - z1)) * -1000;
 }
 
 /** Mean lapse rate (°C km⁻¹) between two heights AGL (m), virtual temperatures at the endpoints. */
@@ -75,7 +75,7 @@ export function precipitableWater(col: Column): number | null {
             continue;
         }
         if (finite(wPrev) && finite(pPrev)) {
-            total += (wPrev + w) / 2 * (pPrev - p);
+            total += ((wPrev + w) / 2) * (pPrev - p);
             used++;
         }
         wPrev = w;
@@ -130,7 +130,7 @@ function firstCrossing(col: Column, values: Float32Array, value: number): number
         const v = values[i];
         if (!finite(v)) continue;
         if (v === value) return col.p[i];
-        if (finite(prev) && (prev < value) !== (v < value)) {
+        if (finite(prev) && prev < value !== v < value) {
             const w = (value - prev) / (v - prev);
             const lp = Math.log10(col.p[prevI]) + w * (Math.log10(col.p[i]) - Math.log10(col.p[prevI]));
             return 10 ** lp;
@@ -179,5 +179,5 @@ export function bulkRichardson(col: Column, capeJkg: number | null): number | nu
     if (!finite(low.u) || !finite(low.v) || !finite(deep.u) || !finite(deep.v)) return null;
     const shear = Math.hypot(deep.u - low.u, deep.v - low.v);
     if (!(shear > 0)) return null;
-    return capeJkg / (shear * shear / 2);
+    return capeJkg / ((shear * shear) / 2);
 }

@@ -12,7 +12,10 @@ const DEFAULT_TIMEOUT_MS = 15000;
  * `timeoutMs` elapses (0 or less disables the timeout). Call `dispose` once the
  * work it guards is finished, so the timer and the listener are released.
  */
-export function linkedAbortSignal(signal: AbortSignal | undefined, timeoutMs: number): { signal: AbortSignal; dispose: () => void } {
+export function linkedAbortSignal(
+    signal: AbortSignal | undefined,
+    timeoutMs: number,
+): { signal: AbortSignal; dispose: () => void } {
     const controller = new AbortController();
     const onExternalAbort = () => controller.abort(signal?.reason);
     if (signal) {
@@ -22,12 +25,13 @@ export function linkedAbortSignal(signal: AbortSignal | undefined, timeoutMs: nu
             signal.addEventListener('abort', onExternalAbort, { once: true });
         }
     }
-    const timeoutId = timeoutMs > 0
-        ? setTimeout(
-            () => controller.abort(new DOMException('Request timed out', 'TimeoutError')),
-            timeoutMs,
-        )
-        : undefined;
+    const timeoutId =
+        timeoutMs > 0
+            ? setTimeout(
+                  () => controller.abort(new DOMException('Request timed out', 'TimeoutError')),
+                  timeoutMs,
+              )
+            : undefined;
     return {
         signal: controller.signal,
         dispose: () => {

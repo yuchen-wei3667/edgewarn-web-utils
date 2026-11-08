@@ -27,8 +27,22 @@ export class LevelAccumulator {
     private readonly reducer: LevelReducer;
     constructor(level: number, factor: number, srcNx: number, srcNy: number, reducer: LevelReducer);
     /** @internal */
-    constructor(level: number, factor: number, srcNx: number, srcNy: number, reducer: LevelReducer, memory?: Memory);
-    constructor(level: number, factor: number, srcNx: number, srcNy: number, reducer: LevelReducer, memory = new Memory()) {
+    constructor(
+        level: number,
+        factor: number,
+        srcNx: number,
+        srcNy: number,
+        reducer: LevelReducer,
+        memory?: Memory,
+    );
+    constructor(
+        level: number,
+        factor: number,
+        srcNx: number,
+        srcNy: number,
+        reducer: LevelReducer,
+        memory = new Memory(),
+    ) {
         this.reducer = reducer;
         const nx = Math.ceil(srcNx / factor);
         const ny = Math.ceil(srcNy / factor);
@@ -41,8 +55,9 @@ export class LevelAccumulator {
     add(i: number, v: number): void {
         const c = (i / this.out.factor) | 0;
         if (this.reducer === 'mean') this.sums[c] += v;
-        else if (this.reducer === 'max') { if (v > this.sums[c]) this.sums[c] = v; }
-        else {
+        else if (this.reducer === 'max') {
+            if (v > this.sums[c]) this.sums[c] = v;
+        } else {
             const k = Math.round(v);
             if (k < 0 || k >= MODE_CATEGORIES) return;
             this.hist![c * MODE_CATEGORIES + k]++;
@@ -60,27 +75,41 @@ export class LevelAccumulator {
             else if (this.reducer === 'max') data[base + c] = toHalf(this.sums[c]);
             else {
                 const h = this.hist!;
-                let best = 0, bestN = -1;
+                let best = 0,
+                    bestN = -1;
                 for (let k = 0; k < MODE_CATEGORIES; k++) {
                     const m = h[c * MODE_CATEGORIES + k];
                     // Ties go to the higher category, so a rarer hazard code is not hidden by a tie.
-                    if (m >= bestN && m > 0) { best = k; bestN = m; }
+                    if (m >= bestN && m > 0) {
+                        best = k;
+                        bestN = m;
+                    }
                 }
                 data[base + c] = toHalf(best);
             }
         }
         this.counts.fill(0);
-        if (this.reducer === 'max') this.sums.fill(-Infinity); else this.sums.fill(0);
+        if (this.reducer === 'max') this.sums.fill(-Infinity);
+        else this.sums.fill(0);
         this.hist?.fill(0);
     }
 }
 
 /** Convert and reduce decoded row-major floats using the same reducers as the GRIB reader. */
-export function levelFromValues(values: Float32Array, nx: number, ny: number, level: number, factor: number,
-    reducer: LevelReducer, transform: ValueTransform = {}, validMax = Infinity): LevelGrid {
+export function levelFromValues(
+    values: Float32Array,
+    nx: number,
+    ny: number,
+    level: number,
+    factor: number,
+    reducer: LevelReducer,
+    transform: ValueTransform = {},
+    validMax = Infinity,
+): LevelGrid {
     if (values.length !== nx * ny) throw new Error('Decoded array dimensions do not match the grid');
     const accumulator = new LevelAccumulator(level, factor, nx, ny, reducer);
-    const scale = transform.scale ?? 1, offset = transform.offset ?? 0;
+    const scale = transform.scale ?? 1,
+        offset = transform.offset ?? 0;
     for (let j = 0; j < ny; j++) {
         for (let i = 0; i < nx; i++) {
             const value = values[j * nx + i] * scale + offset;

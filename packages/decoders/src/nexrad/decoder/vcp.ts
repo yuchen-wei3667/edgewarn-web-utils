@@ -41,7 +41,8 @@ export function parseVcp(body: Uint8Array): Vcp {
     const view = new DataView(body.buffer, body.byteOffset, body.byteLength);
     const number = view.getUint16(4);
     const count = view.getUint16(6);
-    if (count < 1 || count > 25 || body.length < HEADER_BYTES + count * CUT_BYTES) throw new Error('Invalid VCP cut count');
+    if (count < 1 || count > 25 || body.length < HEADER_BYTES + count * CUT_BYTES)
+        throw new Error('Invalid VCP cut count');
     const cuts: VcpCut[] = [];
     for (let i = 0; i < count; i++) {
         const p = HEADER_BYTES + i * CUT_BYTES;

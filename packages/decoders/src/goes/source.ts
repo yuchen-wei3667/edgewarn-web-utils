@@ -22,10 +22,19 @@ export class BytesSource implements ByteSource {
     bytesFetched = 0;
     requests = 0;
     private bytes: Uint8Array;
-    constructor(bytes: Uint8Array) { this.bytes = bytes; }
+    constructor(bytes: Uint8Array) {
+        this.bytes = bytes;
+    }
 
     async read(offset: number, length: number): Promise<Uint8Array> {
-        if (!Number.isSafeInteger(offset) || !Number.isSafeInteger(length) || offset < 0 || length < 0 || length > this.bytes.length - offset) throw new RangeError(`Read past end: ${offset}+${length} > ${this.bytes.length}`);
+        if (
+            !Number.isSafeInteger(offset) ||
+            !Number.isSafeInteger(length) ||
+            offset < 0 ||
+            length < 0 ||
+            length > this.bytes.length - offset
+        )
+            throw new RangeError(`Read past end: ${offset}+${length} > ${this.bytes.length}`);
         this.requests++;
         this.bytesFetched += length;
         return this.bytes.subarray(offset, offset + length);
@@ -35,4 +44,3 @@ export class BytesSource implements ByteSource {
         yield await this.read(offset, length);
     }
 }
-

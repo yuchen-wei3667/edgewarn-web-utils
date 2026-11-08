@@ -115,7 +115,7 @@ test('untrusted product URLs are skipped and default identity is neutral',async(
  let count=0;
  const result=await checkNWSRawAlertForEAS(alertId,async(url,options)=>{
   count++;
-  assert.equal(options.headers['User-Agent'],'edgewarn-alerts (https://github.com/yuchen-wei3667/edgewarn-web-utils)');
+  assert.equal(options.headers['User-Agent'],'edgewarn-web-utils (https://github.com/yuchen-wei3667/edgewarn-web-utils)');
   if(url.includes('/alerts/'))return Response.json({properties:{sent,parameters:{AWIPSidentifier:['FFWOKX'],VTEC:[vtec]}}});
   assert.ok(url.startsWith('https://api.weather.gov/'));
   return Response.json({'@graph':[{'@id':'https://attacker.test/products/x',issuanceTime:sent}]});

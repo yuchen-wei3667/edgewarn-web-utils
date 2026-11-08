@@ -5,13 +5,10 @@ export function projectAndScalePolygon(
     polygon: [number, number][],
     targetLat: number,
     targetLon: number,
-    scale: number
+    scale: number,
 ): [number, number][] {
     const [cLat, cLon] = getPolygonCentroid(polygon);
-    return polygon.map(([lat, lon]) => [
-        targetLat + (lat - cLat) * scale,
-        targetLon + (lon - cLon) * scale,
-    ]);
+    return polygon.map(([lat, lon]) => [targetLat + (lat - cLat) * scale, targetLon + (lon - cLon) * scale]);
 }
 
 /**

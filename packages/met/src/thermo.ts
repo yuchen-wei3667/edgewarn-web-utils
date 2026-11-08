@@ -9,7 +9,12 @@
  * the °C bookkeeping), K where stated, g/kg for mixing ratio.
  */
 
-import { SOUNDING_KELVIN_OFFSET, SOUNDING_EPSILON, SOUNDING_DRY_EXPONENT, SOUNDING_SATLIFT_CONV_C } from './constants.ts';
+import {
+    SOUNDING_KELVIN_OFFSET,
+    SOUNDING_EPSILON,
+    SOUNDING_DRY_EXPONENT,
+    SOUNDING_SATLIFT_CONV_C,
+} from './constants.ts';
 import { mixingRatioHpa } from './bolton.ts';
 
 export {
@@ -34,10 +39,8 @@ const MIXRATIO_C6 = 1.2035;
 const WOBF_N_COEFFS = [
     -8.841660499999999e-3, 1.4714143e-4, -9.671989000000001e-7, -3.2607217e-8, -3.8598073e-10,
 ] as const;
-const WOBF_P_COEFFS = [
-    4.9618922e-07, -6.1059365e-09, 3.9401551e-11, -1.2588129e-13, 1.6688280e-16,
-] as const;
-const WOBF_P_LINEAR = [3.6182989e-03, -1.3603273e-05] as const;
+const WOBF_P_COEFFS = [4.9618922e-7, -6.1059365e-9, 3.9401551e-11, -1.2588129e-13, 1.668828e-16] as const;
+const WOBF_P_LINEAR = [3.6182989e-3, -1.3603273e-5] as const;
 const WOBF_N_SCALE = 15.13;
 const WOBF_P_SCALE = 29.93;
 
@@ -58,7 +61,9 @@ export function thetaC(pHpa: number, tC: number, refPHpa = 1000): number {
 /** Temperature from potential temperature (°C in, °C out) along the dry adiabat. */
 export function temperatureFromThetaC(thetaInC: number, pHpa: number): number {
     if (missing(thetaInC) || missing(pHpa) || pHpa <= 0) return NaN;
-    return (thetaInC + SOUNDING_KELVIN_OFFSET) * (pHpa / 1000) ** SOUNDING_DRY_EXPONENT - SOUNDING_KELVIN_OFFSET;
+    return (
+        (thetaInC + SOUNDING_KELVIN_OFFSET) * (pHpa / 1000) ** SOUNDING_DRY_EXPONENT - SOUNDING_KELVIN_OFFSET
+    );
 }
 
 /** SHARPpy `lcltemp`: parcel temperature (°C) at the LCL. */
@@ -96,7 +101,7 @@ export function virtualTemperatureC(pHpa: number, tC: number, tdC: number): numb
     const r = mixingRatioHpa(pHpa, tdC);
     if (!Number.isFinite(r) || r < 0) return tC;
     const tk = tC + SOUNDING_KELVIN_OFFSET;
-    return tk * (1 + r / 1000 / SOUNDING_EPSILON) / (1 + r / 1000) - SOUNDING_KELVIN_OFFSET;
+    return (tk * (1 + r / 1000 / SOUNDING_EPSILON)) / (1 + r / 1000) - SOUNDING_KELVIN_OFFSET;
 }
 
 /**
@@ -107,14 +112,19 @@ export function wobf(tC: number): number {
     if (missing(tC)) return NaN;
     const t = tC - 20;
     if (t <= 0) {
-        const npol = 1 + t * (
-            WOBF_N_COEFFS[0] + t * (WOBF_N_COEFFS[1] + t * (WOBF_N_COEFFS[2] + t * (WOBF_N_COEFFS[3] + t * WOBF_N_COEFFS[4])))
-        );
+        const npol =
+            1 +
+            t *
+                (WOBF_N_COEFFS[0] +
+                    t *
+                        (WOBF_N_COEFFS[1] +
+                            t * (WOBF_N_COEFFS[2] + t * (WOBF_N_COEFFS[3] + t * WOBF_N_COEFFS[4]))));
         return WOBF_N_SCALE / npol ** 4;
     }
-    const ppol = t * (
-        WOBF_P_COEFFS[0] + t * (WOBF_P_COEFFS[1] + t * (WOBF_P_COEFFS[2] + t * (WOBF_P_COEFFS[3] + t * WOBF_P_COEFFS[4])))
-    );
+    const ppol =
+        t *
+        (WOBF_P_COEFFS[0] +
+            t * (WOBF_P_COEFFS[1] + t * (WOBF_P_COEFFS[2] + t * (WOBF_P_COEFFS[3] + t * WOBF_P_COEFFS[4]))));
     const ppoly = 1 + t * (WOBF_P_LINEAR[0] + t * (WOBF_P_LINEAR[1] + ppol));
     return WOBF_P_SCALE / ppoly ** 4 + 0.96 * t - 14.8;
 }
@@ -166,15 +176,19 @@ export function wetBulbC(pHpa: number, tC: number, tdC: number): number {
 /** Temperature (°C) of air whose mixing ratio is `rGkg` at `pHpa` (SHARPpy `temp_at_mixrat`). */
 export function tempAtMixratioC(rGkg: number, pHpa: number): number {
     if (missing(rGkg) || missing(pHpa) || pHpa <= 0 || rGkg <= 0) return NaN;
-    const x = Math.log10(rGkg * pHpa / (622 + rGkg));
-    return Math.pow(10, MIXRATIO_C1 * x + MIXRATIO_C2)
-        - MIXRATIO_C3
-        + MIXRATIO_C4 * (Math.pow(10, MIXRATIO_C5 * x) - MIXRATIO_C6) ** 2
-        - SOUNDING_KELVIN_OFFSET;
+    const x = Math.log10((rGkg * pHpa) / (622 + rGkg));
+    return (
+        Math.pow(10, MIXRATIO_C1 * x + MIXRATIO_C2) -
+        MIXRATIO_C3 +
+        MIXRATIO_C4 * (Math.pow(10, MIXRATIO_C5 * x) - MIXRATIO_C6) ** 2 -
+        SOUNDING_KELVIN_OFFSET
+    );
 }
 
 /** Temperature (°C) after a dry-adiabatic step from `(pHpaFrom, tC)` to `pHpaTo`. */
 export function dryLiftToC(pHpaFrom: number, tC: number, pHpaTo: number): number {
     if (missing(pHpaFrom) || missing(tC) || missing(pHpaTo) || pHpaFrom <= 0 || pHpaTo <= 0) return NaN;
-    return (tC + SOUNDING_KELVIN_OFFSET) * (pHpaTo / pHpaFrom) ** SOUNDING_DRY_EXPONENT - SOUNDING_KELVIN_OFFSET;
+    return (
+        (tC + SOUNDING_KELVIN_OFFSET) * (pHpaTo / pHpaFrom) ** SOUNDING_DRY_EXPONENT - SOUNDING_KELVIN_OFFSET
+    );
 }

@@ -56,9 +56,7 @@ function pointInPolygonCoords(lat: number, lon: number, coords: number[][][]): b
             const xj = ring[j][1];
             const yj = ring[j][0];
 
-            const intersect =
-                yi > lon !== yj > lon &&
-                lat < ((xj - xi) * (lon - yi)) / (yj - yi) + xi;
+            const intersect = yi > lon !== yj > lon && lat < ((xj - xi) * (lon - yi)) / (yj - yi) + xi;
 
             if (intersect) inside = !inside;
         }
@@ -78,13 +76,17 @@ function pointInPolygonCoords(lat: number, lon: number, coords: number[][][]): b
 }
 
 /** Check if a point is inside a GeoJSON Polygon or MultiPolygon. */
-export function pointInGeometry(lat: number, lon: number, geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon): boolean {
+export function pointInGeometry(
+    lat: number,
+    lon: number,
+    geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon,
+): boolean {
     if (geometry.type === 'Polygon') {
         return pointInPolygonCoords(lat, lon, geometry.coordinates);
     }
 
     if (geometry.type === 'MultiPolygon') {
-        return geometry.coordinates.some(polyCoords => pointInPolygonCoords(lat, lon, polyCoords));
+        return geometry.coordinates.some((polyCoords) => pointInPolygonCoords(lat, lon, polyCoords));
     }
 
     return false;

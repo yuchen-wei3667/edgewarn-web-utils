@@ -12,12 +12,16 @@ export async function decodeSimpleSection(
     sink: RowSink,
     signal: AbortSignal | undefined,
 ): Promise<SectionResult> {
-    const outRow: PackedRow = nbits > 16 ? rd.memory.array(Uint32Array, width) : rd.memory.array(Uint16Array, width);
+    const outRow: PackedRow =
+        nbits > 16 ? rd.memory.array(Uint32Array, width) : rd.memory.array(Uint16Array, width);
     let rowsRead = 0;
-    const checkAbort = () => { if (signal?.aborted) throw signal.reason ?? new DOMException('Aborted', 'AbortError'); };
+    const checkAbort = () => {
+        if (signal?.aborted) throw signal.reason ?? new DOMException('Aborted', 'AbortError');
+    };
     const done = (stopped: boolean): SectionResult => ({ width, height, rowsRead, stopped });
 
-    if (nbits === 0) { // constant field: every X = 0
+    if (nbits === 0) {
+        // constant field: every X = 0
         await rd.skip(sectionBytes);
         for (let y = 0; y < height; y++) {
             checkAbort();
@@ -27,7 +31,10 @@ export async function decodeSimpleSection(
         return done(false);
     }
 
-    let acc = 0, accBits = 0, x = 0, y = 0;
+    let acc = 0,
+        accBits = 0,
+        x = 0,
+        y = 0;
     const emit = async (): Promise<boolean> => {
         checkAbort();
         rowsRead = y + 1;
@@ -37,7 +44,8 @@ export async function decodeSimpleSection(
         return stop;
     };
 
-    if (nbits <= 23) { // int32 fast path: acc stays < 2^31
+    if (nbits <= 23) {
+        // int32 fast path: acc stays < 2^31
         const mask = (1 << nbits) - 1;
         for await (const s of rd.take(sectionBytes)) {
             for (let i = 0; i < s.length && y < height; i++) {
@@ -51,7 +59,7 @@ export async function decodeSimpleSection(
             }
         }
     } else {
-        const mask = nbits >= 32 ? 0xffffffff : (2 ** nbits) - 1;
+        const mask = nbits >= 32 ? 0xffffffff : 2 ** nbits - 1;
         for await (const s of rd.take(sectionBytes)) {
             for (let i = 0; i < s.length && y < height; i++) {
                 acc = (acc * 256 + s[i]) % 2 ** 53; // float math keeps up to 53 bits exact

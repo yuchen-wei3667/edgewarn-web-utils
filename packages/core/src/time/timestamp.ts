@@ -17,8 +17,9 @@ interface TimestampStr {
  */
 function parseTimestamp(ts: string): Date | null {
     const trimmed = ts.trim();
-    const match = trimmed.match(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})$/)
-        ?? trimmed.match(/^(\d{4})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})$/);
+    const match =
+        trimmed.match(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})$/) ??
+        trimmed.match(/^(\d{4})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})$/);
     if (!match) return null;
     return new Date(
         parseInt(match[1]),
@@ -26,24 +27,27 @@ function parseTimestamp(ts: string): Date | null {
         parseInt(match[3]),
         parseInt(match[4]),
         parseInt(match[5]),
-        parseInt(match[6])
+        parseInt(match[6]),
     );
 }
 
 /** Parse an EdgeWARN timestamp as UTC. */
 export function parseTimestampUTC(ts: string): Date | null {
     const trimmed = ts.trim();
-    const match = trimmed.match(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})$/)
-        ?? trimmed.match(/^(\d{4})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})$/);
+    const match =
+        trimmed.match(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})$/) ??
+        trimmed.match(/^(\d{4})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})$/);
     if (!match) return null;
-    return new Date(Date.UTC(
-        parseInt(match[1]),
-        parseInt(match[2]) - 1,
-        parseInt(match[3]),
-        parseInt(match[4]),
-        parseInt(match[5]),
-        parseInt(match[6]),
-    ));
+    return new Date(
+        Date.UTC(
+            parseInt(match[1]),
+            parseInt(match[2]) - 1,
+            parseInt(match[3]),
+            parseInt(match[4]),
+            parseInt(match[5]),
+            parseInt(match[6]),
+        ),
+    );
 }
 
 /**
@@ -52,12 +56,13 @@ export function parseTimestampUTC(ts: string): Date | null {
  * @returns Object with formatted date (YYYY-MM-DD) and time (HH:MM)
  */
 export function formatTimeLabel(ts: string): TimestampStr {
-    const match = ts.match(/(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})/)
-        ?? ts.match(/(\d{4})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})/);
+    const match =
+        ts.match(/(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})/) ??
+        ts.match(/(\d{4})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})/);
     if (!match) return { date: ts, time: '' };
     return {
         date: `${match[1]}-${match[2]}-${match[3]}`,
-        time: `${match[4]}:${match[5]}`
+        time: `${match[4]}:${match[5]}`,
     };
 }
 
@@ -71,7 +76,7 @@ export function formatTimeLabel(ts: string): TimestampStr {
 export function findClosestTimestamp(
     targetTs: string,
     candidates: string[],
-    toleranceMs: number = 600000
+    toleranceMs: number = 600000,
 ): string | null {
     if (!candidates || candidates.length === 0) return null;
 
@@ -127,10 +132,7 @@ export function formatExpiresIn(
  * @param value Date-parseable string, Date, or number.
  * @param withYear Include the year (used by SPC outlooks).
  */
-export function formatDateUTC(
-    value: string | number | Date | null | undefined,
-    withYear = false
-): string {
+export function formatDateUTC(value: string | number | Date | null | undefined, withYear = false): string {
     if (value === null || value === undefined || value === '') return 'Unknown';
 
     const date = value instanceof Date ? value : new Date(value);

@@ -32,13 +32,25 @@ class Cursor {
         this.lengthSize = lengthSize;
         this.dv = new DataView(b.buffer, b.byteOffset, b.byteLength);
     }
-    u8(): number { return this.b[this.p++]; }
-    u16(): number { const v = this.dv.getUint16(this.p, true); this.p += 2; return v; }
-    u32(): number { const v = this.dv.getUint32(this.p, true); this.p += 4; return v; }
+    u8(): number {
+        return this.b[this.p++];
+    }
+    u16(): number {
+        const v = this.dv.getUint16(this.p, true);
+        this.p += 2;
+        return v;
+    }
+    u32(): number {
+        const v = this.dv.getUint32(this.p, true);
+        this.p += 4;
+        return v;
+    }
     /** Little-endian unsigned of `n` bytes; all-ones decodes to UNDEF (HDF5's "undefined address"). */
     uN(n: number): number {
-        if (!Number.isSafeInteger(n) || n < 0 || this.p + n > this.b.length) throw new Hdf5FormatError('Truncated HDF5 integer');
-        let v = 0, ones = true;
+        if (!Number.isSafeInteger(n) || n < 0 || this.p + n > this.b.length)
+            throw new Hdf5FormatError('Truncated HDF5 integer');
+        let v = 0,
+            ones = true;
         for (let i = 0; i < n; i++) {
             const byte = this.b[this.p + i];
             if (byte !== 0xff) ones = false;
@@ -47,12 +59,23 @@ class Cursor {
         this.p += n;
         return ones && n > 0 ? UNDEF : v;
     }
-    addr(): number { return this.uN(this.offsetSize); }
-    len(): number { return this.uN(this.lengthSize); }
-    bytes(n: number): Uint8Array { if (!Number.isSafeInteger(n) || n < 0 || this.p + n > this.b.length) throw new Hdf5FormatError('Truncated HDF5 message'); const s = this.b.subarray(this.p, this.p + n); this.p += n; return s; }
+    addr(): number {
+        return this.uN(this.offsetSize);
+    }
+    len(): number {
+        return this.uN(this.lengthSize);
+    }
+    bytes(n: number): Uint8Array {
+        if (!Number.isSafeInteger(n) || n < 0 || this.p + n > this.b.length)
+            throw new Hdf5FormatError('Truncated HDF5 message');
+        const s = this.b.subarray(this.p, this.p + n);
+        this.p += n;
+        return s;
+    }
     sig(expected: string): void {
         const got = TEXT.decode(this.bytes(4));
-        if (got !== expected) throw new Hdf5FormatError(`Expected ${expected} signature, found ${JSON.stringify(got)}`);
+        if (got !== expected)
+            throw new Hdf5FormatError(`Expected ${expected} signature, found ${JSON.stringify(got)}`);
     }
 }
 
@@ -85,7 +108,10 @@ export interface ChunkRef {
     filterMask: number;
 }
 
-interface Message { type: number; body: Uint8Array }
+interface Message {
+    type: number;
+    body: Uint8Array;
+}
 
 /** Bytes needed to store `n` (H5VM_limit_enc_size). */
 const encSize = (n: number) => Math.floor(Math.log2(n) / 8) + 1;
@@ -97,7 +123,13 @@ export class Hdf5File {
     private src: ByteSource;
     private base: number;
 
-    private constructor(src: ByteSource, offsetSize: number, lengthSize: number, base: number, rootAddress: number) {
+    private constructor(
+        src: ByteSource,
+        offsetSize: number,
+        lengthSize: number,
+        base: number,
+        rootAddress: number,
+    ) {
         this.src = src;
         this.offsetSize = offsetSize;
         this.lengthSize = lengthSize;
@@ -111,9 +143,11 @@ export class Hdf5File {
             const b = await src.read(at, 48, signal);
             if (b[0] !== 0x89 || b[1] !== 0x48 || b[2] !== 0x44 || b[3] !== 0x46) continue;
             const version = b[8];
-            if (version !== 2 && version !== 3) throw new Hdf5FormatError(`Superblock v${version} not supported (need v2/v3)`);
+            if (version !== 2 && version !== 3)
+                throw new Hdf5FormatError(`Superblock v${version} not supported (need v2/v3)`);
             const c = new Cursor(b, 9);
-            const offsetSize = c.u8(), lengthSize = c.u8();
+            const offsetSize = c.u8(),
+                lengthSize = c.u8();
             c.u8(); // file consistency flags
             const cur = new Cursor(b, 12, offsetSize, lengthSize);
             const base = cur.addr();
@@ -125,7 +159,9 @@ export class Hdf5File {
         throw new Hdf5FormatError('No HDF5 signature found');
     }
 
-    private cursor(b: Uint8Array, p = 0): Cursor { return new Cursor(b, p, this.offsetSize, this.lengthSize); }
+    private cursor(b: Uint8Array, p = 0): Cursor {
+        return new Cursor(b, p, this.offsetSize, this.lengthSize);
+    }
 
     read(address: number, length: number, signal?: AbortSignal): Promise<Uint8Array> {
         return this.src.read(this.base + address, length, signal);
@@ -135,7 +171,9 @@ export class Hdf5File {
     stream(address: number, length: number, signal?: AbortSignal): AsyncIterable<Uint8Array> {
         if (this.src.stream) return this.src.stream(this.base + address, length, signal);
         const read = () => this.read(address, length, signal);
-        return (async function* () { yield await read(); })();
+        return (async function* () {
+            yield await read();
+        })();
     }
 
     // ---- Object headers ------------------------------------------------------------------------
@@ -161,12 +199,14 @@ export class Hdf5File {
         for (let i = 0; i < blocks.length; i++) {
             const b = this.cursor(blocks[i]);
             while (b.p + hdr <= b.b.length) {
-                const type = b.u8(), size = b.u16();
+                const type = b.u8(),
+                    size = b.u16();
                 b.p += hdr - 3;
                 const body = b.bytes(size);
                 if (type === 0x10) {
                     const cc = this.cursor(body);
-                    const at = cc.addr(), len = cc.len();
+                    const at = cc.addr(),
+                        len = cc.len();
                     if (seen.has(at)) throw new Hdf5FormatError('Cyclic HDF5 continuation');
                     seen.add(at);
                     const blk = await this.read(at, len);
@@ -192,13 +232,15 @@ export class Hdf5File {
         for (let i = 0; i < blocks.length && remaining > 0; i++) {
             const b = this.cursor(blocks[i]);
             while (b.p + 8 <= b.b.length && remaining > 0) {
-                const type = b.u16(), sz = b.u16();
+                const type = b.u16(),
+                    sz = b.u16();
                 b.p += 4;
                 const body = b.bytes(sz);
                 remaining--;
                 if (type === 0x10) {
                     const cc = this.cursor(body);
-                    const at = cc.addr(), len = cc.len();
+                    const at = cc.addr(),
+                        len = cc.len();
                     blocks.push(await this.read(at, len));
                 } else if (type !== 0) {
                     out.push({ type, body });
@@ -222,7 +264,8 @@ export class Hdf5File {
                 c.u8();
                 const flags = c.u8();
                 if (flags & 1) c.p += 8;
-                const heapAddr = c.addr(), nameBtree = c.addr();
+                const heapAddr = c.addr(),
+                    nameBtree = c.addr();
                 if (heapAddr === UNDEF) continue;
                 const heap = await FractalHeap.open(this, heapAddr);
                 for (const rec of await this.btree2Records(nameBtree)) {
@@ -261,7 +304,8 @@ export class Hdf5File {
                 c.u8();
                 const flags = c.u8();
                 if (flags & 1) c.p += 2;
-                const heapAddr = c.addr(), nameBtree = c.addr();
+                const heapAddr = c.addr(),
+                    nameBtree = c.addr();
                 if (heapAddr === UNDEF) continue;
                 const heap = await FractalHeap.open(this, heapAddr);
                 for (const rec of await this.btree2Records(nameBtree)) {
@@ -278,7 +322,9 @@ export class Hdf5File {
         const c = this.cursor(b);
         const version = c.u8();
         c.u8();
-        const nameSize = c.u16(), dtSize = c.u16(), dsSize = c.u16();
+        const nameSize = c.u16(),
+            dtSize = c.u16(),
+            dsSize = c.u16();
         if (version === 3) c.u8(); // name encoding
         const pad = (n: number) => (version === 1 ? Math.ceil(n / 8) * 8 : n);
         const name = TEXT.decode(c.b.subarray(c.p, c.p + nameSize - 1));
@@ -296,7 +342,8 @@ export class Hdf5File {
     /** Dataspace dims; [] for a scalar, null for a null dataspace. */
     parseDataspace(b: Uint8Array): number[] | null {
         const c = this.cursor(b);
-        const version = c.u8(), rank = c.u8();
+        const version = c.u8(),
+            rank = c.u8();
         c.u8(); // flags
         if (version === 1) c.p += 5;
         else if (c.u8() === 2) return null;
@@ -324,7 +371,8 @@ export class Hdf5File {
 
     parseFilters(b: Uint8Array): Filter[] {
         const c = this.cursor(b);
-        const version = c.u8(), n = c.u8();
+        const version = c.u8(),
+            n = c.u8();
         if (version === 1) c.p += 6;
         const filters: Filter[] = [];
         for (let i = 0; i < n; i++) {
@@ -358,13 +406,15 @@ export class Hdf5File {
             const head = this.cursor(b);
             head.sig('TREE');
             if (head.u8() !== 1) throw new Hdf5FormatError('Expected a chunk (type 1) B-tree node');
-            const level = head.u8(), entries = head.u16();
+            const level = head.u8(),
+                entries = head.u16();
             if (nodeSize(entries) > b.length) b = await this.read(addr, nodeSize(entries));
             const c = this.cursor(b, headSize);
             const leaves: ChunkRef[] = [];
             const children: number[] = [];
             for (let i = 0; i < entries; i++) {
-                const size = c.u32(), filterMask = c.u32();
+                const size = c.u32(),
+                    filterMask = c.u32();
                 const offset: number[] = [];
                 for (let d = 0; d < rank; d++) offset.push(c.uN(8));
                 c.p += 8;
@@ -385,10 +435,14 @@ export class Hdf5File {
         if (address === UNDEF) return [];
         const h = this.cursor(await this.read(address, 16 + this.offsetSize + 2 + this.lengthSize + 4));
         h.sig('BTHD');
-        h.u8(); h.u8();
-        const nodeSize = h.u32(), recSize = h.u16(), depth = h.u16();
+        h.u8();
+        h.u8();
+        const nodeSize = h.u32(),
+            recSize = h.u16(),
+            depth = h.u16();
         h.p += 2;
-        const root = h.addr(), rootNrec = h.u16();
+        const root = h.addr(),
+            rootNrec = h.u16();
 
         // Child-pointer field widths per depth, as H5B2__hdr_init computes them.
         const PREFIX = 10;
@@ -414,9 +468,13 @@ export class Hdf5File {
             c.p += 2;
             const recs: Uint8Array[] = [];
             for (let i = 0; i < nrec; i++) recs.push(c.bytes(recSize));
-            if (d === 0) { out.push(...recs); return; }
+            if (d === 0) {
+                out.push(...recs);
+                return;
+            }
             for (let i = 0; i <= nrec; i++) {
-                const child = c.addr(), childNrec = c.uN(nrecSize);
+                const child = c.addr(),
+                    childNrec = c.uN(nrecSize);
                 if (d > 1) c.p += cumSize[d - 1];
                 await walk(child, childNrec, d - 1);
                 if (i < nrec) out.push(recs[i]);
@@ -439,8 +497,16 @@ class FractalHeap {
     private maxDirectRows: number;
     private firstRowBits: number;
 
-    private constructor(f: Hdf5File, width: number, startSize: number, maxDirect: number, maxHeapBits: number,
-        rootAddr: number, rootRows: number, maxManaged: number) {
+    private constructor(
+        f: Hdf5File,
+        width: number,
+        startSize: number,
+        maxDirect: number,
+        maxHeapBits: number,
+        rootAddr: number,
+        rootRows: number,
+        maxManaged: number,
+    ) {
         this.f = f;
         this.width = width;
         this.startSize = startSize;
@@ -453,7 +519,8 @@ class FractalHeap {
     }
 
     static async open(f: Hdf5File, address: number): Promise<FractalHeap> {
-        const O = f.offsetSize, L = f.lengthSize;
+        const O = f.offsetSize,
+            L = f.lengthSize;
         const c = new Cursor(await f.read(address, 22 + 12 * L + 3 * O + 12), 0, O, L);
         c.sig('FRHP');
         c.u8();
@@ -462,23 +529,35 @@ class FractalHeap {
         if (filtersLen) throw new Hdf5FormatError('Filtered fractal heaps are not supported');
         c.u8();
         const maxManaged = c.u32();
-        c.len(); c.addr(); c.len(); c.addr(); // huge-object ID/B-tree, free space and its manager
+        c.len();
+        c.addr();
+        c.len();
+        c.addr(); // huge-object ID/B-tree, free space and its manager
         for (let i = 0; i < 8; i++) c.len(); // managed/huge/tiny space and object counts
-        const width = c.u16(), startSize = c.len(), maxDirect = c.len(), maxHeapBits = c.u16();
+        const width = c.u16(),
+            startSize = c.len(),
+            maxDirect = c.len(),
+            maxHeapBits = c.u16();
         c.u16(); // starting rows of the root indirect block
-        const rootAddr = c.addr(), rootRows = c.u16();
+        const rootAddr = c.addr(),
+            rootRows = c.u16();
         return new FractalHeap(f, width, startSize, maxDirect, maxHeapBits, rootAddr, rootRows, maxManaged);
     }
 
-    private rowSize(r: number): number { return r === 0 ? this.startSize : this.startSize * 2 ** (r - 1); }
-    private rowStart(r: number): number { return r === 0 ? 0 : this.startSize * this.width * 2 ** (r - 1); }
+    private rowSize(r: number): number {
+        return r === 0 ? this.startSize : this.startSize * 2 ** (r - 1);
+    }
+    private rowStart(r: number): number {
+        return r === 0 ? 0 : this.startSize * this.width * 2 ** (r - 1);
+    }
 
     async get(id: Uint8Array): Promise<Uint8Array> {
         const kind = (id[0] >> 4) & 3;
         if (kind === 2) return id.subarray(1, 1 + (id[0] & 0x0f) + 1);
         if (kind !== 0) throw new Hdf5FormatError('Huge fractal-heap objects are not supported');
         const c = new Cursor(id, 1);
-        const offset = c.uN(this.offBytes), length = c.uN(this.lenBytes);
+        const offset = c.uN(this.offBytes),
+            length = c.uN(this.lenBytes);
         const block = await this.locate(offset);
         return this.f.read(block.address + (offset - block.heapOffset), length);
     }
@@ -486,7 +565,9 @@ class FractalHeap {
     /** File address and heap offset of the direct block holding heap offset `off`. */
     private async locate(off: number): Promise<{ address: number; heapOffset: number }> {
         if (this.rootRows === 0) return { address: this.rootAddr, heapOffset: 0 };
-        let addr = this.rootAddr, rows = this.rootRows, base = 0;
+        let addr = this.rootAddr,
+            rows = this.rootRows,
+            base = 0;
         const seen = new Set<number>();
         for (;;) {
             if (seen.has(addr)) throw new Hdf5FormatError('Cyclic HDF5 heap');
@@ -500,7 +581,8 @@ class FractalHeap {
             const headLen = 4 + 1 + this.f.offsetSize + this.offBytes;
             const b = await this.f.read(addr + headLen + entry * this.f.offsetSize, this.f.offsetSize);
             const child = new Cursor(b, 0, this.f.offsetSize).addr();
-            if (child === UNDEF) throw new Hdf5FormatError(`Heap offset ${off} falls in an unallocated block`);
+            if (child === UNDEF)
+                throw new Hdf5FormatError(`Heap offset ${off} falls in an unallocated block`);
             if (r < this.maxDirectRows) return { address: child, heapOffset: childBase };
             addr = child;
             base = childBase;
@@ -512,7 +594,12 @@ class FractalHeap {
 export function parseDatatype(b: Uint8Array): Datatype {
     const cls = b[0] & 0x0f;
     const size = new DataView(b.buffer, b.byteOffset, b.byteLength).getUint32(4, true);
-    return { cls, size, signed: cls === 0 && (b[1] & 0x08) !== 0, bigEndian: (cls === 0 || cls === 1) && (b[1] & 0x01) !== 0 };
+    return {
+        cls,
+        size,
+        signed: cls === 0 && (b[1] & 0x08) !== 0,
+        bigEndian: (cls === 0 || cls === 1) && (b[1] & 0x01) !== 0,
+    };
 }
 
 export function decodeValues(b: Uint8Array, t: Datatype, count: number): AttrValue {

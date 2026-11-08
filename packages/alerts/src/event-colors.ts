@@ -1,10 +1,10 @@
 // NWS Severity Colors (fallback)
 const SEVERITY_COLORS: Record<string, { bg: string; border: string; dot: string }> = {
-    'Extreme': { bg: '#7c2d12', border: '#ea580c', dot: '#f97316' },
-    'Severe': { bg: '#7f1d1d', border: '#dc2626', dot: '#ef4444' },
-    'Moderate': { bg: '#78350f', border: '#d97706', dot: '#f59e0b' },
-    'Minor': { bg: '#1e3a5f', border: '#3b82f6', dot: '#60a5fa' },
-    'Unknown': { bg: '#374151', border: '#6b7280', dot: '#9ca3af' },
+    Extreme: { bg: '#7c2d12', border: '#ea580c', dot: '#f97316' },
+    Severe: { bg: '#7f1d1d', border: '#dc2626', dot: '#ef4444' },
+    Moderate: { bg: '#78350f', border: '#d97706', dot: '#f59e0b' },
+    Minor: { bg: '#1e3a5f', border: '#3b82f6', dot: '#60a5fa' },
+    Unknown: { bg: '#374151', border: '#6b7280', dot: '#9ca3af' },
 };
 
 /**

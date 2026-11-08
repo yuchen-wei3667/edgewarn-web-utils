@@ -35,7 +35,7 @@ async function toErrorMessage(response: Response): Promise<string> {
     const base = `Server returned ${response.status}: ${response.statusText}`;
 
     try {
-        const body = await response.json() as {
+        const body = (await response.json()) as {
             error?: string | { message?: string };
             detail?: string;
             title?: string;
@@ -65,7 +65,7 @@ export function createJsonRequester(baseUrl: string) {
     return async function requestJson<T>(
         path: string,
         params?: QueryParams,
-        options?: RequestOptions
+        options?: RequestOptions,
     ): Promise<T> {
         const { signal, cache = 'no-store', timeoutMs = 0 } = options ?? {};
         // The timeout and the caller's signal also cover reading the body.
@@ -87,14 +87,20 @@ export function createJsonRequester(baseUrl: string) {
                 // Don't log the body — it can carry sensitive content. The
                 // content-type and status are enough to diagnose.
                 const body = await response.text();
-                console.error('[EdgeWARNAPI] Non-JSON response', { contentType, status: response.status, length: body.length });
+                console.error('[EdgeWARNAPI] Non-JSON response', {
+                    contentType,
+                    status: response.status,
+                    length: body.length,
+                });
                 throw new Error(`Server returned non-JSON content. Content-Type: ${contentType}`);
             }
 
-            return await response.json() as T;
+            return (await response.json()) as T;
         } catch (error) {
             if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-                throw new Error(`Failed to connect to API. Please check if the server is running at ${baseUrl}`);
+                throw new Error(
+                    `Failed to connect to API. Please check if the server is running at ${baseUrl}`,
+                );
             }
             throw error;
         } finally {

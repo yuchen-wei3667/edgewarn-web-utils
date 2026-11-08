@@ -2,7 +2,17 @@ import type { IdxEntry } from '../../idx.ts';
 
 /** Parameters ECMWF accumulates from the start of the run: the forecast column reads `0-N hour acc`. */
 const ACCUMULATED: ReadonlySet<string> = new Set([
-    'tp', 'cp', 'sf', 'ro', 'ssr', 'ssrd', 'str', 'strd', 'ttr', 'ewss', 'nsss',
+    'tp',
+    'cp',
+    'sf',
+    'ro',
+    'ssr',
+    'ssrd',
+    'str',
+    'strd',
+    'ttr',
+    'ewss',
+    'nsss',
 ]);
 /** `mx2t3`, `mn2t6`: the maximum or minimum over the hours before the step, named by their length. */
 const PERIOD_EXTREME = /^m([xn])\w+?(\d+)$/;
@@ -39,7 +49,8 @@ function memberOf(rec: IndexRecord): { member?: number } {
 function forecastOf(param: string, hours: number): string {
     if (ACCUMULATED.has(param)) return `0-${hours} hour acc fcst`;
     const period = PERIOD_EXTREME.exec(param);
-    if (period && hours >= Number(period[2])) return `${hours - Number(period[2])}-${hours} hour ${period[1] === 'x' ? 'max' : 'min'} fcst`;
+    if (period && hours >= Number(period[2]))
+        return `${hours - Number(period[2])}-${hours} hour ${period[1] === 'x' ? 'max' : 'min'} fcst`;
     return hours === 0 ? 'anl' : `${hours} hour fcst`;
 }
 
@@ -53,7 +64,11 @@ export function parseEcmwfIndex(text: string): IdxEntry[] {
     for (const line of text.split('\n')) {
         if (!line.trim()) continue;
         let rec: IndexRecord;
-        try { rec = JSON.parse(line) as IndexRecord; } catch { continue; }
+        try {
+            rec = JSON.parse(line) as IndexRecord;
+        } catch {
+            continue;
+        }
         const { param, _offset: start, _length: length } = rec;
         if (!param || !Number.isFinite(start) || !Number.isFinite(length)) continue;
         out.push({

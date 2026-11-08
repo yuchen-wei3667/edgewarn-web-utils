@@ -138,7 +138,15 @@ function parseLatLonGrid(s: Uint8Array): LatLonModelGrid {
         throw new Error('Lat/lon grid extent does not match its increments');
     }
     return {
-        projection: 'latlon', nx, ny, lat1, lon1, dlat, dlon, scanMode, radiusM: earthRadiusM(s),
+        projection: 'latlon',
+        nx,
+        ny,
+        lat1,
+        lon1,
+        dlat,
+        dlon,
+        scanMode,
+        radiusM: earthRadiusM(s),
         componentsRelativeToGrid: (s[54] & COMPONENTS_RELATIVE_TO_GRID) !== 0,
     };
 }
@@ -150,7 +158,10 @@ function parseLatLonGrid(s: Uint8Array): LatLonModelGrid {
 function parseRotatedLatLonGrid(s: Uint8Array): ModelGrid {
     const angle = new DataView(s.buffer, s.byteOffset + 80, 4).getFloat32(0);
     if (angle !== 0) throw new Error('Rotated lat/lon grid with a non-zero angle of rotation not supported');
-    return { ...parseLatLonGrid(s), rotation: { southPoleLat: s32(s, 72) * MICRODEGREE, southPoleLon: u32(s, 76) * MICRODEGREE } };
+    return {
+        ...parseLatLonGrid(s),
+        rotation: { southPoleLat: s32(s, 72) * MICRODEGREE, southPoleLon: u32(s, 76) * MICRODEGREE },
+    };
 }
 
 /** Rows run south to north, with or without alternating directions: the layouts the projected grids use. */
@@ -163,7 +174,8 @@ function projectedScanMode(scanMode: number): number {
 
 /** Polar stereographic (3.20): octet numbers are those of the GRIB2 template table, minus one. */
 function parsePolarStereoGrid(s: Uint8Array): ModelGrid {
-    if ((s[63] & 0x80) !== 0) throw new Error('Polar stereographic grid centred on the south pole not supported');
+    if ((s[63] & 0x80) !== 0)
+        throw new Error('Polar stereographic grid centred on the south pole not supported');
     return {
         projection: 'polarStereo',
         nx: u32(s, 30),
@@ -203,7 +215,10 @@ function parseGrid(s: Uint8Array): ModelGrid {
     if (tmpl === 1) return parseRotatedLatLonGrid(s);
     if (tmpl === 20) return parsePolarStereoGrid(s);
     if (tmpl === 10) return parseMercatorGrid(s);
-    if (tmpl !== 30) throw new Error(`Grid template 3.${tmpl} not supported (Lambert conformal 3.30, polar stereographic 3.20, Mercator 3.10, regular lat/lon 3.0 and rotated lat/lon 3.1)`);
+    if (tmpl !== 30)
+        throw new Error(
+            `Grid template 3.${tmpl} not supported (Lambert conformal 3.30, polar stereographic 3.20, Mercator 3.10, regular lat/lon 3.0 and rotated lat/lon 3.1)`,
+        );
     const scanMode = projectedScanMode(s[64]);
     return {
         projection: 'lambert',
@@ -241,7 +256,12 @@ class LevelWriter {
     /** Values above this are a "none" code in the field (an unlimited ceiling), not data: they are written as missing. */
     private readonly validMax: number;
     constructor(
-        nx: number, ny: number, bitmap: Uint8Array | null, l0: Uint16Array | null, accs: LevelAccumulator[], alternating: boolean,
+        nx: number,
+        ny: number,
+        bitmap: Uint8Array | null,
+        l0: Uint16Array | null,
+        accs: LevelAccumulator[],
+        alternating: boolean,
         validMax: number,
     ) {
         this.nx = nx;
@@ -280,7 +300,10 @@ class LevelWriter {
     value(v: number): void {
         this.skipAbsent();
         if (this.gi >= this.total) return;
-        if (v > this.validMax) { this.missingHere(); return; }
+        if (v > this.validMax) {
+            this.missingHere();
+            return;
+        }
         const col = this.column();
         if (this.l0) this.l0[this.j * this.nx + col] = toHalf(v);
         for (const a of this.accs) a.add(col, v);
@@ -313,7 +336,7 @@ export interface PackedField {
 }
 
 /** Reads the packed values of one message and hands each to the sink, in scan order. */
-type PackingDecoder =(field: PackedField, sink: ValueSink) => void;
+type PackingDecoder = (field: PackedField, sink: ValueSink) => void;
 
 const PACKINGS = new Map<number, PackingDecoder>();
 
@@ -357,13 +380,19 @@ function parseMessage(msg: Uint8Array): ParsedMessage {
         if (len < 5 || len > msg.length - p) throw new Error('Invalid GRIB2 section length');
         const s = msg.subarray(p, p + len);
         switch (s[4]) {
-            case 3: grid = parseGrid(s); break;
-            case 5: s5 = s; break;
+            case 3:
+                grid = parseGrid(s);
+                break;
+            case 5:
+                s5 = s;
+                break;
             case 6:
                 if (s[5] === 0) bitmap = s.subarray(6);
                 else if (s[5] !== 255) throw new Error(`Bitmap indicator ${s[5]} not supported`);
                 break;
-            case 7: s7 = s.subarray(5); break;
+            case 7:
+                s7 = s.subarray(5);
+                break;
         }
         p += len;
     }
@@ -384,17 +413,28 @@ export function readGrib2Grid(msg: Uint8Array): ModelGrid {
  * no valid source cell is NaN.
  */
 
-export function decodeGrib2ToLevels(msg: Uint8Array, opts: DecodeLevelsOptions): {
+export function decodeGrib2ToLevels(
+    msg: Uint8Array,
+    opts: DecodeLevelsOptions,
+): {
     grid: ModelGrid;
     levels: LevelGrid[];
 };
 /** @internal */
 
-export function decodeGrib2ToLevels(msg: Uint8Array, opts: DecodeLevelsOptions, memory?: Memory): {
+export function decodeGrib2ToLevels(
+    msg: Uint8Array,
+    opts: DecodeLevelsOptions,
+    memory?: Memory,
+): {
     grid: ModelGrid;
     levels: LevelGrid[];
 };
-export function decodeGrib2ToLevels(msg: Uint8Array, opts: DecodeLevelsOptions, memory = new Memory()): { grid: ModelGrid; levels: LevelGrid[] } {
+export function decodeGrib2ToLevels(
+    msg: Uint8Array,
+    opts: DecodeLevelsOptions,
+    memory = new Memory(),
+): { grid: ModelGrid; levels: LevelGrid[] } {
     const { grid, s5, s7, bitmap } = parseMessage(msg);
     const factors = opts.factors;
     const reducer = opts.reducer ?? 'mean';
@@ -416,7 +456,15 @@ export function decodeGrib2ToLevels(msg: Uint8Array, opts: DecodeLevelsOptions, 
     const base = R * dscale + (transform.offset ?? 0);
     const step = 2 ** E * dscale;
 
-    const w = new LevelWriter(grid.nx, grid.ny, bitmap, l0, accs, (grid.scanMode & SCAN_ALTERNATING_ROWS) !== 0, opts.validMax ?? Infinity);
+    const w = new LevelWriter(
+        grid.nx,
+        grid.ny,
+        bitmap,
+        l0,
+        accs,
+        (grid.scanMode & SCAN_ALTERNATING_ROWS) !== 0,
+        opts.validMax ?? Infinity,
+    );
     if (template === 0) {
         for (let i = 0, pos = 0; i < nValues; i++, pos += nbits) w.value(base + bits(s7, pos, nbits) * step);
     } else if (template === 2 || template === 3) {
@@ -424,8 +472,13 @@ export function decodeGrib2ToLevels(msg: Uint8Array, opts: DecodeLevelsOptions, 
     } else {
         const packing = PACKINGS.get(template);
         if (!packing) throw new Error(`Data representation template 5.${template} not supported`);
-        if (memory.limitBytes !== Infinity && !isAuditedPacking(packing)) throw new Error('Custom packing is not supported by the budgeted decoder');
-        (packing as (field: PackedField, sink: ValueSink, memory: Memory) => void)({ s5, s7, nValues, nbits, base, step }, w, memory);
+        if (memory.limitBytes !== Infinity && !isAuditedPacking(packing))
+            throw new Error('Custom packing is not supported by the budgeted decoder');
+        (packing as (field: PackedField, sink: ValueSink, memory: Memory) => void)(
+            { s5, s7, nValues, nbits, base, step },
+            w,
+            memory,
+        );
     }
     w.finish();
 
@@ -438,24 +491,42 @@ export function decodeGrib2ToLevels(msg: Uint8Array, opts: DecodeLevelsOptions, 
 
 /** Decode one message at full resolution into float16 bits (level 0 of `decodeGrib2ToLevels`). */
 
-export function decodeGrib2ToHalf(msg: Uint8Array, transform?: ValueTransform): {
+export function decodeGrib2ToHalf(
+    msg: Uint8Array,
+    transform?: ValueTransform,
+): {
     grid: ModelGrid;
     data: Uint16Array;
 };
 /** @internal */
 
-export function decodeGrib2ToHalf(msg: Uint8Array, transform?: ValueTransform, memory?: Memory): {
+export function decodeGrib2ToHalf(
+    msg: Uint8Array,
+    transform?: ValueTransform,
+    memory?: Memory,
+): {
     grid: ModelGrid;
     data: Uint16Array;
 };
-export function decodeGrib2ToHalf(msg: Uint8Array, transform: ValueTransform = {}, memory = new Memory()): { grid: ModelGrid; data: Uint16Array } {
+export function decodeGrib2ToHalf(
+    msg: Uint8Array,
+    transform: ValueTransform = {},
+    memory = new Memory(),
+): { grid: ModelGrid; data: Uint16Array } {
     const { grid, levels } = decodeGrib2ToLevels(msg, { transform, levels: [0], factors: [1] }, memory);
     return { grid, data: levels[0].data };
 }
 
 function decodeComplex(
-    s5: Uint8Array, d: Uint8Array, spatial: boolean, refBits: number, nValues: number,
-    base: number, step: number, w: LevelWriter, memory: Memory,
+    s5: Uint8Array,
+    d: Uint8Array,
+    spatial: boolean,
+    refBits: number,
+    nValues: number,
+    base: number,
+    step: number,
+    w: LevelWriter,
+    memory: Memory,
 ): void {
     const missMgmt = s5[22];
     const ng = u32(s5, 31);
@@ -469,12 +540,19 @@ function decodeComplex(
     const extraOctets = spatial ? s5[48] : 0;
 
     let pos = 0;
-    let ival1 = 0, ival2 = 0, minsd = 0;
+    let ival1 = 0,
+        ival2 = 0,
+        minsd = 0;
     if (spatial) {
         if (order !== 1 && order !== 2) throw new Error(`Spatial differencing order ${order} not supported`);
-        ival1 = signedOctets(d, pos, extraOctets); pos += extraOctets * 8;
-        if (order === 2) { ival2 = signedOctets(d, pos, extraOctets); pos += extraOctets * 8; }
-        minsd = signedOctets(d, pos, extraOctets); pos += extraOctets * 8;
+        ival1 = signedOctets(d, pos, extraOctets);
+        pos += extraOctets * 8;
+        if (order === 2) {
+            ival2 = signedOctets(d, pos, extraOctets);
+            pos += extraOctets * 8;
+        }
+        minsd = signedOctets(d, pos, extraOctets);
+        pos += extraOctets * 8;
     }
 
     // Per-group descriptors; each block is padded to a whole octet.
@@ -491,8 +569,9 @@ function decodeComplex(
 
     const refMiss1 = 2 ** refBits - 1;
     const refMiss2 = refMiss1 - 1;
-    let n = 0;          // non-missing values seen (spatial differencing skips missing points)
-    let prev = 0, prev2 = 0;
+    let n = 0; // non-missing values seen (spatial differencing skips missing points)
+    let prev = 0,
+        prev2 = 0;
     let emitted = 0;
 
     for (let k = 0; k < ng && emitted < nValues; k++) {
@@ -504,12 +583,18 @@ function decodeComplex(
         for (let j = 0; j < len; j++, emitted++) {
             let x: number;
             if (width === 0) {
-                if (missMgmt !== 0 && (ref === refMiss1 || (missMgmt === 2 && ref === refMiss2))) { w.missing(); continue; }
+                if (missMgmt !== 0 && (ref === refMiss1 || (missMgmt === 2 && ref === refMiss2))) {
+                    w.missing();
+                    continue;
+                }
                 x = ref;
             } else {
                 const raw = bits(d, pos, width);
                 pos += width;
-                if (missMgmt !== 0 && (raw === miss1 || (missMgmt === 2 && raw === miss2))) { w.missing(); continue; }
+                if (missMgmt !== 0 && (raw === miss1 || (missMgmt === 2 && raw === miss2))) {
+                    w.missing();
+                    continue;
+                }
                 x = ref + raw;
             }
             let v: number;

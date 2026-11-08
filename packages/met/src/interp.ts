@@ -12,7 +12,17 @@ import { SOUNDING_LAYER_STEP_HPA } from './constants.ts';
 export type ColumnField = 'p' | 'z' | 't' | 'td' | 'u' | 'v';
 
 const fieldOf = (col: Column, field: ColumnField): Float32Array =>
-    field === 'p' ? col.p : field === 'z' ? col.z : field === 't' ? col.t : field === 'td' ? col.td : field === 'u' ? col.u : col.v;
+    field === 'p'
+        ? col.p
+        : field === 'z'
+          ? col.z
+          : field === 't'
+            ? col.t
+            : field === 'td'
+              ? col.td
+              : field === 'u'
+                ? col.u
+                : col.v;
 
 /** Linear interpolation of `field` in log-p. Outside the profile -> NaN. `pxy` arrays are descending. */
 export function interpolateLogP(ps: Float32Array, field: Float32Array, pHpa: number): number {
@@ -94,7 +104,10 @@ export function levelOfTemperature(col: Column, tC: number): number {
         const s = Math.sign(col.t[i] - tC);
         if (s === 0) return col.p[i];
         if (s !== sign && sign !== 0) {
-            const lp = Math.log10(col.p[i - 1]) + (tC - col.t[i - 1]) / (col.t[i] - col.t[i - 1]) * (Math.log10(col.p[i]) - Math.log10(col.p[i - 1]));
+            const lp =
+                Math.log10(col.p[i - 1]) +
+                ((tC - col.t[i - 1]) / (col.t[i] - col.t[i - 1])) *
+                    (Math.log10(col.p[i]) - Math.log10(col.p[i - 1]));
             return 10 ** lp;
         }
         sign = s;
@@ -114,7 +127,13 @@ export interface LayerMeanOptions {
  * fixed pressure grid, endpoints included via interpolation. NaN dots are skipped (no throw); an
  * all-missing layer is NaN.
  */
-export function layerMean(col: Column, field: ColumnField, pBotHpa: number, pTopHpa: number, options: LayerMeanOptions = {}): number {
+export function layerMean(
+    col: Column,
+    field: ColumnField,
+    pBotHpa: number,
+    pTopHpa: number,
+    options: LayerMeanOptions = {},
+): number {
     const step = options.stepHpa ?? SOUNDING_LAYER_STEP_HPA;
     if (pBotHpa <= pTopHpa || !Number.isFinite(pBotHpa) || !Number.isFinite(pTopHpa)) return NaN;
     const values = fieldOf(col, field);
@@ -137,7 +156,13 @@ export function layerMean(col: Column, field: ColumnField, pBotHpa: number, pTop
  * endpoints count once and every level in between counts twice. Applied to a per-level value the
  * caller computes; NaN levels are skipped. Undefined (empty layer) -> NaN.
  */
-export function exactLayerMean(col: Column, pBotHpa: number, pTopHpa: number, valueAtLevel: (i: number) => number, endpoint: (pHpa: number) => number): number {
+export function exactLayerMean(
+    col: Column,
+    pBotHpa: number,
+    pTopHpa: number,
+    valueAtLevel: (i: number) => number,
+    endpoint: (pHpa: number) => number,
+): number {
     if (pBotHpa <= pTopHpa || !Number.isFinite(pBotHpa) || !Number.isFinite(pTopHpa)) return NaN;
     let sum = endpoint(pBotHpa) + endpoint(pTopHpa);
     let count = 2;
@@ -153,4 +178,8 @@ export function exactLayerMean(col: Column, pBotHpa: number, pTopHpa: number, va
 
 /** Strictly-decreasing duplicated-pressure guard for the mean helpers above. */
 export const isLayerValid = (col: Column, pBotHpa: number, pTopHpa: number): boolean =>
-    Number.isFinite(pBotHpa) && Number.isFinite(pTopHpa) && pBotHpa > pTopHpa && pBotHpa <= col.p[0] && pTopHpa >= col.p[col.p.length - 1];
+    Number.isFinite(pBotHpa) &&
+    Number.isFinite(pTopHpa) &&
+    pBotHpa > pTopHpa &&
+    pBotHpa <= col.p[0] &&
+    pTopHpa >= col.p[col.p.length - 1];

@@ -1,92 +1,101 @@
 {
-  "name": "@edgewarn/web-utils",
-  "version": "2026.11.8-alpha.1",
-  "type": "module",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yuchen-wei3667/edgewarn-web-utils.git"
-  },
-  "sideEffects": false,
-  "engines": {
-    "node": ">=22.18"
-  },
-  "files": [
-    "packages/core/dist",
-    "packages/decoders/dist",
-    "packages/core/README.md",
-    "packages/decoders/README.md",
-    "LICENSE",
-    "NOTICE",
-    "README.md",
-    "CHANGELOG.md",
-    "packages/alerts/dist",
-    "packages/alerts/README.md",
-    "packages/met/dist",
-    "packages/met/README.md"
-  ],
-  "exports": {
-    ".": {
-      "types": "./packages/decoders/dist/index.d.ts",
-      "default": "./packages/decoders/dist/index.js"
+    "name": "@edgewarn/web-utils",
+    "version": "2026.11.8-alpha.1",
+    "type": "module",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/yuchen-wei3667/edgewarn-web-utils.git"
     },
-    "./geo": {
-      "types": "./packages/core/dist/geo/index.d.ts",
-      "default": "./packages/core/dist/geo/index.js"
+    "sideEffects": false,
+    "engines": {
+        "node": ">=22.18"
     },
-    "./time": {
-      "types": "./packages/core/dist/time/index.d.ts",
-      "default": "./packages/core/dist/time/index.js"
+    "files": [
+        "packages/core/dist",
+        "packages/decoders/dist",
+        "packages/core/README.md",
+        "packages/decoders/README.md",
+        "LICENSE",
+        "NOTICE",
+        "README.md",
+        "CHANGELOG.md",
+        "packages/alerts/dist",
+        "packages/alerts/README.md",
+        "packages/met/dist",
+        "packages/met/README.md"
+    ],
+    "exports": {
+        ".": {
+            "types": "./packages/decoders/dist/index.d.ts",
+            "default": "./packages/decoders/dist/index.js"
+        },
+        "./geo": {
+            "types": "./packages/core/dist/geo/index.d.ts",
+            "default": "./packages/core/dist/geo/index.js"
+        },
+        "./time": {
+            "types": "./packages/core/dist/time/index.d.ts",
+            "default": "./packages/core/dist/time/index.js"
+        },
+        "./net": {
+            "types": "./packages/core/dist/net/index.d.ts",
+            "default": "./packages/core/dist/net/index.js"
+        },
+        "./grib2": {
+            "types": "./packages/decoders/dist/grib2/index.d.ts",
+            "default": "./packages/decoders/dist/grib2/index.js"
+        },
+        "./nexrad": {
+            "types": "./packages/decoders/dist/nexrad/index.d.ts",
+            "default": "./packages/decoders/dist/nexrad/index.js"
+        },
+        "./goes": {
+            "types": "./packages/decoders/dist/goes/index.d.ts",
+            "default": "./packages/decoders/dist/goes/index.js"
+        },
+        "./package.json": "./package.json",
+        "./alerts": {
+            "types": "./packages/alerts/dist/index.d.ts",
+            "default": "./packages/alerts/dist/index.js"
+        },
+        "./alerts/nws": {
+            "types": "./packages/alerts/dist/nws/index.d.ts",
+            "default": "./packages/alerts/dist/nws/index.js"
+        },
+        "./met": {
+            "types": "./packages/met/dist/index.d.ts",
+            "default": "./packages/met/dist/index.js"
+        }
     },
-    "./net": {
-      "types": "./packages/core/dist/net/index.d.ts",
-      "default": "./packages/core/dist/net/index.js"
+    "scripts": {
+        "build": "tsc -b",
+        "test": "npm run build && node --test \"packages/*/test/**/*.test.mjs\"",
+        "test:coverage": "npm run build && node --experimental-test-coverage --test-coverage-lines=90 --test-coverage-branches=80 --test-coverage-functions=88 --test \"packages/*/test/**/*.test.mjs\"",
+        "test:time": "node scripts/test-time.mjs",
+        "test:types": "node scripts/check-test-types.mjs",
+        "lint": "eslint .",
+        "format": "prettier --write \"packages/*/src/**/*.ts\" \"scripts/**/*.mjs\" package.json tsconfig*.json",
+        "format:check": "prettier --check \"packages/*/src/**/*.ts\" \"scripts/**/*.mjs\" package.json tsconfig*.json",
+        "lint:pack": "publint --pack=false",
+        "bump": "node scripts/bump-version.mjs",
+        "release": "npm publish",
+        "check:package": "bash scripts/verify-package.sh",
+        "prepack": "npm run build"
     },
-    "./grib2": {
-      "types": "./packages/decoders/dist/grib2/index.d.ts",
-      "default": "./packages/decoders/dist/grib2/index.js"
+    "dependencies": {
+        "@types/geojson": "7946.0.16"
     },
-    "./nexrad": {
-      "types": "./packages/decoders/dist/nexrad/index.d.ts",
-      "default": "./packages/decoders/dist/nexrad/index.js"
+    "devDependencies": {
+        "@types/node": "^26.6.6",
+        "eslint": "^10.14.0",
+        "prettier": "^3.9.10",
+        "publint": "^0.3",
+        "typescript": "5.9.3",
+        "typescript-eslint": "^8.72.1"
     },
-    "./goes": {
-      "types": "./packages/decoders/dist/goes/index.d.ts",
-      "default": "./packages/decoders/dist/goes/index.js"
-    },
-    "./package.json": "./package.json",
-    "./alerts": {
-      "types": "./packages/alerts/dist/index.d.ts",
-      "default": "./packages/alerts/dist/index.js"
-    },
-    "./alerts/nws": {
-      "types": "./packages/alerts/dist/nws/index.d.ts",
-      "default": "./packages/alerts/dist/nws/index.js"
-    },
-    "./met": {
-      "types": "./packages/met/dist/index.d.ts",
-      "default": "./packages/met/dist/index.js"
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
     }
-  },
-  "scripts": {
-    "build": "tsc -b",
-    "test": "npm run build && node --test packages/core/test/*.test.mjs packages/decoders/test/*.test.mjs packages/decoders/test/models/*.test.mjs packages/alerts/test/*.test.mjs packages/met/test/*.test.mjs",
-    "lint:pack": "publint --pack=false",
-    "bump": "node scripts/bump-version.mjs",
-    "release": "npm publish",
-    "check:package": "bash scripts/verify-package.sh",
-    "test:time": "TZ=UTC node --test packages/core/test/time-lock.test.mjs packages/core/test/timestamp.test.mjs packages/alerts/test/alert-format.test.mjs && TZ=America/New_York node --test packages/core/test/time-lock.test.mjs packages/core/test/timestamp.test.mjs packages/alerts/test/alert-format.test.mjs",
-    "prepack": "npm run build"
-  },
-  "dependencies": {
-    "@types/geojson": "7946.0.16"
-  },
-  "devDependencies": {
-    "typescript": "5.9.3",
-    "publint": "^0.3"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  }
 }
