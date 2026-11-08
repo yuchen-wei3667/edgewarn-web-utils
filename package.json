@@ -19,6 +19,7 @@
     "LICENSE",
     "NOTICE",
     "README.md",
+    "CHANGELOG.md",
     "packages/alerts/dist",
     "packages/alerts/README.md",
     "packages/met/dist",
@@ -71,7 +72,7 @@
     "build": "tsc -b",
     "test": "npm run build && node --test packages/core/test/*.test.mjs packages/decoders/test/*.test.mjs packages/decoders/test/models/*.test.mjs packages/alerts/test/*.test.mjs packages/met/test/*.test.mjs",
     "lint:pack": "publint --pack=false",
-    "changeset": "changeset",
+    "bump": "node scripts/bump-version.mjs",
     "release": "npm publish",
     "check:package": "bash scripts/verify-package.sh",
     "test:time": "TZ=UTC node --test packages/core/test/time-lock.test.mjs packages/core/test/timestamp.test.mjs packages/alerts/test/alert-format.test.mjs && TZ=America/New_York node --test packages/core/test/time-lock.test.mjs packages/core/test/timestamp.test.mjs packages/alerts/test/alert-format.test.mjs",
@@ -82,8 +83,7 @@
   },
   "devDependencies": {
     "typescript": "5.9.3",
-    "publint": "^0.3",
-    "@changesets/cli": "^2"
+    "publint": "^0.3"
   },
   "publishConfig": {
     "access": "public",
