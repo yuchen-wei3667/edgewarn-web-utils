@@ -78,8 +78,3 @@ Transport/coercion/feed URL helpers are private. The feed policy accepts absolut
 HTTP(S) URLs on noaa.gov/weather.gov and their subdomains, upgrades HTTP, and
 retains credentials and ports. It checks neither DNS nor redirects and is not
 automatically applied to client URLs. Callers own additional server request policy.
-
-Source was copied from consumer-app commit
-`revision omitted`, then adapted for imports, explicit
-exports, caller configuration/cache injection and NWS User-Agent configuration.
-See `validation metadata` and repository extraction notes for provenance.

@@ -61,8 +61,7 @@ Compatibility rules retained from the Website:
   the current clock explicitly.
 
 Cache state, UI, audio, browser storage access, polling and zone matching remain
-in the Website. No implementation deep paths are exported. Copy provenance is recorded in
-[validation metadata](validation metadata); tests retain the frozen Website
+in the Website. No implementation deep paths are exported. Tests retain the
 behavior fixtures.
 
 P1 also exports `alertMatchesFilter`, `alertEASKey`,

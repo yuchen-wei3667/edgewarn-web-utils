@@ -1,8 +1,3 @@
-Decoder implementations copied from consumer-app at
-revision omitted, copyright 2026 yuchen-wei3667,
-under the MIT license retained in LICENSE. Original comments and algorithm
-references are retained. The copied source files carry no separate third-party
-license headers. JPEG 2000, CCSDS, BZip2 and DEFLATE implementations are the
-Website's TypeScript code; this package does not vendor OpenJPEG, libaec, ecCodes,
-Python/Pillow or GPL Open-Meteo libraries. Fixtures retain their NOAA/ECMWF origin
-and independent ecCodes/OpenJPEG reference descriptions in test sources.
+Copyright 2026 yuchen-wei3667. This package is distributed under the MIT license
+in LICENSE. Third-party algorithm references and fixture attribution remain in
+their respective source and test files.

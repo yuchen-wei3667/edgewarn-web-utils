@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import * as alerts from '@edgewarn/web-utils/alerts';
 import { evaluate } from './helpers/evaluate.mjs';
 const fixture = name => JSON.parse(readFileSync(new URL(`fixtures/${name}.json`,import.meta.url),'utf8'));
-test('every P0 export agrees with outputs captured from the pinned Website', () => {
+test('every P0 export agrees with the locked behavior fixtures', () => {
   assert.deepEqual(evaluate(alerts,fixture('alerts')), fixture('expected'));
 });
 test('point matching keeps expired, future, cancelled and test alerts; geometry and severity alone gate matches (Q3/Q4)', () => {

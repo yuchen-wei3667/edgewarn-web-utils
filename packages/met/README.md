@@ -1,7 +1,6 @@
 # Sounding science (`@edgewarn/web-utils/met`)
 
-Portable synchronous meteorological analysis, copied from consumer-app
-`revision omitted`. No runtime dependencies, network,
+Portable synchronous meteorological analysis. No runtime dependencies, network,
 storage or DOM. Usable in Node, browsers, workers and service workers.
 
 ```ts

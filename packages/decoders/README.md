@@ -1,7 +1,7 @@
 # @edgewarn/web-utils: decoders
 
-Portable ESM weather byte decoders, copied from consumer-app and adapted for
-Node, browsers and workers. No runtime code dependencies, decoder network clients, caches,
+Portable ESM weather byte decoders for Node, browsers and workers. No runtime
+code dependencies, decoder network clients, caches,
 workers, scheduling or rendering. Node 22.18+ and native Web Streams,
 `DecompressionStream`, `AbortSignal`, `DOMException` and typed arrays are required.
 
@@ -163,5 +163,5 @@ results: discard them after failure. Low-level format APIs retain their unlimite
 compatibility behavior and decoder-local bounds. Custom registered packings work
 through those APIs; the budgeted instance refuses unaudited implementations.
 
-See the repository's decoder extraction notes for source provenance, validation
-and pending Website/browser release gates. No Website adoption or publication is included.
+See the implementation notes for validation and pending browser release gates.
+No external adoption or publication is included.
