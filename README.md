@@ -45,9 +45,15 @@ boundaries. They are shipped together and cannot be published independently.
 Format entry points remain isolated; the root decoder loads formats on demand.
 Private implementation paths are not exported.
 
+This is one published package. Source files in `alerts` import `core` through the
+package's own `/net` and `/geo` exports (self-reference); `tsc -b` builds `core`
+first through project references. The root `.` export is the decoder entry and
+will stay that way; other modules use subpaths. Declaration maps are not shipped
+because `src/` is not in the tarball.
+
 Existing imports from `@edgewarn/core` or `@edgewarn/decoders` should switch to
 `@edgewarn/web-utils` with the same subpath. The former decoder root import maps
-to the new package root. Existing published packages are not changed or removed.
+to the new package root. The legacy `@edgewarn/core` and `@edgewarn/decoders` packages are unchanged on npm; deprecate them with `npm deprecate` once consumers have moved.
 
 ```sh
 npm ci --ignore-scripts

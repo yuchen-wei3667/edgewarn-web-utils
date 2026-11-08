@@ -7,6 +7,7 @@ export interface DismissedAlert {
 }
 const STORAGE_KEY = 'edgewarn_dismissed_alerts';
 
+/** @experimental Presentation policy; behavior may change in any release. */
 export function getDismissedAlerts(
     storage: DismissalStorage,
     retentionMs: number,
@@ -29,6 +30,7 @@ export function getDismissedAlerts(
     }
 }
 
+/** @experimental Presentation policy; behavior may change in any release. */
 export function saveDismissedAlert(
     id: string,
     expires: string,

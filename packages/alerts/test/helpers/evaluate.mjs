@@ -1,4 +1,4 @@
-// Shared with the Website parity test. Evaluate every P0 root export on fixed inputs.
+// Evaluate every P0 root export on fixed inputs.
 export function evaluate(a, fixtures) {
   const { alerts, ids, now } = fixtures;
   const names = ['alertPriorityRank', 'hasEASActivation', 'isSevereThunderstormWarning',

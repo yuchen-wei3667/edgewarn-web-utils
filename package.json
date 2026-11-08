@@ -70,7 +70,7 @@
     },
     "scripts": {
         "build": "tsc -b",
-        "test": "npm run build && node --test \"packages/*/test/**/*.test.mjs\"",
+        "test": "npm run build && node --test \"packages/*/test/**/*.test.mjs\" && node scripts/api-surface.mjs",
         "test:coverage": "npm run build && node --experimental-test-coverage --test-coverage-lines=90 --test-coverage-branches=80 --test-coverage-functions=88 --test \"packages/*/test/**/*.test.mjs\"",
         "test:time": "node scripts/test-time.mjs",
         "test:types": "node scripts/check-test-types.mjs",
@@ -81,10 +81,12 @@
         "bump": "node scripts/bump-version.mjs",
         "release": "npm publish",
         "check:package": "bash scripts/verify-package.sh",
-        "prepack": "npm run build"
+        "prepack": "npm run build",
+        "api:check": "node scripts/api-surface.mjs",
+        "api:update": "npm run build && node scripts/api-surface.mjs --update"
     },
     "dependencies": {
-        "@types/geojson": "7946.0.16"
+        "@types/geojson": "^7946.0.16"
     },
     "devDependencies": {
         "@types/node": "^26.6.6",

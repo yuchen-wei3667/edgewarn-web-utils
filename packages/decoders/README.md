@@ -45,10 +45,10 @@ await decodeGrib2(body, { mode: 'mrms', sink, signal });
 Model decoding is synchronous, with half-float bits in `Uint16Array`, NaNs,
 bitmaps, scan direction, alternating rows, affine transforms and mean/max/mode
 reduction. Only requested levels are allocated. Supported grids are Lambert,
-regular/rotated lat/lon, polar stereographic and Mercator within the original
-Website subsets. Built-in packings are 0, 2 and 3. Optional 40 supports the
-existing single-tile, single-component reversible JPEG 2000 profile; optional 42
-supports the existing unsigned, unrestricted CCSDS profile. Other profiles throw.
+regular/rotated lat/lon, polar stereographic and Mercator within the supported
+subsets. Built-in packings are 0, 2 and 3. Optional 40 supports the
+single-tile, single-component reversible JPEG 2000 profile; optional 42
+supports the unsigned, unrestricted CCSDS profile. Other profiles throw.
 `readGrib2Grid`, `decodeGrib2ToHalf` and `decodeGrib2ToLevels` retain their original
 contracts. Registration overwrites a previous decoder for that template.
 
@@ -67,8 +67,7 @@ permissive: callers must validate safe ranges before making network reads.
 Inventory strings/objects are outside the decoder instance's buffer allowance.
 
 The single GRIB2 entry point has no registration side effects and permits unused
-codec elimination, but does not preserve the Website's former separate addon
-chunks. The root dynamically loads only the selected format.
+codec elimination, and does not ship separate addon chunks. The root dynamically loads only the selected format.
 
 ## NEXRAD
 
@@ -127,8 +126,7 @@ limits and concurrency retain their existing contracts. `readRows` streams
 borrowed rows in order from caller-supplied range iterators. `bandRange`,
 `gridInfo`, `prepare`, metadata readers and `release` remain available.
 
-Metadata uses a native Map per file, lasting as long as that `AbiFile`. For the
-Website's existing expiry policy, inject its Map subclass:
+Metadata uses a native Map per file, lasting as long as that `AbiFile`. To apply an expiry policy, inject a Map subclass:
 
 ```ts
 await AbiFile.open(source, signal, {

@@ -1,5 +1,6 @@
 import type { NWSAlertFeature } from '@edgewarn/web-utils/net';
 
+/** @experimental Presentation policy; behavior may change in any release. */
 export function isDashboardSignificantAlert(alert: NWSAlertFeature) {
     const event = alert.properties.event.trim();
     if (event.toLowerCase() === 'strong thunderstorm') return false;
@@ -20,6 +21,7 @@ export function isDashboardSignificantAlert(alert: NWSAlertFeature) {
     return /^marine weather statement$|^special marine warning$/i.test(event);
 }
 
+/** @experimental Presentation policy; behavior may change in any release. */
 export function isDashboardTopBannerAlert(alert: NWSAlertFeature) {
     const event = alert.properties.event.trim();
     if (

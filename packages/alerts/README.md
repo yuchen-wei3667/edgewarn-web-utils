@@ -1,6 +1,6 @@
 # Alert evaluation
 
-`@edgewarn/web-utils/alerts` provides the Website's portable alert classification,
+`@edgewarn/web-utils/alerts` provides portable alert classification,
 priority, location matching, geometry normalization and formatting functions.
 `@edgewarn/web-utils/alerts/nws` verifies an alert against NWS text products.
 Both entry points are safe to import without a browser or an HTTP request.
@@ -32,6 +32,16 @@ The P0 API comprises these 32 runtime names:
 | SPC | `getSPCWatchTypeFromEvent`, `extractSpcWatchNumber` |
 | Formatting | `formatAlertTime`, `formatAlertTimeUntil`, `formatNwsAlertText` |
 
+### Unstable presentation exports
+
+These exports encode product UI decisions, not alert classification. They are
+tagged `@experimental` and may change in any release, including wording, colors
+and selection rules: `isDashboardSignificantAlert`, `isDashboardTopBannerAlert`,
+`isFlashFloodEmergency`, `hazardParts`, `hazardLine`, `warningCopy`,
+`heroTitleForAlert`, `getEventColors`, `selectAlertsToSound`,
+`getDismissedAlerts` and `saveDismissedAlert`. Pin the package version if you
+depend on them, or copy the logic into your application.
+
 Public types are `NWSAlertProperties`, `NWSAlertFeature`, `NWSData` (owned by
 `/net`), `SPCWatchType`, `SPCWatchProbabilities`, `SPCWatchAttributes`,
 `SPCWatchSourceUrls`, `SPCWatchDetails`, `LocationAlert`,
@@ -45,7 +55,7 @@ tone (`currentIssuanceRequestsEAS`). Follow-up issuances do not replay the origi
 tone, and cancellations never request playback. Product detail URLs must belong
 to `https://api.weather.gov`. Framework caching belongs in the caller's fetcher.
 
-Compatibility rules retained from the Website:
+Compatibility rules:
 
 - The three ID functions deliberately normalize prefixes differently.
 - Point matching uses geometry and severity, ignoring expiry, status and message
@@ -61,7 +71,7 @@ Compatibility rules retained from the Website:
   the current clock explicitly.
 
 Cache state, UI, audio, browser storage access, polling and zone matching remain
-in the Website. No implementation deep paths are exported. Tests retain the
+in the caller. No implementation deep paths are exported. Tests retain the
 behavior fixtures.
 
 P1 also exports `alertMatchesFilter`, `alertEASKey`,

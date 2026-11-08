@@ -48,3 +48,10 @@ omitted"`, and `fixtures.mjs` referenced a `src/utils` layout from another
 repo — dead weight that looked like it was measuring something. If decoder
 performance tracking is needed again, add a small wired-up script that
 measures `dist/` output and records the git commit.
+
+## Toolchain notes
+
+- TypeScript is pinned at 5.9.3. TypeScript 7.0.2 compiles the project but removes
+  the JS compiler API, which breaks `typescript-eslint` and the source-boundary
+  tests (`import ts from 'typescript'`). Upgrade only after both move off that API.
+- `@changesets/cli` is no longer a dependency; releases use `npm run bump`.

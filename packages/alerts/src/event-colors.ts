@@ -100,6 +100,7 @@ const EVENT_COLORS: Record<string, { bg: string; border: string; dot: string }> 
  * Get color scheme for NWS alerts based on event type and severity.
  * Uses per-event lookup first, then falls back to severity colors.
  */
+/** @experimental Presentation policy; behavior may change in any release. */
 export const getEventColors = (event: string, severity: string) => {
     // Exact match first
     if (EVENT_COLORS[event]) {

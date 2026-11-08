@@ -70,7 +70,7 @@ test('EAS eligibility excludes special statements and keys by official ID plus s
   assert.equal(isEASVerificationCandidate(feature('Dense Fog Advisory')),false);
 });
 
-test('warning copy, parsed hazards and event colors retain Website wording and fallbacks', () => {
+test('warning copy, parsed hazards and event colors retain wording and fallbacks', () => {
   const flood = feature('Flash Flood Warning',{description:'FLASH FLOOD EMERGENCY'});
   assert.equal(isFlashFloodEmergency(flood),true);
   assert.equal(warningCopy(flood).title,'Flash flood emergency');

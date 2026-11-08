@@ -42,7 +42,7 @@ for fewer than two pressure levels or a height/pressure length mismatch.
 Analysis uses a module-owned, 32-entry FIFO memo cache keyed by time, options and
 hashes of the six array bit patterns. Equal content returns the **same object**;
 treat results and nested arrays as read-only. Hash collisions are not checked for
-equality (the existing Website behavior). Subarray byte offsets are supported.
+equality (retained behavior). Subarray byte offsets are supported.
 There is no public cache reset or configurable capacity.
 
 SHARPpy Wobus polynomials, 5 hPa lift / 10 hPa screening meshes, the 300 hPa
@@ -51,8 +51,7 @@ No numerical recalibration is part of this extraction.
 
 ## API
 
-60 runtime functions and 15 types, plus four constants required by existing
-Website consumers (D-M2): `SOUNDING_RD` (287.04 J kg⁻¹ K⁻¹),
+60 runtime functions and 15 types, plus four public constants: `SOUNDING_RD` (287.04 J kg⁻¹ K⁻¹),
 `SOUNDING_GRAVITY` (9.80665 m s⁻²), `SOUNDING_KELVIN_OFFSET` (273.15), and
 `SOUNDING_CIN_LIMIT_HPA` (500). All other constants and deep imports are private.
 

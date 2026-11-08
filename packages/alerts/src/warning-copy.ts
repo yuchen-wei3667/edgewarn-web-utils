@@ -10,10 +10,12 @@ import { extractSevereHazards } from './severe-hazards.ts';
 
 const eventOf = (alert: NWSAlertFeature) => (alert.properties.event || '').trim();
 
+/** @experimental Presentation policy; behavior may change in any release. */
 export function isFlashFloodEmergency(alert: NWSAlertFeature): boolean {
     return /flash flood emergency/i.test(tornadoAlertText(alert));
 }
 
+/** @experimental Presentation policy; behavior may change in any release. */
 export function hazardParts(alert: NWSAlertFeature): string[] {
     const parsed = extractSevereHazards(alert);
     const parts: string[] = [];
@@ -32,6 +34,7 @@ const sentence = (text: string) =>
     `${text.charAt(0).toUpperCase()}${text.slice(1)}${/[.!?]$/.test(text) ? '' : '.'}`;
 
 /** "Up to 70 mph winds and 1.75 inch hail." */
+/** @experimental Presentation policy; behavior may change in any release. */
 export function hazardLine(alert: NWSAlertFeature): string | null {
     const parsed = extractSevereHazards(alert);
     const number = (value: string | null) => value?.match(/\d+(?:\.\d+)?/)?.[0] ?? null;
@@ -56,6 +59,7 @@ export interface WarningCopy {
 }
 
 /** Plain-language copy for an alert on the sign. Commands follow NWS safety guidance. */
+/** @experimental Presentation policy; behavior may change in any release. */
 export function warningCopy(alert: NWSAlertFeature): WarningCopy {
     const event = eventOf(alert) || 'Weather alert';
     const lower = event.toLowerCase();
@@ -116,6 +120,7 @@ export function warningCopy(alert: NWSAlertFeature): WarningCopy {
     return { title: event, band: null, lead: null, command: 'Move indoors and keep alerts on.' };
 }
 
+/** @experimental Presentation policy; behavior may change in any release. */
 export function heroTitleForAlert(alert: NWSAlertFeature): string {
     if (/^special weather statement$/i.test(alert.properties.event || ''))
         return 'Thunderstorm activity — stay weather aware';

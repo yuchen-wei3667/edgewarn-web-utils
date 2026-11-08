@@ -3,8 +3,6 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
-import * as alerts from '@edgewarn/web-utils/alerts';
-import * as nws from '@edgewarn/web-utils/alerts/nws';
 function files(dir) { return readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(new URL(e.name+'/',dir)):[new URL(e.name,dir)]); }
 test('alert source imports only core geometry, core wire types and GeoJSON types',()=>{
  for(const path of files(new URL('../src/',import.meta.url))) {
@@ -32,18 +30,5 @@ test('alert source imports only core geometry, core wire types and GeoJSON types
  }
 });
 test('public runtime names and deep import restrictions are explicit',async()=>{
- assert.deepEqual(Object.keys(alerts).sort(),[
-  'normalizeAlertId','normalizeOfficialAlertId','getFeatureAlertCacheKey','normalizeAlertGeometry',
-  'filterNwsAlerts','formatAlertTime','formatAlertTimeUntil','formatNwsAlertText',
-  'alertPriorityRank','compareAlertPriority','mostUrgentAlertForHour','hasEASActivation',
-  'isSevereThunderstormWarning','isFlashFloodWarning','alertsForPeriod','CRITICAL_EVENTS',
-  'isCriticalAlertEvent','isDashboardSignificantAlert','isDashboardTopBannerAlert','sortDashboardAlerts',
-  'hasEASActivationRequest','findAlertsAtPoint','mergeLocationAlerts','extractSevereHazards','isSevereTabAlert',
-  'getSPCWatchTypeFromEvent','extractSpcWatchNumber','tornadoAlertText','isTornadoWarning',
-  'isTornadoEmergency','isPdsTornado','isConfirmedTornado',
-  'alertMatchesFilter','alertEASKey','isEASVerificationCandidate','getDismissedAlerts','saveDismissedAlert','selectAlertsToSound',
-  'isFlashFloodEmergency','hazardParts','hazardLine','warningCopy','heroTitleForAlert','hazardTypeForAlert','getEventColors',
- ].sort());
- assert.deepEqual(Object.keys(nws).sort(),['checkNWSRawAlertForEAS','loadLocationAlerts','loadRegionAlerts','createEdgeWARNAlertSource','createNWSAlertSource','createWWAAlertSource'].sort());
  for(const specifier of ['@edgewarn/web-utils/alerts/alert-id','@edgewarn/web-utils/alerts/dist/index.js','@edgewarn/web-utils/packages/alerts/dist/index.js'])await assert.rejects(import(specifier),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 });

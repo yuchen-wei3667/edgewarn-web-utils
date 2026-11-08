@@ -9,9 +9,11 @@ cp packages/decoders/test/fixtures/goes/abi-mini.nc "$consumer_dir/"
 cp packages/decoders/test/fixtures/models/jpeg2000/rap-tmp2m-f06.grib2 "$consumer_dir/"
 cp packages/decoders/test/fixtures/models/t12z-f00-tmp2m.grib2 "$consumer_dir/"
 cp packages/decoders/test/fixtures/nexrad/{synthetic.ar2v,tvs-kemx.bin,level3-products.mjs} "$consumer_dir/"
+cp scripts/api-surface.mjs api-surface.json "$consumer_dir/"
 cd "$consumer_dir"
 printf '%s\n' '{"private":true,"type":"module"}' > package.json
 npm install --ignore-scripts --no-audit --no-fund ./*.tgz
+API_SURFACE_SNAPSHOT=./api-surface.json node api-surface.mjs
 cat > smoke.mjs <<'JS'
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -24,8 +26,6 @@ const geo = await import('@edgewarn/web-utils/geo');
 const time = await import('@edgewarn/web-utils/time');
 const net = await import('@edgewarn/web-utils/net');
 const met = await import('@edgewarn/web-utils/met');
-assert.equal(Object.keys(met).length, 64);
-assert.equal(Object.values(met).filter(value => typeof value === 'function').length, 60);
 const column = { validMs: 0, p: Float32Array.of(1000, 900), z: Float32Array.of(0, 1000), t: Float32Array.of(20, 10), td: Float32Array.of(10, 0), u: new Float32Array(2), v: new Float32Array(2), surface: {p:1000,z:0,t:20,td:10,u:0,v:0} };
 const cape = met.analyzeSounding(column).parcels.sb.cape;
 assert.ok(cape === null || Number.isFinite(cape));
@@ -33,7 +33,6 @@ assert.throws(() => met.analyzeSounding({...column, p: Float32Array.of(1000)}), 
 for (const path of ['met/thermo','met/constants']) await assert.rejects(import('@edgewarn/web-utils/' + path), {code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 const alerts = await import('@edgewarn/web-utils/alerts');
 const nwsAlerts = await import('@edgewarn/web-utils/alerts/nws');
-assert.equal(Object.keys(alerts).length,45);
 assert.deepEqual(Object.keys(nwsAlerts).sort(),['checkNWSRawAlertForEAS','loadLocationAlerts','loadRegionAlerts','createEdgeWARNAlertSource','createNWSAlertSource','createWWAAlertSource'].sort());
 assert.equal(alerts.normalizeOfficialAlertId('official:abc'),'abc');
 globalThis.fetch = async url => {
@@ -42,9 +41,6 @@ globalThis.fetch = async url => {
 };
 assert.deepEqual(await nwsAlerts.loadRegionAlerts({area:['TX']},{source:'nws'}),[]);
 globalThis.fetch = () => { throw Error('unexpected request'); };
-assert.equal(Object.keys(geo).length,14);
-assert.equal(Object.keys(time).length,8);
-assert.equal(Object.keys(net).length,11);
 assert.equal(geo.distanceMiles(0,0,0,0),0);
 assert.equal(time.msToTimestamp(0),'19700101-000000');
 for (const path of ['@edgewarn/web-utils/cache','@edgewarn/web-utils/net/normalize','@edgewarn/web-utils/alerts/alert-id','@edgewarn/web-utils/alerts/dist/index.js','@edgewarn/web-utils/packages/alerts/dist/index.js']) {
