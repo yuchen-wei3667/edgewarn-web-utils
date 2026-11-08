@@ -51,14 +51,14 @@ export class EdgeWARNAPI {
         return envelope.data;
     }
 
-    private async collection<T>(path: string, params: Record<string, string | number | undefined> = {}): Promise<T[]> {
+    private async collection<T>(path: string, params: Record<string, string | number | undefined> = {}, options?: RequestOptions): Promise<T[]> {
         const all: T[] = [];
         const seen = new Set<string>();
         let cursor: string | undefined;
         do {
             const envelope = await this.requestJson<{ data: T[]; meta?: { nextCursor?: string | null } }>(path, {
                 ...params, limit: this.config.pageSize, cursor,
-            });
+            }, options);
             if (!Array.isArray(envelope?.data)) throw new Error(`Invalid collection envelope from ${path}`);
             all.push(...envelope.data);
             const next = envelope.meta?.nextCursor ?? null;
@@ -75,8 +75,8 @@ export class EdgeWARNAPI {
      * Resolve an alert payload by ID, preferring the raw OID and falling back
      * to legacy filename-safe IDs for backward compatibility.
      */
-    private async fetchNWSAlertPayloadById(alertId: string): Promise<unknown> {
-        return await this.resource<unknown>(`${this.config.routes.alerts}/${encodeURIComponent(alertId)}`, this.config.alertQuery);
+    private async fetchNWSAlertPayloadById(alertId: string, options?: RequestOptions): Promise<unknown> {
+        return await this.resource<unknown>(`${this.config.routes.alerts}/${encodeURIComponent(alertId)}`, this.config.alertQuery, options);
     }
 
     /**
@@ -162,18 +162,18 @@ export class EdgeWARNAPI {
      * Fetch available NWS alert timestamps
      * @returns Array of timestamps
      */
-    async fetchNWSTimestamps(): Promise<string[]> {
-        return this.collection<string>(`${this.config.routes.alertSnapshots}`, this.config.alertQuery);
+    async fetchNWSTimestamps(options?: RequestOptions): Promise<string[]> {
+        return this.collection<string>(`${this.config.routes.alertSnapshots}`, this.config.alertQuery, options);
     }
 
     /**
      * Fetch the complete alert list for a specific NWS timestamp.
      * @param timestamp - Timestamp in YYYYMMDD-HHMMSS format
      */
-    async fetchNWSAlertList(timestamp: string): Promise<NWSData['data']['features']> {
+    async fetchNWSAlertList(timestamp: string, options?: RequestOptions): Promise<NWSData['data']['features']> {
         assertValidTimestamp(timestamp);
 
-        const snapshot = await this.resource<{ alerts?: unknown[] }>(`${this.config.routes.alertSnapshots}/${encodeURIComponent(timestamp)}`, this.config.alertQuery);
+        const snapshot = await this.resource<{ alerts?: unknown[] }>(`${this.config.routes.alertSnapshots}/${encodeURIComponent(timestamp)}`, this.config.alertQuery, options);
         const payload = snapshot.alerts ?? [];
 
         const rawItems = extractNWSAlertItems(payload);
@@ -187,7 +187,7 @@ export class EdgeWARNAPI {
      * Download a single NWS alert feature by alert ID.
      * @param alertId - Official alert OID
      */
-    async downloadNWSAlert(alertId: string): Promise<NWSData['data']['features'][number] | null> {
+    async downloadNWSAlert(alertId: string, options?: RequestOptions): Promise<NWSData['data']['features'][number] | null> {
         const normalizedAlertId = String(alertId).trim();
         if (!normalizedAlertId) {
             console.warn('[EdgeWARNAPI] downloadNWSAlert called with empty ID');
@@ -198,7 +198,7 @@ export class EdgeWARNAPI {
         // Always attempt to fetch fresh data for hydration since the API
         // returns full data when queried by ID (unlike the list endpoint)
         try {
-            const payload = await this.fetchNWSAlertPayloadById(normalizedAlertId);
+            const payload = await this.fetchNWSAlertPayloadById(normalizedAlertId, options);
             const feature = toNWSFeature(payload, normalizedAlertId);
 
             if (feature) {
@@ -206,6 +206,7 @@ export class EdgeWARNAPI {
             }
             return feature;
         } catch (error) {
+            options?.signal?.throwIfAborted();
             console.warn(`[EdgeWARNAPI] Failed to fetch alert ${normalizedAlertId}:`, error);
             // Fallback to cache if fetch fails
             const cachedFeature = this.nwsAlertFeatureCache.get(normalizedAlertId);

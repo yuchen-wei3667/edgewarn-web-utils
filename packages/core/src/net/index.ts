@@ -7,3 +7,6 @@ export { toNWSFeature, extractNWSAlertItems } from './edgewarn/alert-payload.ts'
 export { NWSAPI, setNwsUserAgent } from './nws/api.ts';
 export type { NWSForecastPeriod } from './nws/api.ts';
 export type { NWSAlertProperties, NWSAlertFeature, NWSData } from './types.ts';
+export { WWAAPI } from './wwa/api.ts';
+export type { WWAFeature, WWAResponse, AlertBoundingBox } from './wwa/api.ts';
+export type { NWSAlertRegion } from './nws/api.ts';

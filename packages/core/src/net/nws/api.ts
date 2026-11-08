@@ -167,11 +167,26 @@ interface NWSGridDataResponse {
 let userAgent = 'edgewarn-core (https://github.com/yuchen-wei3667/edgewarn-web-utils)';
 export function setNwsUserAgent(value: string): void { userAgent = value; }
 
-const nwsHeaders = (): Record<string, string> => typeof window === 'undefined'
+export const nwsHeaders = (): Record<string, string> => typeof window === 'undefined'
     ? { Accept: 'application/geo+json', 'User-Agent': userAgent }
     : { Accept: 'application/geo+json' };
 
+export type NWSAlertRegion = { area: string[] } | { region: string[] } | { zone: string[] };
+
 export class NWSAPI {
+    static async getRegionAlerts<T = NWSAlertsResponse>(region: NWSAlertRegion, signal?: AbortSignal): Promise<T> {
+        const entries = Object.entries(region);
+        if (entries.length !== 1 || !['area', 'region', 'zone'].includes(entries[0][0])) throw new Error('unsupported region type');
+        const [kind, values] = entries[0];
+        if (!Array.isArray(values) || !values.length || values.some(v => typeof v !== 'string' || !v.trim())) throw new Error('Region requires non-empty codes');
+        return this.getResource<T>(`https://api.weather.gov/alerts/active?${kind}=${encodeURIComponent(values.join(','))}`, signal);
+    }
+
+    static async getAlertById<T = import('../types.ts').NWSAlertFeature>(capId: string, signal?: AbortSignal): Promise<T> {
+        if (!capId.trim()) throw new Error('Alert ID must not be empty');
+        return this.getResource<T>(`https://api.weather.gov/alerts/${encodeURIComponent(capId)}`, signal);
+    }
+
     static async getResource<T>(url: string, signal?: AbortSignal): Promise<T> {
         const response = await fetchWithTimeout(url, { headers: nwsHeaders(), signal });
         if (!response.ok) {

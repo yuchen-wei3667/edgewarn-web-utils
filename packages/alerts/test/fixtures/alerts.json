@@ -1,0 +1,1361 @@
+{
+  "now": 1794142800000,
+  "ids": [
+    "abc",
+    " abc ",
+    "official:abc",
+    "https://api.weather.gov/alerts/abc",
+    "official:https://api.weather.gov/alerts/abc",
+    "",
+    null,
+    42
+  ],
+  "alerts": [
+    {
+      "type": "Feature",
+      "id": "tornado",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "tornado"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "confirmed",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "SOURCE...Weather spotters confirmed a tornado.",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "confirmed"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "pds",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "PARTICULARLY DANGEROUS SITUATION",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "pds"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "emergency",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "TORNADO EMERGENCY",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "emergency"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "radar-first",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "SOURCE...Radar indicated rotation and confirmed damage.",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "radar-first"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "svr",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Severe Thunderstorm Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "svr"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "svr-eas",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Severe Thunderstorm Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "BULLETIN - EAS ACTIVATION REQUESTED\nMAX WIND GUST...70 MPH\nMAX HAIL SIZE...1.75 IN",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "svr-eas"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "flood",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Flash Flood Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "flood"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "flood-emergency",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Flash Flood Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "FLASH FLOOD EMERGENCY",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "flood-emergency"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "watch",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Watch",
+        "severity": "Moderate",
+        "headline": "",
+        "description": "TORNADO WATCH NUMBER 123",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "watch"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "spc-event",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Severe Thunderstorm Watch",
+        "severity": "Severe",
+        "headline": "",
+        "description": "SEVERE THUNDERSTORM WATCH 456",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "spc-event"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "expired",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T11:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "expired"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "future-sent",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T14:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "future-sent"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "cancel",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Cancel",
+        "areaDesc": "Fixture County",
+        "id": "cancel"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "test",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Test Message",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Test",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "test"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "no-geometry",
+      "geometry": null,
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "no-geometry"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "hole",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ],
+          [
+            [
+              -97,
+              33
+            ],
+            [
+              -93,
+              33
+            ],
+            [
+              -93,
+              37
+            ],
+            [
+              -97,
+              37
+            ],
+            [
+              -97,
+              33
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "hole"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "legacy-west-latlon",
+      "geometry": null,
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "legacy-west-latlon"
+      },
+      "Polygon": [
+        [
+          "30",
+          "-100"
+        ],
+        [
+          "30",
+          "-90"
+        ],
+        [
+          "40",
+          "-90"
+        ]
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": "legacy-west-lonlat",
+      "geometry": null,
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "legacy-west-lonlat"
+      },
+      "Polygon": [
+        [
+          "-100",
+          "30"
+        ],
+        [
+          "-90",
+          "30"
+        ],
+        [
+          "-90",
+          "40"
+        ]
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": "legacy-east",
+      "geometry": null,
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "legacy-east"
+      },
+      "Polygon": [
+        [
+          "100",
+          "30"
+        ],
+        [
+          "110",
+          "30"
+        ],
+        [
+          "110",
+          "40"
+        ]
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": "legacy-southwest",
+      "geometry": null,
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "legacy-southwest"
+      },
+      "Polygon": [
+        [
+          "-100",
+          "-30"
+        ],
+        [
+          "-90",
+          "-30"
+        ],
+        [
+          "-90",
+          "-40"
+        ]
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": "legacy-southeast",
+      "geometry": null,
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "legacy-southeast"
+      },
+      "Polygon": [
+        [
+          "100",
+          "-30"
+        ],
+        [
+          "110",
+          "-30"
+        ],
+        [
+          "110",
+          "-40"
+        ]
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": "statement",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Special Weather Statement",
+        "severity": "Severe",
+        "headline": "",
+        "description": "HAZARD...60 mph wind gusts and quarter size hail.",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "statement"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ignored-hazards",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Flood Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "HAZARD...60 mph wind gusts and quarter size hail.",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "ignored-hazards"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "headline-eas",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "BULLETIN - EAS ACTIVATION REQUESTED",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "headline-eas"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "minor",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Flood Advisory",
+        "severity": "Minor",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "minor"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "unknown",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Dense Fog Advisory",
+        "severity": "Unknown",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "unknown"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "onset",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T15:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T16:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "onset"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ends-cap",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T18:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "ends-cap"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ends-early",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -100,
+              30
+            ],
+            [
+              -90,
+              30
+            ],
+            [
+              -90,
+              40
+            ],
+            [
+              -100,
+              40
+            ],
+            [
+              -100,
+              30
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "event": "Tornado Warning",
+        "severity": "Severe",
+        "headline": "",
+        "description": "",
+        "instruction": "",
+        "sent": "2026-11-08T12:00:00Z",
+        "effective": "2026-11-08T12:00:00Z",
+        "onset": "2026-11-08T12:00:00Z",
+        "expires": "2026-11-08T16:00:00Z",
+        "ends": "2026-11-08T13:15:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "areaDesc": "Fixture County",
+        "id": "ends-early"
+      }
+    }
+  ]
+}

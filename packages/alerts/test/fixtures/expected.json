@@ -1,0 +1,4471 @@
+{
+  "ids": [
+    [
+      "abc",
+      "abc",
+      "official:abc"
+    ],
+    [
+      "abc",
+      "abc",
+      "official:abc"
+    ],
+    [
+      "official:abc",
+      "abc",
+      "official:official:abc"
+    ],
+    [
+      "https://api.weather.gov/alerts/abc",
+      "abc",
+      "official:https://api.weather.gov/alerts/abc"
+    ],
+    [
+      "official:https://api.weather.gov/alerts/abc",
+      "https://api.weather.gov/alerts/abc",
+      "official:official:https://api.weather.gov/alerts/abc"
+    ],
+    [
+      "",
+      "",
+      "official:fallback"
+    ],
+    [
+      "",
+      "",
+      "official:fallback"
+    ],
+    [
+      "42",
+      "42",
+      "official:42"
+    ]
+  ],
+  "features": [
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:tornado",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 2,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": "confirmed"
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\nSOURCE...Weather spotters confirmed a tornado.\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": true,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:confirmed",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nSOURCE...Weather spotters confirmed a tornado."
+    },
+    {
+      "alertPriorityRank": 1,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "PARTICULARLY DANGEROUS SITUATION\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": true,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:pds",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nPARTICULARLY DANGEROUS SITUATION"
+    },
+    {
+      "alertPriorityRank": 0,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\nTORNADO EMERGENCY\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": true,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:emergency",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nTORNADO EMERGENCY"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": "radar-indicated"
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\nSOURCE...Radar indicated rotation and confirmed damage.\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:radar-first",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nSOURCE...Radar indicated rotation and confirmed damage."
+    },
+    {
+      "alertPriorityRank": 5,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": true,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:svr",
+      "formatNwsAlertText": "Event: Severe Thunderstorm Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": -95,
+      "hasEASActivation": true,
+      "isSevereThunderstormWarning": true,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": "70 MPH",
+        "hail": "1.75 IN",
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\nBULLETIN - EAS ACTIVATION REQUESTED\nMAX WIND GUST...70 MPH\nMAX HAIL SIZE...1.75 IN\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:svr-eas",
+      "formatNwsAlertText": "Event: Severe Thunderstorm Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nBULLETIN - EAS ACTIVATION REQUESTED\nMAX WIND GUST...70 MPH\nMAX HAIL SIZE...1.75 IN"
+    },
+    {
+      "alertPriorityRank": 7,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": true,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:flood",
+      "formatNwsAlertText": "Event: Flash Flood Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 6,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": true,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\nFLASH FLOOD EMERGENCY\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:flood-emergency",
+      "formatNwsAlertText": "Event: Flash Flood Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nFLASH FLOOD EMERGENCY"
+    },
+    {
+      "alertPriorityRank": 9,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": false,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": 123,
+      "tornadoAlertText": "\nTORNADO WATCH NUMBER 123\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:watch",
+      "formatNwsAlertText": "Event: Tornado Watch\nSeverity: Moderate\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nTORNADO WATCH NUMBER 123"
+    },
+    {
+      "alertPriorityRank": 9,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": false,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": 456,
+      "tornadoAlertText": "\nSEVERE THUNDERSTORM WATCH 456\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:spc-event",
+      "formatNwsAlertText": "Event: Severe Thunderstorm Watch\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nSEVERE THUNDERSTORM WATCH 456"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:expired",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T11:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:future-sent",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:cancel",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 9,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": false,
+      "isDashboardTopBannerAlert": false,
+      "isSevereTabAlert": false,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:test",
+      "formatNwsAlertText": "Event: Test Message\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": null,
+      "getFeatureAlertCacheKey": "official:no-geometry",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ],
+            [
+              [
+                -97,
+                33
+              ],
+              [
+                -93,
+                33
+              ],
+              [
+                -93,
+                37
+              ],
+              [
+                -97,
+                37
+              ],
+              [
+                -97,
+                33
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:hole",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:legacy-west-latlon",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:legacy-west-lonlat",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                100,
+                30
+              ],
+              [
+                110,
+                30
+              ],
+              [
+                110,
+                40
+              ],
+              [
+                100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:legacy-east",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                -30
+              ],
+              [
+                -90,
+                -30
+              ],
+              [
+                -90,
+                -40
+              ],
+              [
+                -100,
+                -30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:legacy-southwest",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -30,
+                100
+              ],
+              [
+                -30,
+                110
+              ],
+              [
+                -40,
+                110
+              ],
+              [
+                -30,
+                100
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:legacy-southeast",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 9,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": false,
+      "isSevereTabAlert": false,
+      "extractSevereHazards": {
+        "wind": "60 mph",
+        "hail": "Quarter size",
+        "hazard": "60 mph wind gusts and quarter size hail.",
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\nHAZARD...60 mph wind gusts and quarter size hail.\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:statement",
+      "formatNwsAlertText": "Event: Special Weather Statement\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nHAZARD...60 mph wind gusts and quarter size hail."
+    },
+    {
+      "alertPriorityRank": 9,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": false,
+      "isDashboardTopBannerAlert": false,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\nHAZARD...60 mph wind gusts and quarter size hail.\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:ignored-hazards",
+      "formatNwsAlertText": "Event: Flood Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nHAZARD...60 mph wind gusts and quarter size hail."
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "BULLETIN - EAS ACTIVATION REQUESTED\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:headline-eas",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County\n\nBULLETIN - EAS ACTIVATION REQUESTED"
+    },
+    {
+      "alertPriorityRank": 9,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": false,
+      "isDashboardTopBannerAlert": false,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:minor",
+      "formatNwsAlertText": "Event: Flood Advisory\nSeverity: Minor\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 9,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": false,
+      "isDashboardTopBannerAlert": false,
+      "isSevereTabAlert": false,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": false,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:unknown",
+      "formatNwsAlertText": "Event: Dense Fog Advisory\nSeverity: Unknown\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:onset",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:ends-cap",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    },
+    {
+      "alertPriorityRank": 3,
+      "hasEASActivation": false,
+      "isSevereThunderstormWarning": false,
+      "isFlashFloodWarning": false,
+      "isDashboardSignificantAlert": true,
+      "isDashboardTopBannerAlert": true,
+      "isSevereTabAlert": true,
+      "extractSevereHazards": {
+        "wind": null,
+        "hail": null,
+        "hazard": null,
+        "tornadoConfirmation": null
+      },
+      "extractSpcWatchNumber": null,
+      "tornadoAlertText": "\n\n",
+      "isTornadoWarning": true,
+      "isTornadoEmergency": false,
+      "isPdsTornado": false,
+      "isConfirmedTornado": false,
+      "normalizeAlertGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -100,
+                30
+              ],
+              [
+                -90,
+                30
+              ],
+              [
+                -90,
+                40
+              ],
+              [
+                -100,
+                40
+              ],
+              [
+                -100,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "getFeatureAlertCacheKey": "official:ends-early",
+      "formatNwsAlertText": "Event: Tornado Warning\nSeverity: Severe\nEffective: 2026-11-08T12:00:00Z\nExpires: 2026-11-08T16:00:00Z\nArea: Fixture County"
+    }
+  ],
+  "events": [
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      true
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      false,
+      "Tornado",
+      false
+    ],
+    [
+      false,
+      "Severe Thunderstorm",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      false,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      false,
+      "Unknown",
+      false
+    ],
+    [
+      false,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      false,
+      "Unknown",
+      false
+    ],
+    [
+      false,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ],
+    [
+      true,
+      "Unknown",
+      false
+    ]
+  ],
+  "critical": [
+    "Tornado Warning",
+    "Severe Thunderstorm Warning",
+    "Flash Flood Warning"
+  ],
+  "comparisons": [
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      -1,
+      0,
+      1,
+      2,
+      -1,
+      -3,
+      97,
+      -5,
+      -4,
+      -7,
+      -7,
+      -1,
+      -1,
+      -1,
+      -7,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -7,
+      -7,
+      -1,
+      -7,
+      -7,
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -2,
+      -1,
+      0,
+      1,
+      -2,
+      -4,
+      96,
+      -6,
+      -5,
+      -8,
+      -8,
+      -2,
+      -2,
+      -2,
+      -8,
+      -2,
+      -2,
+      -2,
+      -2,
+      -2,
+      -2,
+      -2,
+      -8,
+      -8,
+      -2,
+      -8,
+      -8,
+      -2,
+      -2,
+      -2
+    ],
+    [
+      -3,
+      -2,
+      -1,
+      0,
+      -3,
+      -5,
+      95,
+      -7,
+      -6,
+      -9,
+      -9,
+      -3,
+      -3,
+      -3,
+      -9,
+      -3,
+      -3,
+      -3,
+      -3,
+      -3,
+      -3,
+      -3,
+      -9,
+      -9,
+      -3,
+      -9,
+      -9,
+      -3,
+      -3,
+      -3
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      2,
+      3,
+      4,
+      5,
+      2,
+      0,
+      100,
+      -2,
+      -1,
+      -4,
+      -4,
+      2,
+      2,
+      2,
+      -4,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      -4,
+      -4,
+      2,
+      -4,
+      -4,
+      2,
+      2,
+      2
+    ],
+    [
+      -98,
+      -97,
+      -96,
+      -95,
+      -98,
+      -100,
+      0,
+      -102,
+      -101,
+      -104,
+      -104,
+      -98,
+      -98,
+      -98,
+      -104,
+      -98,
+      -98,
+      -98,
+      -98,
+      -98,
+      -98,
+      -98,
+      -104,
+      -104,
+      -98,
+      -104,
+      -104,
+      -98,
+      -98,
+      -98
+    ],
+    [
+      4,
+      5,
+      6,
+      7,
+      4,
+      2,
+      102,
+      0,
+      1,
+      -2,
+      -2,
+      4,
+      4,
+      4,
+      -2,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      -2,
+      -2,
+      4,
+      -2,
+      -2,
+      4,
+      4,
+      4
+    ],
+    [
+      3,
+      4,
+      5,
+      6,
+      3,
+      1,
+      101,
+      -1,
+      0,
+      -3,
+      -3,
+      3,
+      3,
+      3,
+      -3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      -3,
+      -3,
+      3,
+      -3,
+      -3,
+      3,
+      3,
+      3
+    ],
+    [
+      6,
+      7,
+      8,
+      9,
+      6,
+      4,
+      104,
+      2,
+      3,
+      0,
+      1,
+      6,
+      6,
+      6,
+      1,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      1,
+      1,
+      6,
+      -1,
+      -2,
+      6,
+      6,
+      6
+    ],
+    [
+      6,
+      7,
+      8,
+      9,
+      6,
+      4,
+      104,
+      2,
+      3,
+      -1,
+      0,
+      6,
+      6,
+      6,
+      -1,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      -1,
+      1,
+      6,
+      -2,
+      -3,
+      6,
+      6,
+      6
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      6,
+      7,
+      8,
+      9,
+      6,
+      4,
+      104,
+      2,
+      3,
+      -1,
+      1,
+      6,
+      6,
+      6,
+      0,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      0,
+      2,
+      6,
+      -2,
+      -3,
+      6,
+      6,
+      6
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      6,
+      7,
+      8,
+      9,
+      6,
+      4,
+      104,
+      2,
+      3,
+      -1,
+      1,
+      6,
+      6,
+      6,
+      0,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      0,
+      2,
+      6,
+      -2,
+      -3,
+      6,
+      6,
+      6
+    ],
+    [
+      6,
+      7,
+      8,
+      9,
+      6,
+      4,
+      104,
+      2,
+      3,
+      -1,
+      -1,
+      6,
+      6,
+      6,
+      -2,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      -2,
+      0,
+      6,
+      -2,
+      -3,
+      6,
+      6,
+      6
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      6,
+      7,
+      8,
+      9,
+      6,
+      4,
+      104,
+      2,
+      3,
+      1,
+      2,
+      6,
+      6,
+      6,
+      2,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      2,
+      2,
+      6,
+      0,
+      -1,
+      6,
+      6,
+      6
+    ],
+    [
+      6,
+      7,
+      8,
+      9,
+      6,
+      4,
+      104,
+      2,
+      3,
+      2,
+      3,
+      6,
+      6,
+      6,
+      3,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      3,
+      3,
+      6,
+      1,
+      0,
+      6,
+      6,
+      6
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2,
+      3,
+      0,
+      -2,
+      98,
+      -4,
+      -3,
+      -6,
+      -6,
+      0,
+      0,
+      0,
+      -6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -6,
+      -6,
+      0,
+      -6,
+      -6,
+      0,
+      0,
+      0
+    ]
+  ],
+  "priority": [
+    "svr-eas",
+    "emergency",
+    "pds",
+    "confirmed",
+    "tornado",
+    "radar-first",
+    "expired",
+    "future-sent",
+    "cancel",
+    "no-geometry",
+    "hole",
+    "legacy-west-latlon",
+    "legacy-west-lonlat",
+    "legacy-east",
+    "legacy-southwest",
+    "legacy-southeast",
+    "headline-eas",
+    "onset",
+    "ends-cap",
+    "ends-early",
+    "svr",
+    "flood-emergency",
+    "flood",
+    "ignored-hazards",
+    "spc-event",
+    "test",
+    "statement",
+    "watch",
+    "minor",
+    "unknown"
+  ],
+  "dashboard": [
+    "expired",
+    "tornado",
+    "confirmed",
+    "pds",
+    "emergency",
+    "radar-first",
+    "future-sent",
+    "cancel",
+    "no-geometry",
+    "hole",
+    "legacy-west-latlon",
+    "legacy-west-lonlat",
+    "legacy-east",
+    "legacy-southwest",
+    "legacy-southeast",
+    "headline-eas",
+    "onset",
+    "ends-cap",
+    "ends-early",
+    "flood",
+    "flood-emergency",
+    "svr",
+    "svr-eas",
+    "ignored-hazards",
+    "spc-event",
+    "watch",
+    "test",
+    "statement",
+    "minor",
+    "unknown"
+  ],
+  "periods": [
+    [
+      [],
+      null
+    ],
+    [
+      [
+        "svr-eas",
+        "emergency",
+        "pds",
+        "confirmed",
+        "tornado",
+        "radar-first",
+        "no-geometry",
+        "hole",
+        "legacy-west-latlon",
+        "legacy-west-lonlat",
+        "legacy-east",
+        "legacy-southwest",
+        "legacy-southeast",
+        "headline-eas",
+        "ends-cap",
+        "ends-early",
+        "svr",
+        "flood-emergency",
+        "flood",
+        "ignored-hazards",
+        "spc-event",
+        "statement",
+        "watch",
+        "minor",
+        "unknown"
+      ],
+      "svr-eas"
+    ],
+    [
+      [
+        "svr-eas",
+        "emergency",
+        "pds",
+        "confirmed",
+        "tornado",
+        "radar-first",
+        "no-geometry",
+        "hole",
+        "legacy-west-latlon",
+        "legacy-west-lonlat",
+        "legacy-east",
+        "legacy-southwest",
+        "legacy-southeast",
+        "headline-eas",
+        "ends-cap",
+        "svr",
+        "flood-emergency",
+        "flood",
+        "ignored-hazards",
+        "spc-event",
+        "statement",
+        "watch",
+        "minor",
+        "unknown"
+      ],
+      "svr-eas"
+    ],
+    [
+      [],
+      null
+    ],
+    [
+      [],
+      null
+    ]
+  ],
+  "locations": [
+    [
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "hole",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ],
+        [
+          "minor",
+          false
+        ],
+        [
+          "unknown",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "hole",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ],
+        [
+          "minor",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "hole",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "hole",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ]
+      ],
+      []
+    ],
+    [
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ],
+        [
+          "minor",
+          false
+        ],
+        [
+          "unknown",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ],
+        [
+          "minor",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ]
+      ],
+      []
+    ],
+    [
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ],
+        [
+          "minor",
+          false
+        ],
+        [
+          "unknown",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ],
+        [
+          "minor",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ]
+      ],
+      []
+    ],
+    [
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "hole",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ],
+        [
+          "minor",
+          false
+        ],
+        [
+          "unknown",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "hole",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ],
+        [
+          "minor",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "hole",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ],
+        [
+          "watch",
+          false
+        ]
+      ],
+      [
+        [
+          "expired",
+          true
+        ],
+        [
+          "tornado",
+          true
+        ],
+        [
+          "confirmed",
+          true
+        ],
+        [
+          "pds",
+          true
+        ],
+        [
+          "emergency",
+          true
+        ],
+        [
+          "radar-first",
+          true
+        ],
+        [
+          "svr",
+          true
+        ],
+        [
+          "svr-eas",
+          true
+        ],
+        [
+          "flood",
+          true
+        ],
+        [
+          "flood-emergency",
+          true
+        ],
+        [
+          "future-sent",
+          true
+        ],
+        [
+          "cancel",
+          true
+        ],
+        [
+          "hole",
+          true
+        ],
+        [
+          "headline-eas",
+          true
+        ],
+        [
+          "onset",
+          true
+        ],
+        [
+          "ends-cap",
+          true
+        ],
+        [
+          "ends-early",
+          true
+        ],
+        [
+          "spc-event",
+          false
+        ],
+        [
+          "test",
+          false
+        ],
+        [
+          "statement",
+          false
+        ],
+        [
+          "ignored-hazards",
+          false
+        ]
+      ],
+      []
+    ],
+    [
+      [],
+      [],
+      [],
+      [],
+      []
+    ]
+  ],
+  "filters": [
+    [
+      [
+        "tornado",
+        "confirmed",
+        "pds",
+        "emergency",
+        "radar-first",
+        "svr",
+        "svr-eas",
+        "flood",
+        "flood-emergency",
+        "watch",
+        "spc-event",
+        "expired",
+        "future-sent",
+        "cancel",
+        "test",
+        "no-geometry",
+        "hole",
+        "legacy-west-latlon",
+        "legacy-west-lonlat",
+        "legacy-east",
+        "legacy-southwest",
+        "legacy-southeast",
+        "statement",
+        "ignored-hazards",
+        "headline-eas",
+        "minor",
+        "unknown",
+        "onset",
+        "ends-cap",
+        "ends-early"
+      ],
+      [
+        "tornado",
+        "confirmed",
+        "pds",
+        "emergency",
+        "radar-first",
+        "expired",
+        "future-sent",
+        "cancel",
+        "no-geometry",
+        "hole",
+        "legacy-west-latlon",
+        "legacy-west-lonlat",
+        "legacy-east",
+        "legacy-southwest",
+        "legacy-southeast",
+        "headline-eas",
+        "onset",
+        "ends-cap",
+        "ends-early"
+      ],
+      []
+    ],
+    [
+      [
+        "tornado",
+        "confirmed",
+        "pds",
+        "emergency",
+        "radar-first",
+        "svr",
+        "svr-eas",
+        "flood",
+        "flood-emergency",
+        "spc-event",
+        "expired",
+        "future-sent",
+        "cancel",
+        "test",
+        "no-geometry",
+        "hole",
+        "legacy-west-latlon",
+        "legacy-west-lonlat",
+        "legacy-east",
+        "legacy-southwest",
+        "legacy-southeast",
+        "statement",
+        "ignored-hazards",
+        "headline-eas",
+        "onset",
+        "ends-cap",
+        "ends-early"
+      ],
+      [
+        "tornado",
+        "confirmed",
+        "pds",
+        "emergency",
+        "radar-first",
+        "expired",
+        "future-sent",
+        "cancel",
+        "no-geometry",
+        "hole",
+        "legacy-west-latlon",
+        "legacy-west-lonlat",
+        "legacy-east",
+        "legacy-southwest",
+        "legacy-southeast",
+        "headline-eas",
+        "onset",
+        "ends-cap",
+        "ends-early"
+      ],
+      []
+    ],
+    [
+      [
+        "unknown"
+      ],
+      [],
+      []
+    ]
+  ],
+  "merge": [
+    {
+      "id": "abc",
+      "properties": {
+        "id": "abc"
+      },
+      "marker": "point"
+    },
+    {
+      "id": "official:https://api.weather.gov/alerts/abc",
+      "properties": {
+        "id": "official:https://api.weather.gov/alerts/abc"
+      },
+      "marker": "snapshot"
+    },
+    {
+      "id": 42,
+      "properties": {
+        "id": 42
+      },
+      "marker": "snapshot"
+    }
+  ],
+  "format": [
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "Expired",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h",
+    "3h"
+  ],
+  "invalidTime": "Invalid Date"
+}

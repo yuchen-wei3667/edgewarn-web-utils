@@ -1,6 +1,6 @@
 # @edgewarn/web-utils
 
-One ESM package for EdgeWARN geometry, time, HTTP clients and weather byte
+One ESM package for EdgeWARN geometry, time, HTTP clients, alert evaluation and weather byte
 decoding. Version `2026.11.8-alpha.0` requires Node 22.18+ for development;
 portable modules also support browsers and workers with the native APIs described
 in the API manuals. `@types/geojson` is included for public GeoJSON declarations.
@@ -17,7 +17,9 @@ Use the entry point for the functionality you need:
 | `@edgewarn/web-utils` | `EdgeWARNDecoder`, `DecodeBudgetExceededError` and decoding types |
 | `@edgewarn/web-utils/geo` | Geometry, containment and polygon helpers |
 | `@edgewarn/web-utils/time` | UTC timestamp parsing and formatting |
-| `@edgewarn/web-utils/net` | Configurable EdgeWARN and NWS HTTP clients |
+| `@edgewarn/web-utils/net` | Configurable EdgeWARN, NWS and NOAA WWA HTTP clients |
+| `@edgewarn/web-utils/alerts` | Alert priority, classification, geometry and location matching |
+| `@edgewarn/web-utils/alerts/nws` | NWS EAS verification and multi-source point/region alert loading |
 | `@edgewarn/web-utils/grib2` | MRMS/model decoding, inventories and optional codecs |
 | `@edgewarn/web-utils/nexrad` | NEXRAD Level II/III, cuts, VCP and TVS |
 | `@edgewarn/web-utils/goes` | GOES ABI/HDF5 byte-source readers |
@@ -33,9 +35,10 @@ const field = await decoder.decode(messageBytes, {
 ```
 
 The [geometry, time and clients manual](packages/core/README.md) and
-[decoder manual](packages/decoders/README.md) describe the contracts, supported
+[decoder manual](packages/decoders/README.md) and
+[alerts manual](packages/alerts/README.md) describe the contracts, supported
 subsets, explicit codec registration, memory accounting and cancellation.
-The `packages/core` and `packages/decoders` directories are internal source/build
+The `packages/core`, `packages/alerts` and `packages/decoders` directories are internal source/build
 boundaries. They are shipped together and cannot be published independently.
 Format entry points remain isolated; the root decoder loads formats on demand.
 Private implementation paths are not exported.

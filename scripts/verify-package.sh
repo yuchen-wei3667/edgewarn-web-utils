@@ -23,12 +23,23 @@ const goes = await import('@edgewarn/web-utils/goes');
 const geo = await import('@edgewarn/web-utils/geo');
 const time = await import('@edgewarn/web-utils/time');
 const net = await import('@edgewarn/web-utils/net');
+const alerts = await import('@edgewarn/web-utils/alerts');
+const nwsAlerts = await import('@edgewarn/web-utils/alerts/nws');
+assert.equal(Object.keys(alerts).length,45);
+assert.deepEqual(Object.keys(nwsAlerts).sort(),['checkNWSRawAlertForEAS','loadLocationAlerts','loadRegionAlerts','createEdgeWARNAlertSource','createNWSAlertSource','createWWAAlertSource'].sort());
+assert.equal(alerts.normalizeOfficialAlertId('official:abc'),'abc');
+globalThis.fetch = async url => {
+  assert.equal(url,'https://api.weather.gov/alerts/active?area=TX');
+  return Response.json({features:[]});
+};
+assert.deepEqual(await nwsAlerts.loadRegionAlerts({area:['TX']},{source:'nws'}),[]);
+globalThis.fetch = () => { throw Error('unexpected request'); };
 assert.equal(Object.keys(geo).length,14);
 assert.equal(Object.keys(time).length,8);
-assert.equal(Object.keys(net).length,6);
+assert.equal(Object.keys(net).length,7);
 assert.equal(geo.distanceMiles(0,0,0,0),0);
 assert.equal(time.msToTimestamp(0),'19700101-000000');
-for (const path of ['@edgewarn/web-utils/cache','@edgewarn/web-utils/net/normalize']) {
+for (const path of ['@edgewarn/web-utils/cache','@edgewarn/web-utils/net/normalize','@edgewarn/web-utils/alerts/alert-id','@edgewarn/web-utils/alerts/dist/index.js','@edgewarn/web-utils/packages/alerts/dist/index.js']) {
   await assert.rejects(import(path), {code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 }
 assert.equal(net.normalizeNumber,undefined);
@@ -58,6 +69,29 @@ import { pointInGeometry } from '@edgewarn/web-utils/geo';
 import { timestampToMs } from '@edgewarn/web-utils/time';
 import { EdgeWARNAPI, NWSAPI, setNwsUserAgent, normalizeStormcellFeatures, toNWSFeature, extractNWSAlertItems } from '@edgewarn/web-utils/net';
 import type { EdgeWARNApiConfig, EdgeWARNApiDeps, ExpiryCache, RequestOptions, Cell, StormCellList, NWSForecastPeriod, NWSAlertProperties, NWSAlertFeature, NWSData } from '@edgewarn/web-utils/net';
+import { compareAlertPriority, findAlertsAtPoint } from '@edgewarn/web-utils/alerts';
+import type { NWSAlertFeature as AlertFeature, SPCWatchDetails, ParsedSevereHazards, LocationAlert } from '@edgewarn/web-utils/alerts';
+import { checkNWSRawAlertForEAS } from '@edgewarn/web-utils/alerts/nws';
+import type { EASVerification, AlertRegion, AlertSource, AlertLoaderOptions } from '@edgewarn/web-utils/alerts/nws';
+import { loadLocationAlerts, loadRegionAlerts, createWWAAlertSource } from '@edgewarn/web-utils/alerts/nws';
+import { WWAAPI } from '@edgewarn/web-utils/net';
+import { getDismissedAlerts, selectAlertsToSound, warningCopy, hazardTypeForAlert, getEventColors } from '@edgewarn/web-utils/alerts';
+const selected: AlertSource = createWWAAlertSource();
+const region: AlertRegion = { wfo: ['KFWD'] };
+const regionAlerts: Promise<AlertFeature[]> = loadRegionAlerts(region, { source: 'wwa' });
+const pointAlerts: Promise<AlertFeature[]> = loadLocationAlerts({ lat: 35, lon: -97 }, { source: 'nws' });
+// @ts-expect-error invalid source ID
+loadRegionAlerts(region, { source: 'other' });
+// @ts-expect-error exactly four bbox coordinates
+loadRegionAlerts({ bbox: [1, 2] }, { source: 'wwa' });
+declare const alertFeature: AlertFeature;
+const comparison: number = compareAlertPriority(alertFeature,alertFeature);
+const matches: LocationAlert[] = findAlertsAtPoint(35,-97,[alertFeature],'Severe');
+const verification: Promise<EASVerification> = checkNWSRawAlertForEAS('abc',fetch,{userAgent:'consumer/1.0'});
+// @ts-expect-error an alert feature is required
+compareAlertPriority('Tornado Warning',alertFeature);
+// @ts-expect-error coordinates must be numbers
+findAlertsAtPoint('35',-97,[alertFeature]);
 const geometry: GeoJSON.Polygon = {type:'Polygon',coordinates:[]};
 pointInGeometry(0,0,geometry);
 timestampToMs('20260102-030405');
