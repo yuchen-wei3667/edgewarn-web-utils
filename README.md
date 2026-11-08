@@ -1,7 +1,7 @@
 # @edgewarn/web-utils
 
 One ESM package for EdgeWARN geometry, time, HTTP clients, alert evaluation, sounding science and weather byte
-decoding. Version `2026.11.8-alpha.1` requires Node 22.18+ for development;
+decoding. Version `2026.11.8-alpha.2` requires Node 22.18+ for development;
 portable modules also support browsers and workers with the native APIs described
 in the API manuals. `@types/geojson` is included for public GeoJSON declarations.
 There are no runtime code dependencies.

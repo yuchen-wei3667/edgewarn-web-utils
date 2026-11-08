@@ -19,13 +19,13 @@ if (!m) {
 }
 const next = `${m[1]}-alpha.${Number(m[2]) + 1}`;
 pkg.version = next;
-writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+writeFileSync(pkgPath, JSON.stringify(pkg, null, 4) + '\n');
 
 // package-lock.json mirrors the root version in two places.
 const lock = JSON.parse(readFileSync(lockPath, 'utf8'));
 lock.version = next;
 if (lock.packages && lock.packages['']) lock.packages[''].version = next;
-writeFileSync(lockPath, JSON.stringify(lock, null, 2) + '\n');
+writeFileSync(lockPath, JSON.stringify(lock, null, 4) + '\n');
 
 const readme = readFileSync(readmePath, 'utf8');
 const updated = readme.replace(`Version \`${m[0]}\``, `Version \`${next}\``);

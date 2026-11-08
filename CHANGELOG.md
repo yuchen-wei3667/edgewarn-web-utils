@@ -6,7 +6,7 @@ Versions are hand-bumped CalVer prereleases (`YYYY.MM.DD-alpha.N`); the
 releases are published from git tags (see the release section in
 `README.md`).
 
-## Unreleased
+## 2026.11.8-alpha.2
 
 - **Breaking:** `NWSAPI` and `WWAAPI` methods are now instance methods. Create
   clients with `createNWSClient({ userAgent, baseUrl })` and
@@ -18,6 +18,15 @@ releases are published from git tags (see the release section in
   `normalizeUpstreamBaseUrl`.
 - Add lint, format, coverage-threshold and test-type checks; remove the
   unwired decoders bench.
+- `@types/geojson` is now a caret range (`^7946.0.16`).
+- Add `api-surface.json` and `npm run api:check` / `api:update`: CI fails when
+  the public runtime exports change without a reviewed snapshot update.
+- Declaration maps are no longer generated (the sources are not shipped).
+- The `alerts` presentation exports (`warningCopy`, `heroTitleForAlert`,
+  `getEventColors`, `selectAlertsToSound`, dismissals, dashboard significance)
+  are tagged `@experimental` and may change in any release.
+- Docs no longer refer to an external Website; the stale met consumer map is
+  removed.
 
 ## 2026.11.8-alpha.1
 
