@@ -23,6 +23,14 @@ const goes = await import('@edgewarn/web-utils/goes');
 const geo = await import('@edgewarn/web-utils/geo');
 const time = await import('@edgewarn/web-utils/time');
 const net = await import('@edgewarn/web-utils/net');
+const met = await import('@edgewarn/web-utils/met');
+assert.equal(Object.keys(met).length, 64);
+assert.equal(Object.values(met).filter(value => typeof value === 'function').length, 60);
+const column = { validMs: 0, p: Float32Array.of(1000, 900), z: Float32Array.of(0, 1000), t: Float32Array.of(20, 10), td: Float32Array.of(10, 0), u: new Float32Array(2), v: new Float32Array(2), surface: {p:1000,z:0,t:20,td:10,u:0,v:0} };
+const cape = met.analyzeSounding(column).parcels.sb.cape;
+assert.ok(cape === null || Number.isFinite(cape));
+assert.throws(() => met.analyzeSounding({...column, p: Float32Array.of(1000)}), /structurally empty column/);
+for (const path of ['met/thermo','met/constants']) await assert.rejects(import('@edgewarn/web-utils/' + path), {code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 const alerts = await import('@edgewarn/web-utils/alerts');
 const nwsAlerts = await import('@edgewarn/web-utils/alerts/nws');
 assert.equal(Object.keys(alerts).length,45);
@@ -64,6 +72,14 @@ assert.deepEqual(grib.BUILT_IN_PACKINGS,[0,2,3]);
 for(const name of ['@edgewarn/web-utils/packages/core/dist/net/index.js','@edgewarn/web-utils/packages/decoders/dist/index.js','@edgewarn/web-utils/grib2/models/grib2','@edgewarn/web-utils/internal/memory','@edgewarn/web-utils/nexrad/decoder/decoder','@edgewarn/web-utils/mrms','@edgewarn/web-utils/goes/hdf5']) await assert.rejects(import(name),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 JS
 cat > consumer.ts <<'TS'
+import { analyzeSounding, surfaceParcelDef, liftColumn } from '@edgewarn/web-utils/met';
+import type { Column, Vec2, StormMotion, ParcelKey, ParcelResult, AnalysisOptions, LayerBounds, SoundingAnalysis, ParcelDefinition, LiftResult, CapeCheck, BunkersResult, ColumnField, LayerMeanOptions, LiftFn } from '@edgewarn/web-utils/met';
+declare const soundingColumn: Column;
+const sounding: SoundingAnalysis = analyzeSounding(soundingColumn);
+const parcel: ParcelDefinition = surfaceParcelDef(soundingColumn);
+const lifted: LiftResult | null = liftColumn(soundingColumn, parcel);
+// @ts-expect-error pressure levels must be typed arrays
+const invalidColumn: Column = {...soundingColumn, p: [1000, 900]};
 import type * as GeoJSON from 'geojson';
 import { pointInGeometry } from '@edgewarn/web-utils/geo';
 import { timestampToMs } from '@edgewarn/web-utils/time';

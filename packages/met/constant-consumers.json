@@ -1,0 +1,19 @@
+{
+  "SOUNDING_RD": [
+    "src/utils/sounding/plate.ts",
+    "src/utils/models/diagnosticRecipes.ts",
+    "src/utils/sounding/sources/column.ts"
+  ],
+  "SOUNDING_GRAVITY": [
+    "src/utils/sounding/plate.ts",
+    "src/utils/models/diagnosticRecipes.ts",
+    "src/utils/sounding/sources/column.ts"
+  ],
+  "SOUNDING_KELVIN_OFFSET": [
+    "src/utils/sounding/plate.ts",
+    "src/utils/sounding/sources/column.ts"
+  ],
+  "SOUNDING_CIN_LIMIT_HPA": [
+    "src/utils/sounding/geometry/skewT.ts"
+  ]
+}

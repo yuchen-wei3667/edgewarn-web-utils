@@ -16,7 +16,9 @@
     "NOTICE",
     "README.md",
     "packages/alerts/dist",
-    "packages/alerts/README.md"
+    "packages/alerts/README.md",
+    "packages/met/dist",
+    "packages/met/README.md"
   ],
   "exports": {
     ".": {
@@ -55,11 +57,15 @@
     "./alerts/nws": {
       "types": "./packages/alerts/dist/nws/index.d.ts",
       "default": "./packages/alerts/dist/nws/index.js"
+    },
+    "./met": {
+      "types": "./packages/met/dist/index.d.ts",
+      "default": "./packages/met/dist/index.js"
     }
   },
   "scripts": {
     "build": "tsc -b",
-    "test": "npm run build && node --test packages/core/test/*.test.mjs packages/decoders/test/*.test.mjs packages/decoders/test/models/*.test.mjs packages/alerts/test/*.test.mjs",
+    "test": "npm run build && node --test packages/core/test/*.test.mjs packages/decoders/test/*.test.mjs packages/decoders/test/models/*.test.mjs packages/alerts/test/*.test.mjs packages/met/test/*.test.mjs",
     "lint:pack": "publint --pack=false",
     "changeset": "changeset",
     "release": "npm publish",
