@@ -1,0 +1,25 @@
+{
+  "name": "edgewarn-web-utils",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "test": "npm run build && npm test --workspaces --if-present",
+    "lint:pack": "npm exec --workspaces -- publint",
+    "changeset": "changeset",
+    "release": "npm run build && changeset publish",
+    "check:package": "npm run build && bash scripts/verify-package.sh",
+    "test:time": "TZ=UTC node --test packages/core/test/time-lock.test.mjs packages/core/test/timestamp.test.mjs && TZ=America/New_York node --test packages/core/test/time-lock.test.mjs packages/core/test/timestamp.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "publint": "^0.3",
+    "@changesets/cli": "^2"
+  }
+}
