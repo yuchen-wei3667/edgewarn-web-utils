@@ -6,6 +6,13 @@ Versions are hand-bumped CalVer prereleases (`YYYY.MM.DD-alpha.N`); the
 releases are published from git tags (see the release section in
 `README.md`).
 
+## 2026.11.8-alpha.3
+
+- Export float16 conversion and level reduction helpers from `/grib2`.
+- Export transport, allowed-feed URL and payload normalization helpers from `/net`.
+- Export the GOES `inflate` helper alongside `InflateError`.
+- Allow NWS and WWA clients to omit the browser-controlled User-Agent header with `userAgent: null`.
+
 ## 2026.11.8-alpha.2
 
 - **Breaking:** `NWSAPI` and `WWAAPI` methods are now instance methods. Create

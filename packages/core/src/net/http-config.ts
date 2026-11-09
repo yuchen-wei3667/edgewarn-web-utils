@@ -15,8 +15,10 @@
 export const DEFAULT_NWS_USER_AGENT =
     'edgewarn-web-utils (https://github.com/yuchen-wei3667/edgewarn-web-utils)';
 
-export function nwsHeaders(userAgent: string = DEFAULT_NWS_USER_AGENT): Record<string, string> {
-    return { Accept: 'application/geo+json', 'User-Agent': userAgent };
+export function nwsHeaders(userAgent: string | null = DEFAULT_NWS_USER_AGENT): Record<string, string> {
+    return userAgent === null
+        ? { Accept: 'application/geo+json' }
+        : { Accept: 'application/geo+json', 'User-Agent': userAgent };
 }
 
 /** Validate and trim an upstream base URL; only https upstreams are accepted. */

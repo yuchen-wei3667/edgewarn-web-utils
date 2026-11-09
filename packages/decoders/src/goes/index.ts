@@ -12,4 +12,4 @@ export type {
 export { BytesSource } from './source.ts';
 export type { ByteSource } from './source.ts';
 export { Hdf5FormatError } from './hdf5.ts';
-export { InflateError } from './inflate.ts';
+export { InflateError, inflate } from './inflate.ts';

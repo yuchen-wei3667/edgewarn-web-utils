@@ -40,18 +40,18 @@ export function validateAlertBoundingBox(box: AlertBoundingBox): void {
 
 export interface WWAClientConfig {
     /** User-Agent sent on every request. Defaults to {@link DEFAULT_NWS_USER_AGENT}. */
-    userAgent?: string;
+    userAgent?: string | null;
     /** NOAA MapServer base URL override. Defaults to the public WWA service layer. */
     baseUrl?: string;
 }
 
 /** NOAA polygon service. Hydration belongs to the alerts domain. */
 export class WWAAPI {
-    private readonly userAgent: string;
+    private readonly userAgent: string | null;
     private readonly baseUrl: string;
 
     constructor(config: WWAClientConfig = {}) {
-        this.userAgent = config.userAgent ?? DEFAULT_NWS_USER_AGENT;
+        this.userAgent = config.userAgent === undefined ? DEFAULT_NWS_USER_AGENT : config.userAgent;
         this.baseUrl = normalizeUpstreamBaseUrl(
             config.baseUrl,
             'https://mapservices.weather.noaa.gov/eventdriven/rest/services/WWA/watch_warn_adv/MapServer/1',

@@ -167,7 +167,7 @@ interface NWSGridDataResponse {
 
 export interface NWSClientConfig {
     /** User-Agent sent on every request. Defaults to {@link DEFAULT_NWS_USER_AGENT}. */
-    userAgent?: string;
+    userAgent?: string | null;
     /** Upstream origin override (no trailing slash needed). Defaults to api.weather.gov. */
     baseUrl?: string;
 }
@@ -180,11 +180,11 @@ export type NWSAlertRegion = { area: string[] } | { region: string[] } | { zone:
  * Instances are immutable after construction, so clients never share state.
  */
 export class NWSAPI {
-    private readonly userAgent: string;
+    private readonly userAgent: string | null;
     private readonly baseUrl: string;
 
     constructor(config: NWSClientConfig = {}) {
-        this.userAgent = config.userAgent ?? DEFAULT_NWS_USER_AGENT;
+        this.userAgent = config.userAgent === undefined ? DEFAULT_NWS_USER_AGENT : config.userAgent;
         this.baseUrl = normalizeUpstreamBaseUrl(config.baseUrl, 'https://api.weather.gov');
     }
 

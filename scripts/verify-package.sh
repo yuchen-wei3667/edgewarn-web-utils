@@ -46,7 +46,9 @@ assert.equal(time.msToTimestamp(0),'19700101-000000');
 for (const path of ['@edgewarn/web-utils/cache','@edgewarn/web-utils/net/normalize','@edgewarn/web-utils/alerts/alert-id','@edgewarn/web-utils/alerts/dist/index.js','@edgewarn/web-utils/packages/alerts/dist/index.js']) {
   await assert.rejects(import(path), {code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 }
-assert.equal(net.normalizeNumber,undefined);
+for (const name of ['fetchWithTimeout','linkedAbortSignal','resolveAllowedFeedUrl','normalizeString','normalizeNullableString','normalizeNumber']) {
+  assert.equal(typeof net[name],'function',`${name} is exported from /net`);
+}
 const decoder = new EdgeWARNDecoder({ memoryLimitBytes:64*1024*1024 });
 const bytes = name => new Uint8Array(readFileSync(name));
 const options = { format:'grib2', mode:'model', output:'half' };
@@ -65,6 +67,8 @@ const { VEL }=await import('./level3-products.mjs');
 assert.equal((await decoder.decode(VEL,{format:'nexrad',level:3,product:'radial',moment:'VEL'})).field.rows,4);
 assert.equal((await decoder.decode(bytes('tvs-kemx.bin'),{format:'nexrad',level:3,product:'tvs'})).detections.length,1);
 assert.deepEqual(grib.BUILT_IN_PACKINGS,[0,2,3]);
+for (const name of ['fromHalf','toHalf','HALF_NAN','levelFromValues']) assert.ok(name in grib,`${name} is exported from /grib2`);
+assert.equal(typeof goes.inflate,'function');
 for(const name of ['@edgewarn/web-utils/packages/core/dist/net/index.js','@edgewarn/web-utils/packages/decoders/dist/index.js','@edgewarn/web-utils/grib2/models/grib2','@edgewarn/web-utils/internal/memory','@edgewarn/web-utils/nexrad/decoder/decoder','@edgewarn/web-utils/mrms','@edgewarn/web-utils/goes/hdf5']) await assert.rejects(import(name),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 JS
 cat > consumer.ts <<'TS'

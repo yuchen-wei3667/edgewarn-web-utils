@@ -37,14 +37,21 @@
     "createNWSClient",
     "createWWAClient",
     "extractNWSAlertItems",
+    "fetchWithTimeout",
+    "linkedAbortSignal",
+    "normalizeNullableString",
+    "normalizeNumber",
     "normalizeStormcellFeatures",
+    "normalizeString",
     "normalizeUpstreamBaseUrl",
     "nwsHeaders",
+    "resolveAllowedFeedUrl",
     "toNWSFeature"
   ],
   "./grib2": [
     "BUILT_IN_PACKINGS",
     "CCSDS_TEMPLATE",
+    "HALF_NAN",
     "JPEG2000_TEMPLATE",
     "decodeCcsds",
     "decodeCcsdsField",
@@ -52,10 +59,13 @@
     "decodeGrib2ToHalf",
     "decodeGrib2ToLevels",
     "decodeJpeg2000Field",
+    "fromHalf",
+    "levelFromValues",
     "parseEcmwfIndex",
     "parseIdx",
     "readGrib2Grid",
-    "registerPacking"
+    "registerPacking",
+    "toHalf"
   ],
   "./nexrad": [
     "AZIMUTH_MISSING",
@@ -78,7 +88,8 @@
     "AbiFile",
     "BytesSource",
     "Hdf5FormatError",
-    "InflateError"
+    "InflateError",
+    "inflate"
   ],
   "./alerts": [
     "CRITICAL_EVENTS",

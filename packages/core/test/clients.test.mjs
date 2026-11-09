@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { EdgeWARNAPI, createNWSClient, toNWSFeature, extractNWSAlertItems, normalizeStormcellFeatures } from '@edgewarn/web-utils/net';
+import { EdgeWARNAPI, createNWSClient, createWWAClient, toNWSFeature, extractNWSAlertItems, normalizeStormcellFeatures } from '@edgewarn/web-utils/net';
 import { createJsonRequester } from '../src/net/edgewarn/client.ts';
 const config={baseUrl:'https://example.test/',routes:{stormSnapshots:'/frames',cells:'/tracks',alerts:'/warnings',alertSnapshots:'/warning-frames',health:'/ready'},alertQuery:{origin:'test'},pageSize:7};
 const make=()=>new EdgeWARNAPI(config,{cache:()=>new Map()});
@@ -129,4 +129,14 @@ test('two NWS clients keep their own User-Agent and base URL',async t=>{
  // Class instances are per-consumer, not shared globals.
  assert.notEqual(a, b);
  assert.throws(() => createNWSClient({ baseUrl: 'http://insecure.example' }), /https/);
+});
+test('NWS and WWA clients can omit the User-Agent header',async t=>{
+ const calls=[];
+ t.mock.method(globalThis,'fetch',async(url,init)=>{calls.push([url,init]); return json({features:[]});});
+ await createNWSClient({userAgent:null}).getPoint(0,0);
+ await createWWAClient({userAgent:null}).getAlerts(0,0);
+ for(const [,init] of calls) {
+  assert.equal(init.headers['User-Agent'],undefined);
+  assert.equal(init.headers.Accept,'application/geo+json');
+ }
 });
