@@ -20,5 +20,5 @@ test('source closure stays portable and free of application dependencies/configu
  }
 });
 test('public barrels expose only documented runtime names and subpaths',async()=>{
- for(const specifier of ['@edgewarn/web-utils/cache','@edgewarn/web-utils/net/edgewarn/api','@edgewarn/web-utils/dist/net/normalize.js']) await assert.rejects(import(specifier),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
+ for(const specifier of ['@edgewarn/web-utils/cache','@edgewarn/web-utils/net/edgewarn/api','@edgewarn/web-utils/dist/net/normalize.js','@edgewarn/web-utils/colormap/rgba','@edgewarn/web-utils/colormap/bundle','@edgewarn/web-utils/packages/core/dist/colormap/index.js']) await assert.rejects(import(specifier),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 });

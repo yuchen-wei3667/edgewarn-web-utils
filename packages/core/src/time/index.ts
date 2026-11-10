@@ -8,3 +8,4 @@ export {
     timestampToMs,
     msToTimestamp,
 } from './timestamp.ts';
+export { nearestFrameWindow, framesForTimeline } from './frame-window.ts';

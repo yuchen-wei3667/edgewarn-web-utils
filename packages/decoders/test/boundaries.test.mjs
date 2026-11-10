@@ -23,7 +23,7 @@ test('source, runtime and declaration graphs preserve format ownership and porta
 test('public runtime surface matches the decoding-only contract',async()=>{
     const api=await import('../dist/index.js');assert.deepEqual(Object.keys(api).sort(),['DecodeBudgetExceededError','EdgeWARNDecoder']);
     const grib=await import('../dist/grib2/index.js');
-    assert.deepEqual(Object.keys(grib).sort(),['BUILT_IN_PACKINGS','CCSDS_TEMPLATE','HALF_NAN','JPEG2000_TEMPLATE','decodeCcsds','decodeCcsdsField','decodeGrib2','decodeGrib2ToHalf','decodeGrib2ToLevels','decodeJpeg2000Field','fromHalf','levelFromValues','parseEcmwfIndex','parseIdx','readGrib2Grid','registerPacking','toHalf'].sort());
+    assert.deepEqual(Object.keys(grib).sort(),['BUILT_IN_PACKINGS','CCSDS_TEMPLATE','HALF_NAN','JPEG2000_TEMPLATE','decodeCcsds','decodeCcsdsField','decodeGrib2','decodeGrib2ToHalf','decodeGrib2ToLevels','decodeJpeg2000Field','fromHalf','levelFromValues','packedOf','parseEcmwfIndex','parseIdx','physicalOf','readGrib2Grid','registerPacking','toHalf'].sort());
     const nexrad=await import('../dist/nexrad/index.js');
     assert.deepEqual(Object.keys(nexrad).sort(),['AZIMUTH_MISSING','Bzip2Decoder','CutAssembler','MessageDecoder','NexradDecoder','buildAzimuthLut','decodeLevel3Radial','destinationPoint','materialize','momentsOfKind','parseLevel3Header','parseTvsProduct','parseVcp','readVcpFromPrefix','sample'].sort());
     assert.deepEqual(Object.keys(await import('../dist/goes/index.js')).sort(),['AbiFile','BytesSource','Hdf5FormatError','InflateError','inflate']);

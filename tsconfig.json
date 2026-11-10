@@ -12,6 +12,12 @@
         },
         {
             "path": "./packages/met"
+        },
+        {
+            "path": "./packages/sources"
+        },
+        {
+            "path": "./packages/models"
         }
     ]
 }

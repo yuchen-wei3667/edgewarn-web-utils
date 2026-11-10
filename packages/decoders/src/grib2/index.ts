@@ -32,6 +32,7 @@ export type {
 export type { GridRotation, LevelReducer, ValueTransform } from './models/types.ts';
 export { fromHalf, toHalf, HALF_NAN } from './models/half.ts';
 export { levelFromValues } from './models/levelGrid.ts';
+export { packedOf, physicalOf } from './sentinels.ts';
 export { parseIdx } from './models/idx.ts';
 export type { IdxEntry } from './models/idx.ts';
 export { parseEcmwfIndex } from './models/addons/ecmwf/inventory.ts';

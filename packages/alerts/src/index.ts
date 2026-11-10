@@ -57,3 +57,12 @@ export type { WarningCopy } from './warning-copy.ts';
 export { hazardTypeForAlert } from './hazard-type.ts';
 export type { HazardType } from './hazard-type.ts';
 export { getEventColors } from './event-colors.ts';
+export {
+    wpcExpiryMs,
+    spcExpiryMs,
+    isExpired,
+    discussionFeatureExpiryMs,
+    activeDiscussionFeatures,
+    createExpiryWatch,
+} from './discussion-expiry.ts';
+export type { ExpiryWatchClock } from './discussion-expiry.ts';

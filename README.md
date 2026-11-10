@@ -15,14 +15,15 @@ Use the entry point for the functionality you need:
 | Import | API |
 | --- | --- |
 | `@edgewarn/web-utils` | `EdgeWARNDecoder`, `DecodeBudgetExceededError` and decoding types |
-| `@edgewarn/web-utils/geo` | Geometry, containment and polygon helpers |
-| `@edgewarn/web-utils/time` | UTC timestamp parsing and formatting |
-| `@edgewarn/web-utils/net` | Configurable EdgeWARN, NWS and NOAA WWA HTTP clients |
-| `@edgewarn/web-utils/alerts` | Alert priority, classification, geometry and location matching |
+| `@edgewarn/web-utils/geo` | Geometry, containment, polygon and solar-position helpers |
+| `@edgewarn/web-utils/time` | UTC timestamp parsing, formatting and timeline frame selection |
+| `@edgewarn/web-utils/net` | Configurable EdgeWARN, NWS and NOAA WWA HTTP clients, S3 listing and `SharedTask` |
+| `@edgewarn/web-utils/colormap` | Colormap types, value-to-RGBA lookup, textures, payload parsing and legend stops/ticks |
+| `@edgewarn/web-utils/alerts` | Alert priority, classification, geometry, location matching and discussion expiry |
 | `@edgewarn/web-utils/alerts/nws` | NWS EAS verification and multi-source point/region alert loading |
-| `@edgewarn/web-utils/grib2` | MRMS/model decoding, inventories and optional codecs |
+| `@edgewarn/web-utils/grib2` | MRMS/model decoding, inventories, GRIB2 packing helpers and optional codecs |
 | `@edgewarn/web-utils/nexrad` | NEXRAD Level II/III, cuts, VCP and TVS |
-| `@edgewarn/web-utils/met` | Sounding thermodynamics, parcels, indices, kinematics and composites |
+| `@edgewarn/web-utils/met` | Sounding thermodynamics, parcels, indices, kinematics and composites; wind-speed units and apparent temperature |
 | `@edgewarn/web-utils/goes` | GOES ABI/HDF5 byte-source readers |
 
 ```ts

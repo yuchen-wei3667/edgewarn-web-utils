@@ -27,6 +27,21 @@ export function distanceMiles(lat1: number, lon1: number, lat2: number, lon2: nu
     return EARTH_RADIUS_MILES * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+const EARTH_RADIUS_METERS = 6371008.8;
+
+/**
+ * Great-circle (haversine) distance between two points in metres, on the IUGG mean-radius sphere
+ * (6371008.8 m). The radius matches the MRMS volume geometry this replaces; `calculateDestination`
+ * keeps its own 6371e3 m radius, so a destination and its distance differ by about 1.4 ppm.
+ */
+export function distanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+        Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+    return EARTH_RADIUS_METERS * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(Math.max(0, 1 - a)));
+}
+
 /** Converts radians to degrees. */
 function toDeg(rad: number): number {
     return (rad * 180) / Math.PI;

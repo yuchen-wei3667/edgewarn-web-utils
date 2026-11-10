@@ -1,8 +1,8 @@
 # @edgewarn/web-utils: geometry, time and clients
 
 Portable ESM geometry, time helpers and EdgeWARN/NWS HTTP clients for Node
-22.18+, browsers, workers and extension service workers. Select `./geo`, `./time`
-or `./net`; the root entry provides decoding. Cache and implementation paths
+22.18+, browsers, workers and extension service workers. Select `./geo`, `./time`,
+`./net` or `./colormap`; the root entry provides decoding. Cache and implementation paths
 are private. There are no runtime code dependencies. `@types/geojson` ships for public GeoJSON declarations.
 
 ```js
@@ -69,6 +69,29 @@ The default User-Agent is shared by all upstream clients; no state is shared
 between clients in one process, and no environment sniffing is performed.
 NWS retains its own nullable response types alongside shared NWS wire types.
 `loadLocationAlerts` belongs to the separate alerts package and is outside core.
+
+`distanceMeters(lat1, lon1, lat2, lon2)` returns haversine metres on a 6371008.8 m
+sphere. `calculateDestination` keeps its 6371e3 m radius, so a destination and
+its measured distance differ by about 1.4 ppm. The solar helpers
+(`solarPosition`, `declinationDeg`, `dayOfYear`, `pathFraction`, `oppositeAltitude`)
+are accurate to about a degree. `nearestFrameWindow` and `framesForTimeline`
+(`/time`) pick timeline frames from timestamped scans: ties go to the older
+scan, unparseable timestamps are dropped, and the result is oldest first.
+
+`parseS3Listing` and `listS3Pages` (`/net`) read S3 `ListObjectsV2` XML over an
+injected `fetch`; `label` names the caller in HTTP error messages. `SharedTask`
+shares one cancellable operation between subscribers and aborts its I/O when the
+last subscriber leaves before it settles.
+
+```js
+import { mapValueToRgba, extractColormaps, getColormapTicks } from '@edgewarn/web-utils/colormap';
+const [colormap] = extractColormaps(payload); // flat list or `{ colormaps: [...] }` groups
+const rgba = mapValueToRgba(35, colormap, colormap.range); // [r, g, b, a], 0-255
+```
+
+`/colormap` is pure value and legend math: it does not fetch the colormap
+bundle or build CSS. Invalid or non-finite thresholds are dropped when a payload
+is parsed; a map with no usable threshold renders as grey.
 
 Invoking clients requires native Fetch, AbortController, URL and DOMException.
 Importing the library makes no requests and needs no browser or storage globals.

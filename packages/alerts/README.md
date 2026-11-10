@@ -42,6 +42,13 @@ and selection rules: `isDashboardSignificantAlert`, `isDashboardTopBannerAlert`,
 `getDismissedAlerts` and `saveDismissedAlert`. Pin the package version if you
 depend on them, or copy the logic into your application.
 
+`wpcExpiryMs`, `spcExpiryMs`, `isExpired`, `discussionFeatureExpiryMs`,
+`activeDiscussionFeatures` and `createExpiryWatch` decide when SPC mesoscale and
+WPC precipitation discussions stop being valid. End times are UTC epoch
+milliseconds or `null` when unreadable, which keeps the discussion. `createExpiryWatch(onExpire, clock?)`
+sets one timer for the earliest end time ahead; pass `{ setTimeout, clearTimeout, now }`
+(all optional, `ExpiryWatchClock`) to drive it without real time.
+
 Public types are `NWSAlertProperties`, `NWSAlertFeature`, `NWSData` (owned by
 `/net`), `SPCWatchType`, `SPCWatchProbabilities`, `SPCWatchAttributes`,
 `SPCWatchSourceUrls`, `SPCWatchDetails`, `LocationAlert`,

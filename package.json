@@ -42,6 +42,10 @@
             "types": "./packages/core/dist/net/index.d.ts",
             "default": "./packages/core/dist/net/index.js"
         },
+        "./colormap": {
+            "types": "./packages/core/dist/colormap/index.d.ts",
+            "default": "./packages/core/dist/colormap/index.js"
+        },
         "./grib2": {
             "types": "./packages/decoders/dist/grib2/index.d.ts",
             "default": "./packages/decoders/dist/grib2/index.js"

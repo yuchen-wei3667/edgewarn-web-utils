@@ -86,3 +86,6 @@ export {
     SOUNDING_KELVIN_OFFSET,
     SOUNDING_RD,
 } from './constants.ts';
+export { convertKnots, convertMetersPerSecond, convertMilesPerHour, formatWindSpeed } from './wind-units.ts';
+export type { WindSpeedUnit } from './wind-units.ts';
+export { steadmanApparentTemperature } from './apparent-temperature.ts';

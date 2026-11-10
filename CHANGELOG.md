@@ -6,6 +6,16 @@ Versions are hand-bumped CalVer prereleases (`YYYY.MM.DD-alpha.N`); the
 releases are published from git tags (see the release section in
 `README.md`).
 
+## Unreleased
+
+- Add `/colormap`: `Colormap` types, `mapValueToRgba`, `createColormapTextureData`, `findColormapByKey`, `normalizeColormapKey`, `isValidRgb`, `extractColormaps` and legend helpers.
+- Add `/geo` `distanceMeters` and solar helpers (`solarPosition`, `declinationDeg`, `dayOfYear`, `pathFraction`, `oppositeAltitude`).
+- Add `/time` `nearestFrameWindow` and `framesForTimeline`.
+- Add `/net` `parseS3Listing`, `listS3Pages` and `SharedTask`.
+- Add `/alerts` discussion expiry helpers with an injectable clock for `createExpiryWatch`.
+- Add `/met` wind-speed unit conversion and `steadmanApparentTemperature`.
+- Add `/grib2` `packedOf` and `physicalOf`.
+
 ## 2026.11.8-alpha.3
 
 - Export float16 conversion and level reduction helpers from `/grib2`.

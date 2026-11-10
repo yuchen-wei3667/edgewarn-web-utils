@@ -51,7 +51,7 @@ No numerical recalibration is part of this extraction.
 
 ## API
 
-60 runtime functions and 15 types, plus four public constants: `SOUNDING_RD` (287.04 J kg⁻¹ K⁻¹),
+65 runtime functions and 16 types, plus four public constants: `SOUNDING_RD` (287.04 J kg⁻¹ K⁻¹),
 `SOUNDING_GRAVITY` (9.80665 m s⁻²), `SOUNDING_KELVIN_OFFSET` (273.15), and
 `SOUNDING_CIN_LIMIT_HPA` (500). All other constants and deep imports are private.
 
@@ -159,9 +159,23 @@ All take a `Column`. Interpolation is linear in log-p; outside the profile it re
 | `analyzeSounding` | `(col: Column, options: AnalysisOptions = {}) => SoundingAnalysis` | The one-call entry point. Four parcels, kinematics, thermo indices, composites. Throws `Error('sounding: structurally empty column')` when `p` has fewer than 2 levels or `z.length !== p.length`. Results are memoised (see the memoisation contract above) |
 | `resolveMotion` | `(motion: StormMotion \| undefined, bunkers) => Vec2 \| null` | Turns a `StormMotion` choice into u/v components |
 
-### 9 Types: 15
+### Units and apparent temperature: 5 functions + 1 type
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `convertKnots` | `(value, unit: WindSpeedUnit) => number` | Knots to `'kts'`, `'mph'` or `'km/h'` |
+| `convertMetersPerSecond` | `(value, unit) => number` | m/s to the unit (any unit other than `'kts'` and `'km/h'` gives mph) |
+| `convertMilesPerHour` | `(value, unit) => number` | mph to the unit |
+| `formatWindSpeed` | `(value, unit) => string` | Rounded value with the unit suffix, for example `'13mph'` |
+| `steadmanApparentTemperature` | `(tF, humidityPercent, windMph) => number \| null` | Steadman (1994) apparent temperature in °F; returns `tF` when humidity or wind is missing |
+
+`WindSpeedUnit` is `'kts' | 'mph' | 'km/h'`. These helpers are independent of the sounding column contracts.
+
+### 9 Types: 16
 
 `Column`, `Vec2`, `StormMotion`, `ParcelKey`, `ParcelResult`, `AnalysisOptions`, `LayerBounds`, `SoundingAnalysis`: already exported in source.
+
+`WindSpeedUnit`: exported with the unit helpers above.
 
 `ParcelDefinition`, `LiftResult`, `CapeCheck`, `BunkersResult`, `ColumnField`, `LayerMeanOptions`: **newly exported.** They are file-private in the source but appear in public signatures, so a consumer cannot name them otherwise. `LiftFn` is already exported from `indices.ts`.
 

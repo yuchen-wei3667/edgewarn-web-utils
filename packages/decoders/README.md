@@ -66,6 +66,10 @@ the next distinct offset. ECMWF lengths determine end directly. Parsing is
 permissive: callers must validate safe ranges before making network reads.
 Inventory strings/objects are outside the decoder instance's buffer allowance.
 
+`packedOf(value, { R, E, D })` returns the packed integer that stands for a
+physical value under simple packing, `Y = (R + X * 2^E) / 10^D`, or `null` when the
+value is not representable. `physicalOf(x, { R, E, D })` is the inverse.
+
 The single GRIB2 entry point has no registration side effects and permits unused
 codec elimination, and does not ship separate addon chunks. The root dynamically loads only the selected format.
 

@@ -14,3 +14,6 @@ export type { NWSAlertProperties, NWSAlertFeature, NWSData } from './types.ts';
 export { WWAAPI, createWWAClient } from './wwa/api.ts';
 export type { WWAFeature, WWAResponse, AlertBoundingBox, WWAClientConfig } from './wwa/api.ts';
 export type { NWSAlertRegion } from './nws/api.ts';
+export { parseS3Listing, listS3Pages } from './s3-listing.ts';
+export type { S3Object, S3ListingPage, S3ListOptions } from './s3-listing.ts';
+export { SharedTask } from './shared-task.ts';
