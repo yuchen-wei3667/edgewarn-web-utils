@@ -15,6 +15,15 @@ releases are published from git tags (see the release section in
 - Add `/alerts` discussion expiry helpers with an injectable clock for `createExpiryWatch`.
 - Add `/met` wind-speed unit conversion and `steadmanApparentTemperature`.
 - Add `/grib2` `packedOf` and `physicalOf`.
+- Add `/goes` pure tables and projection: sectors, bands, products, RGB composites, `pyramidFromWire`, `lonLatToPixel`, `pixelToLonLat`, `lonLatToScan`, `scanToLonLat`, `zenithDeg`; `Hdf5File` is exported and reads float32 datasets (`dataset`, `floats`).
+- Add `/goes/feed`: bucket listings and timelines, `ReadAheadSource`, `streamAbi`, `GoesBandCache` over an injected `ResponseStore`, tile pyramid and draw planning.
+- Add `/nexrad` pure tables and geometry: station table, moment catalog, `ChunkSequence`, `ElevationAssembler` and elevation planning, `groupTilts`, beam geometry and sweep sampling.
+- Add `/nexrad/feed`: archive, chunk and Level III listings, volume timelines and live polling, `receivingState`, `runLevel3Job`, `CacheStoragePrefixStore` over an injected `ResponseStore`.
+- Add `/met` column building (`buildColumn`), plate panels (`stormSlinky`, `thetaEProfile`, `dendriticGrowthZone`, `precipitationPanel`), `soundingCsv`, `windFromComponents`, the `ColumnSeries` type and observed radiosondes (`fetchRaobStations`, `fetchRaobColumn`, `nearestRaobStations`, `parseRaobColumn`, `recentRaobLaunches`).
+- Add `/met/plot`: Skew-T, hodograph, wind-barb and time-height geometry.
+- Add `/net` `ResponseStore`, the injected persistent byte cache type.
+- Add `/net` per-instance SPC, WPC (including surface analysis and winter precipitation probabilities), IEM reports, Open-Meteo and NHC clients with injected fetch, upstream URLs and request identity; METAR normalization and public-feed response types. Open-Meteo persistence is opt-in through injected storage; PWPF geometry processing is caller-owned.
+- Add `/mrms`: bucket listing, product catalog, lightning sampling, volume geometry and profile sampling, and `GzCache` over an injected `ResponseStore`.
 
 ## 2026.11.8-alpha.3
 

@@ -25,7 +25,17 @@ const goes = await import('@edgewarn/web-utils/goes');
 const geo = await import('@edgewarn/web-utils/geo');
 const time = await import('@edgewarn/web-utils/time');
 const net = await import('@edgewarn/web-utils/net');
+for (const name of ['createSPCClient','createWPCClient','createReportsClient','createOpenMeteoClient','createNHCClient']) {
+  assert.equal(typeof net[name],'function',`${name} is exported from /net`);
+  net[name]({ fetch: globalThis.fetch, userAgent: null }); // construction makes no requests
+}
+assert.equal(net.cycloneCategory(137).step,6);
+assert.equal(net.metarHourTimestamps(new Date('2026-11-09T12:45:00Z'),1).length,1);
 const colormap = await import('@edgewarn/web-utils/colormap');
+const mrms = await import('@edgewarn/web-utils/mrms');
+const goesFeed = await import('@edgewarn/web-utils/goes/feed');
+const nexradFeed = await import('@edgewarn/web-utils/nexrad/feed');
+const metPlot = await import('@edgewarn/web-utils/met/plot');
 const met = await import('@edgewarn/web-utils/met');
 const column = { validMs: 0, p: Float32Array.of(1000, 900), z: Float32Array.of(0, 1000), t: Float32Array.of(20, 10), td: Float32Array.of(10, 0), u: new Float32Array(2), v: new Float32Array(2), surface: {p:1000,z:0,t:20,td:10,u:0,v:0} };
 const cape = met.analyzeSounding(column).parcels.sb.cape;
@@ -48,6 +58,18 @@ assert.equal(geo.distanceMeters(0,0,0,0),0);
 assert.deepEqual(colormap.mapValueToRgba(0,null,[0,1]),[32,32,32,255]);
 assert.equal(net.parseS3Listing('').nextToken,null);
 assert.equal(typeof alerts.createExpiryWatch,'function');
+assert.equal(mrms.timestampFromKey('CONUS/VIL_00.50/20260102/MRMS_VIL_00.50_20260102-030405.grib2.gz'),'20260102-030405');
+assert.equal(goesFeed.parseGoesKey('ABI-L2-CMIPC/2026/284/12/OR_ABI-L2-CMIPC-M6C13_G19_s20262841201186_e20262841203559_c20262841204043.nc').channel,'C13');
+assert.equal(goes.getGoesBand('GOES_ABI_C13_BrightnessTemp').band,13);
+assert.equal(goes.pyramidFromWire({x0:0,y0:0,dx:1e-4,dy:-1e-4,width:2,height:2,perspectivePointHeight:35786023,semiMajorAxis:6378137,semiMinorAxis:6356752.31414,lon0:-75}).width,2);
+assert.equal(metPlot.createSkewT().height,1000);
+assert.equal(metPlot.barbSymbol(10).knots,20);
+assert.equal(met.windFromComponents(0,-10).dirDeg,0);
+assert.equal(met.parseRaobColumn({},0),null);
+assert.equal(nexradFeed.parseChunkKey('KTLX/186/20261013-001157-003-I').sequence,3);
+assert.equal(nexrad.NEXRAD_SITE_BY_ID.get('KTLX').name,'Norman');
+assert.equal(nexrad.formatAngle(0.48),'0.5°');
+assert.equal(mrms.getMrmsProduct(mrms.DEFAULT_MRMS_PRODUCT).group,'reflectivity');
 assert.equal(met.convertKnots(1,'kts'),1);
 assert.equal(grib.packedOf(5,{R:0,E:0,D:0}),5);
 for (const path of ['@edgewarn/web-utils/cache','@edgewarn/web-utils/net/normalize','@edgewarn/web-utils/alerts/alert-id','@edgewarn/web-utils/alerts/dist/index.js','@edgewarn/web-utils/packages/alerts/dist/index.js']) {
@@ -76,7 +98,7 @@ assert.equal((await decoder.decode(bytes('tvs-kemx.bin'),{format:'nexrad',level:
 assert.deepEqual(grib.BUILT_IN_PACKINGS,[0,2,3]);
 for (const name of ['fromHalf','toHalf','HALF_NAN','levelFromValues']) assert.ok(name in grib,`${name} is exported from /grib2`);
 assert.equal(typeof goes.inflate,'function');
-for(const name of ['@edgewarn/web-utils/packages/core/dist/net/index.js','@edgewarn/web-utils/packages/decoders/dist/index.js','@edgewarn/web-utils/grib2/models/grib2','@edgewarn/web-utils/internal/memory','@edgewarn/web-utils/nexrad/decoder/decoder','@edgewarn/web-utils/mrms','@edgewarn/web-utils/goes/hdf5']) await assert.rejects(import(name),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
+for(const name of ['@edgewarn/web-utils/packages/core/dist/net/index.js','@edgewarn/web-utils/packages/decoders/dist/index.js','@edgewarn/web-utils/grib2/models/grib2','@edgewarn/web-utils/internal/memory','@edgewarn/web-utils/nexrad/decoder/decoder','@edgewarn/web-utils/met/raob','@edgewarn/web-utils/met/plot/skew-t','@edgewarn/web-utils/nexrad/feed/listing','@edgewarn/web-utils/goes/feed/listing','@edgewarn/web-utils/mrms/listing','@edgewarn/web-utils/mrms/volume/geometry','@edgewarn/web-utils/goes/hdf5']) await assert.rejects(import(name),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 JS
 cat > consumer.ts <<'TS'
 import { analyzeSounding, surfaceParcelDef, liftColumn } from '@edgewarn/web-utils/met';
@@ -94,8 +116,42 @@ import { mapValueToRgba, extractColormaps } from '@edgewarn/web-utils/colormap';
 import type { Colormap } from '@edgewarn/web-utils/colormap';
 import { solarPosition, distanceMeters } from '@edgewarn/web-utils/geo';
 import { SharedTask, parseS3Listing } from '@edgewarn/web-utils/net';
+import { createSPCClient, createWPCClient, createReportsClient, createOpenMeteoClient, createNHCClient } from '@edgewarn/web-utils/net';
+import type { SPCClientConfig, WPCClientConfig, ReportsConfig, OpenMeteoConfig, ForecastStorage, NHCClientConfig, CycloneCollection, SPCWatchDetails as NetWatchDetails, MetarEntry, LSRGeoJSON } from '@edgewarn/web-utils/net';
+const spcConfig: SPCClientConfig = { baseUrl: 'https://spc.example.test', userAgent: null, fetch };
+const watchDetails: Promise<NetWatchDetails | null> = createSPCClient(spcConfig).fetchWatchDetails(42);
+const wpcConfig: WPCClientConfig = { hazardsUrl: 'https://wpc.example.test/ero', wssiUrl: 'https://wpc.example.test/wssi', productsUrl: 'https://nws.example.test/products', postProcess: data => data };
+const surfaceAnalysis: Promise<GeoJSON.FeatureCollection> = createWPCClient(wpcConfig).fetchSurfaceAnalysis();
+const reportsConfig: ReportsConfig = { lsrUrl: 'https://iem.example.test/lsr', now: () => 0 };
+const localReports: Promise<LSRGeoJSON> = createReportsClient(reportsConfig).fetchLocalStormReports({});
+declare const forecastStorage: ForecastStorage;
+const openMeteoConfig: OpenMeteoConfig = { storage: forecastStorage };
+const hourlyForecast = createOpenMeteoClient(openMeteoConfig).getHourlyForecast(35, -97);
+const nhcConfig: NHCClientConfig = { baseUrl: 'https://nhc.example.test/MapServer' };
+const cyclones: Promise<CycloneCollection> = createNHCClient(nhcConfig).fetchForecasts();
+// @ts-expect-error the injected storage must implement the full ForecastStorage contract
+createOpenMeteoClient({ storage: {} });
+// @ts-expect-error outlook days must be in the SPC range
+createSPCClient().fetchOutlook(9);
+declare const netWatch: NetWatchDetails;
+const alertWatch: import('@edgewarn/web-utils/alerts').SPCWatchDetails = netWatch;
 import type { S3Object } from '@edgewarn/web-utils/net';
 import { createExpiryWatch } from '@edgewarn/web-utils/alerts';
+import { GzCache, listDay, getMrmsProduct, clampLine } from '@edgewarn/web-utils/mrms';
+import type { MrmsProduct, LatLng } from '@edgewarn/web-utils/mrms';
+import type { ResponseStore } from '@edgewarn/web-utils/net';
+import { fetchGoesTimeline, GoesBandCache } from '@edgewarn/web-utils/goes/feed';
+import type { GoesFrame } from '@edgewarn/web-utils/goes/feed';
+import { createSkewT, skewTBackground, windBarbs, buildTimeHeight } from '@edgewarn/web-utils/met/plot';
+import type { SkewT, TimeHeightGrid } from '@edgewarn/web-utils/met/plot';
+import { buildColumn, fetchRaobColumn, soundingCsv, windFromComponents } from '@edgewarn/web-utils/met';
+import type { ColumnSeries, RaobStation } from '@edgewarn/web-utils/met';
+import { listArchiveDay, runLevel3Job, receivingState, CacheStoragePrefixStore } from '@edgewarn/web-utils/nexrad/feed';
+import type { NexradVolume, Level3Message } from '@edgewarn/web-utils/nexrad/feed';
+import { NEXRAD_SITES, buildSweeps, groupTilts } from '@edgewarn/web-utils/nexrad';
+import type { Sweep, NexradSite } from '@edgewarn/web-utils/nexrad';
+import { GOES_SECTORS, getGoesBand, lonLatToPixel, pyramidFromWire } from '@edgewarn/web-utils/goes';
+import type { PyramidGrid, GoesBand } from '@edgewarn/web-utils/goes';
 import { convertKnots } from '@edgewarn/web-utils/met';
 import type { WindSpeedUnit } from '@edgewarn/web-utils/met';
 import { EdgeWARNAPI, NWSAPI, createNWSClient, createWWAClient, normalizeStormcellFeatures, toNWSFeature, extractNWSAlertItems } from '@edgewarn/web-utils/net';
@@ -133,6 +189,44 @@ const meters: number = distanceMeters(0,0,0,0) + solarPosition(0,0,new Date(0)).
 const task = new SharedTask(async () => 1);
 const listed: S3Object[] = parseS3Listing('').objects;
 const watch = createExpiryWatch(() => {}, { now: () => 0 });
+const skewT: SkewT = createSkewT({ size: 500 });
+const background = skewTBackground(skewT, { isobarsHpa: [1000, 500] }).isobars;
+const barbs = windBarbs(skewT, soundingColumn);
+const timeHeight: TimeHeightGrid = buildTimeHeight([soundingColumn]);
+declare const columnSeries: ColumnSeries;
+const csv: string = soundingCsv(columnSeries, soundingColumn);
+const built = buildColumn(0, [], { t: 20, rh: 50, gu: 0, gv: 0, hsurf: 0 }, 0, false, { lapseKPerM: 0.0065 });
+const raob: Promise<Column> = fetchRaobColumn('KOUN', 0);
+const wind: { speedMs: number; dirDeg: number } = windFromComponents(1, 1);
+declare const station: RaobStation;
+void station;
+// @ts-expect-error the surface needs t, rh, gu, gv and hsurf
+buildColumn(0, [], { t: 20 }, 0);
+const goesBand: GoesBand = getGoesBand('GOES_ABI_C13_BrightnessTemp')!;
+const goesFrames: Promise<GoesFrame[]> = fetchGoesTimeline(GOES_SECTORS[0], goesBand, new Date(), { fetcher: fetch, scanMode: '6' });
+const goesCache = new GoesBandCache({ store, memoryBytes: 1024 });
+declare const pyramid: PyramidGrid;
+const goesPixel: { col: number; row: number } | null = lonLatToPixel(pyramid, -97, 35);
+// @ts-expect-error memoryBytes is required
+new GoesBandCache({ store });
+const nexradDay: Promise<unknown[]> = listArchiveDay('KTLX', new Date(), { fetcher: fetch });
+declare const volumes: NexradVolume[];
+const receiving = receivingState({ now: 0, volumes, receiving: null, unreachable: false }).kind;
+const prefixes = new CacheStoragePrefixStore({ store, maxBytes: 1024 });
+const posted: Level3Message[] = [];
+const level3Run: Promise<void> = runLevel3Job({ jobId: 1, site: 'KTLX', volumeId: '20261020-000935', moments: ['VEL'], elevation: { angle: 0.5 } }, { signal: new AbortController().signal, post: (m) => void posted.push(m), headerCache: new Map() }, { bytesRead: 0 });
+const site: NexradSite | undefined = NEXRAD_SITES[0];
+declare const sweepInput: Sweep[];
+const sweeps: Sweep[] = buildSweeps(sweepInput);
+// @ts-expect-error maxBytes is required
+new CacheStoragePrefixStore({ store });
+const mrmsProduct: MrmsProduct | undefined = getMrmsProduct('VIL_00.50');
+const mrmsDays: Promise<string[]> = listDay('VIL_00.50', '20260102', { fetcher: fetch });
+declare const store: ResponseStore;
+const gz = new GzCache({ store });
+const mrmsPoint: LatLng = clampLine({ lat: 35, lng: -97 }, { lat: 36, lng: -96 }).b;
+// @ts-expect-error store must satisfy ResponseStore
+new GzCache({ store: {} });
 const unit: WindSpeedUnit = 'kts';
 const speed: number = convertKnots(1, unit);
 // @ts-expect-error unit must be a known wind speed unit

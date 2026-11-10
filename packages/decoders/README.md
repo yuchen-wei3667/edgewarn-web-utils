@@ -77,7 +77,14 @@ codec elimination, and does not ship separate addon chunks. The root dynamically
 
 `@edgewarn/web-utils/nexrad` exports incremental `NexradDecoder`, `MessageDecoder`,
 `Bzip2Decoder`, `sample`, `materialize`, VCP readers, `CutAssembler`, azimuth lookup
-and Level III radial/TVS readers.
+and Level III radial/TVS readers. The pure helpers around them live here too:
+the moment and station tables (`NEXRAD_SITES`), `ChunkSequence`, the S/D elevation
+assembly (`buildElevations`, `ElevationAssembler`, `pickElevation`, `groupTilts`), beam
+and gate geometry (`beamHeightMeters`, `slantRangeOf`, `locateGate`, `radarQuad`) and
+vertical sampling from sweeps (`buildSweeps`, `polarColumn`, `polarProfile`, `cropField`).
+`ElevationAssembler` is built on `CutAssembler`: it chooses which cuts to assemble for
+each requested elevation and moment. Bucket listings, volume timelines, Level III reads
+and the prefix store are in `@edgewarn/web-utils/nexrad/feed`.
 
 ```ts
 await decoder.decode(archiveBody, {
@@ -107,13 +114,17 @@ heap bound. The root streams radials without aggregating a volume.
 Level III supports the original digital-radial product codes and NTV/TVS subset,
 including compression, scaling, station/scan metadata and azimuth lookup. Invalid
 radial products throw; invalid TVS products return `null`, whereas a valid TVS
-product with no detections returns an empty detections array. Listing, volume
-selection and elevation sequencing are outside the package.
+product with no detections returns an empty detections array. Listing and volume
+selection are in `/nexrad/feed`.
 
 ## GOES ABI
 
 `@edgewarn/web-utils/goes` exports `AbiFile`, `BytesSource`, byte-source and ABI
-contracts, `Hdf5FormatError`, and `InflateError`.
+contracts, `Hdf5File` (with `Hdf5FormatError`), `InflateError` and the pure ABI
+tables: sectors, bands, products, RGB composite recipes, level-of-detail helpers and
+the geostationary projection (`pyramidFromWire`, `lonLatToPixel`, `pixelToLonLat`,
+`lonLatToScan`, `scanToLonLat`, `zenithDeg`). Bucket listings, HTTP sources, caches
+and tile planning are in `@edgewarn/web-utils/goes/feed`.
 
 ```ts
 import { AbiFile, BytesSource } from '@edgewarn/web-utils/goes';
@@ -139,8 +150,16 @@ await AbiFile.open(source, signal, {
 ```
 
 Promise sharing and eviction on rejection are preserved. HTTP range sources,
-read-ahead caches, fetch binding and `streamAbi` stay in the application. A
+read-ahead caches, fetch binding and `streamAbi` live in `/goes/feed`. A
 `ByteSource` owns its returned buffers/caches and must honor cancellation signals.
+
+`Hdf5File` is the one HDF5 reader. Besides the ABI primitives it reads float32
+datasets: `dataset(address)` returns dims, type, layout and filters, and
+`floats(dataset, index?)` returns a whole 1-D or 2-D field, or one level (a 2-D
+slab) of a 3-D one. It locates only the chunks that hold the slab, fetches
+neighbouring chunks in one request, and reads through a `ByteSource`, so a
+range-reading source gives remote NetCDF-4 files without downloading them. Reads
+past the end of the file must come back short, as HTTP range reads do.
 
 ## Memory and failure contracts
 

@@ -3,6 +3,8 @@ interface FetchTimeoutOptions extends Omit<RequestInit, 'signal'> {
     signal?: AbortSignal;
     /** Abort the request after this many ms. Defaults to 15000; pass 0 to disable. */
     timeoutMs?: number;
+    /** Fetch implementation to call instead of the global one (per-instance clients pass theirs). */
+    fetcher?: typeof fetch;
 }
 
 const DEFAULT_TIMEOUT_MS = 15000;
@@ -51,10 +53,10 @@ export async function fetchWithTimeout(
     input: string | URL,
     options: FetchTimeoutOptions = {},
 ): Promise<Response> {
-    const { signal, timeoutMs = DEFAULT_TIMEOUT_MS, ...init } = options;
+    const { signal, timeoutMs = DEFAULT_TIMEOUT_MS, fetcher, ...init } = options;
     const linked = linkedAbortSignal(signal, timeoutMs);
     try {
-        return await fetch(input, { ...init, signal: linked.signal });
+        return await (fetcher ?? fetch)(input, { ...init, signal: linked.signal });
     } finally {
         linked.dispose();
     }

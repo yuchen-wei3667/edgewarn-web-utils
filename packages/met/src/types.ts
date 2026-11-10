@@ -109,3 +109,24 @@ export interface SoundingAnalysis {
         brn: number | null; // bulk Richardson number from the MU parcel
     };
 }
+
+/** A run of columns at one snapped cell, by valid time. */
+export interface ColumnSeries {
+    /** Registry id of the model; owned by the caller's configuration. */
+    model: string;
+    initMs: number;
+    cell: { i: number; j: number; lat: number; lon: number };
+    /** The source that built it, e.g. a point reader. */
+    type: string;
+    /** Human attribution variant, e.g. "Open-Meteo copy of NOAA". */
+    derivedFrom?: string;
+    /** By valid time, ascending: only the times that were read. */
+    columns: Column[];
+    /** Every valid time the run lists (ms), so a step bar can offer the ones not read yet. */
+    validTimes: number[];
+    /** False while the provider is still writing the run: later steps may appear. */
+    complete: boolean;
+    /** What was read to build the series (urls or byte ranges). */
+    provenance: { urls: string[]; bytes: number; reads?: unknown[]; units?: number };
+    notes: string[];
+}

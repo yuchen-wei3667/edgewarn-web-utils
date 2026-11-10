@@ -79,6 +79,7 @@ export type {
     AnalysisOptions,
     LayerBounds,
     SoundingAnalysis,
+    ColumnSeries,
 } from './types.ts';
 export {
     SOUNDING_CIN_LIMIT_HPA,
@@ -89,3 +90,38 @@ export {
 export { convertKnots, convertMetersPerSecond, convertMilesPerHour, formatWindSpeed } from './wind-units.ts';
 export type { WindSpeedUnit } from './wind-units.ts';
 export { steadmanApparentTemperature } from './apparent-temperature.ts';
+export { windFromComponents, componentsFromWind } from './wind.ts';
+export { buildColumn, rotateWind, surfacePressure } from './column.ts';
+export type { RawLevel, RawSurface, SurfacePressure, BuiltColumn, BuildColumnOptions } from './column.ts';
+export {
+    windTone,
+    inferredAdvection,
+    stormRelativeProfile,
+    thetaEProfile,
+    stormSlinky,
+    hazardType,
+    dendriticGrowthZone,
+    layersAloft,
+    precipitationPanel,
+} from './plate.ts';
+export type { WindTone, Slinky, GrowthZone, TemperatureLayer, PrecipitationPanel } from './plate.ts';
+export { soundingCsv } from './csv.ts';
+export {
+    RAOB_STATIONS_URL,
+    RAOB_PROFILE_URL,
+    parseRaobStations,
+    distanceKm,
+    nearestRaobStations,
+    raobLaunchChoices,
+    raobTimestamp,
+    raobProfileUrl,
+    parseRaobColumn,
+    windOnlyColumn,
+    RaobError,
+    fetchRaobStations,
+    fetchRaobColumn,
+    isUsRaobStation,
+    raobPlace,
+    recentRaobLaunches,
+} from './raob.ts';
+export type { RaobStation } from './raob.ts';

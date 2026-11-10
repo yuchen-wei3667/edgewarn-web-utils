@@ -11,8 +11,8 @@ test('normalizers retain coercion and fallback behavior',()=>{
 });
 test('feed URL policy retains credentials and ports and rejects suffix tricks',()=>{
  assert.equal(resolveAllowedFeedUrl('http://USER:pass@DATA.NOAA.GOV:8080/x?q=1#f'),'https://USER:pass@data.noaa.gov:8080/x?q=1#f');
- for(const host of ['noaa.gov','weather.gov','api.weather.gov']) assert.equal(resolveAllowedFeedUrl('https://'+host),'https://'+host+'/');
- for(const x of ['/x','bad','ftp://noaa.gov','https://evilnoaa.gov','https://noaa.gov.evil.test','https://noaa.gov@evil.test']) assert.equal(resolveAllowedFeedUrl(x),null);
+ for(const host of ['noaa.gov','weather.gov','api.weather.gov','www.spc.noaa.gov','mapservices.weather.noaa.gov','mesonet.agron.iastate.edu','api.open-meteo.com']) assert.equal(resolveAllowedFeedUrl('https://'+host),'https://'+host+'/');
+ for(const x of ['/x','bad','ftp://noaa.gov','https://evilnoaa.gov','https://noaa.gov.evil.test','https://noaa.gov@evil.test','https://evilopen-meteo.com','https://open-meteo.com.evil.test','https://evilagron.iastate.edu','https://agron.iastate.edu.evil.test']) assert.equal(resolveAllowedFeedUrl(x),null);
 });
 test('linked signals preserve abort reasons and clean listeners/timers',t=>{
  t.mock.timers.enable({apis:['setTimeout']});

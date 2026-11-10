@@ -83,6 +83,56 @@ injected `fetch`; `label` names the caller in HTTP error messages. `SharedTask`
 shares one cancellable operation between subscribers and aborts its I/O when the
 last subscriber leaves before it settles.
 
+### Public weather feeds (`/net`)
+
+Create an instance per consumer/lifecycle; no cache or in-flight request is shared
+between clients. All feed clients accept `fetch`, `timeoutMs` (15 seconds by
+default, until response headers), `userAgent` (the shared
+`DEFAULT_NWS_USER_AGENT`, or `null` to omit it), and `now` for cache freshness.
+Upstream URLs must use HTTPS. Application proxying, browser storage and
+framework-specific revalidation stay with the caller.
+
+| Factory | Methods | URL options |
+| --- | --- | --- |
+| `createSPCClient` | `fetchOutlook`, `fetchWatchDetails`, `getCachedWatchDetails`, `getWatchSourceUrls`, `fetchStormReports` | `baseUrl` (default `SPC_BASE_URL`) |
+| `createWPCClient` | `fetchEro`, `fetchWssi`, `fetchSurfaceAnalysis`, `fetchAllSnowProbabilities`, `fetchIceProbability` | `hazardsUrl`, `wssiUrl`, `productsUrl`; `baseUrl` is the PWPF MapServer |
+| `createReportsClient` | `fetchLocalStormReports`, `fetchCoCoRaHSReports` | `lsrUrl`, `cocorahsUrl` |
+| `createOpenMeteoClient` | `fetchHourlyForecast`, `getHourlyForecast` | `baseUrl` |
+| `createNHCClient` | `fetchForecasts` | `baseUrl` |
+
+```js
+import { createSPCClient, createWPCClient, createOpenMeteoClient } from '@edgewarn/web-utils/net';
+const spc = createSPCClient({ userAgent: 'my-app (contact@example.com)' });
+const outlook = await spc.fetchOutlook(1, 'hail');
+const details = await spc.fetchWatchDetails(42);
+const wpc = createWPCClient();
+const fronts = await wpc.fetchSurfaceAnalysis('20261109-120000');
+const forecasts = createOpenMeteoClient(); // memory only unless `storage` is supplied
+const hourly = await forecasts.getHourlyForecast(35, -97);
+```
+
+Watch details (including missing products) and parsed surface charts are cached
+for the lifetime of their client. Failed watch/chart requests are evicted and
+can be retried. SPC reports expire after five minutes (`forceRefresh` bypasses
+that cache); the surface-analysis product listing expires after two minutes.
+Scope client lifetimes accordingly. Report feeds preserve partial-success and
+empty-result behavior; WPC surface analysis returns an empty collection on
+failure, whereas NHC rejects upstream failures rather than claiming no storms.
+
+PWPF accepts `postProcess(collection)` after adding threshold/day/type metadata;
+geometry-library operations such as donut clipping are not bundled. Open-Meteo
+accepts an optional `ForecastStorage` implementation, caches for 30 minutes and
+removes stored location forecasts after six hours. `fetchHourlyForecast` accepts
+a caller signal; `getHourlyForecast` shares one in-flight read per rounded
+location in its own instance. Feed imports do not access browser storage.
+
+`metarHourTimestamps`, `latestMetarEntries` and `conusStationIds` are pure helpers,
+not a station-data fetcher. `/net` exports the report, METAR and watch response
+types; `/alerts` retains compatible watch-type re-exports. The standalone
+`fetchSPCOutlook`, `fetchWPCEro`, `fetchWSSI`, PWPF, report, Open-Meteo and cyclone
+fetch functions also accept configuration; cached operations live on instances,
+not singleton functions.
+
 ```js
 import { mapValueToRgba, extractColormaps, getColormapTicks } from '@edgewarn/web-utils/colormap';
 const [colormap] = extractColormaps(payload); // flat list or `{ colormaps: [...] }` groups
@@ -100,7 +150,8 @@ headers; body consumption is outside that timeout. EdgeWARN request options use
 an opt-in timeout (default disabled) covering headers and JSON body consumption.
 Abort reasons propagate and request timers/listeners are disposed on completion.
 
-Transport/coercion/feed URL helpers are private. The feed policy accepts absolute
-HTTP(S) URLs on noaa.gov/weather.gov and their subdomains, upgrades HTTP, and
+Transport/coercion/feed URL helpers are exported through `/net`; implementation
+paths are private. The feed policy accepts absolute HTTP(S) URLs on
+noaa.gov/weather.gov/agron.iastate.edu/open-meteo.com and their subdomains, upgrades HTTP, and
 retains credentials and ports. It checks neither DNS nor redirects and is not
 automatically applied to client URLs. Callers own additional server request policy.

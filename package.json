@@ -23,7 +23,9 @@
         "packages/alerts/dist",
         "packages/alerts/README.md",
         "packages/met/dist",
-        "packages/met/README.md"
+        "packages/met/README.md",
+        "packages/sources/dist",
+        "packages/sources/README.md"
     ],
     "exports": {
         ".": {
@@ -70,6 +72,22 @@
         "./met": {
             "types": "./packages/met/dist/index.d.ts",
             "default": "./packages/met/dist/index.js"
+        },
+        "./mrms": {
+            "types": "./packages/sources/dist/mrms/index.d.ts",
+            "default": "./packages/sources/dist/mrms/index.js"
+        },
+        "./goes/feed": {
+            "types": "./packages/sources/dist/goes/index.d.ts",
+            "default": "./packages/sources/dist/goes/index.js"
+        },
+        "./nexrad/feed": {
+            "types": "./packages/sources/dist/nexrad/index.d.ts",
+            "default": "./packages/sources/dist/nexrad/index.js"
+        },
+        "./met/plot": {
+            "types": "./packages/met/dist/plot/index.d.ts",
+            "default": "./packages/met/dist/plot/index.js"
         }
     },
     "scripts": {

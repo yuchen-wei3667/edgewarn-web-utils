@@ -26,7 +26,7 @@ Use equal-length `Float32Array` fields with strictly decreasing pressure, elemen
 zero at the surface and below-ground levels removed. `surface` duplicates the
 first row. `validMs` is the valid time in Unix milliseconds. Optional `vertical`
 contains `{ units: 'm/s', values: Float32Array }`; analysis does not use it.
-`ColumnSeries`, source/model selection, I/O and rendering remain caller concerns.
+Model selection, point readers and rendering remain caller concerns.
 
 Pressure is hPa, temperature °C (unless named K), mixing ratio g/kg, height metres
 MSL (AGL where named), wind m/s, CAPE/CIN J/kg and helicity m²/s². User storm
@@ -48,6 +48,34 @@ There is no public cache reset or configurable capacity.
 SHARPpy Wobus polynomials, 5 hPa lift / 10 hPa screening meshes, the 300 hPa
 most-unstable search, and DCAPE's local gravity of 9.8 are retained intentionally.
 No numerical recalibration is part of this extraction.
+
+## Panels, columns, export and radiosondes
+
+Also exported from `@edgewarn/web-utils/met`, all synchronous except the RAOB fetches:
+
+- `windFromComponents` and `componentsFromWind`: speed and meteorological direction (a calm wind reads 0).
+- `buildColumn`, `rotateWind`, `surfacePressure` and the `RawLevel`/`RawSurface` types: raw model
+  levels to a `Column` (grid winds turned to earth-relative, dewpoint from RH, surface pressure
+  estimated from the level heights). `ColumnSeries` is the type of a run of columns.
+- `thetaEProfile`, `stormSlinky`, `stormRelativeProfile`, `inferredAdvection`, `windTone`,
+  `hazardType`, `dendriticGrowthZone`, `layersAloft`, `precipitationPanel`: the SHARPpy-style
+  plate panels (EdgeWARN's simplified takes; each says what it does).
+- `soundingCsv(series, column)`: one column as CSV with provenance lines. The credit line names
+  Open-Meteo, as the website's export does. A calm level's direction cell is 180.
+- RAOB (Iowa State Mesonet): `fetchRaobStations`, `fetchRaobColumn`, `nearestRaobStations`,
+  `parseRaobStations`, `parseRaobColumn`, `recentRaobLaunches`, `raobLaunchChoices`, `windOnlyColumn`
+  and more. The two fetches go through `fetchWithTimeout` from `/net` (15 s default) and take the
+  station-list and profile URLs as optional arguments. Distances use `/geo` `distanceMeters`.
+  These are the only functions in this package that touch the network or import another package.
+
+## Plot geometry (`@edgewarn/web-utils/met/plot`)
+
+Display geometry as plain numbers, with no drawing and no colours: `createSkewT`, `skewTBackground`,
+`columnTrace`, `parcelTrace`, `parcelMarkers`, `buoyancyAreas`, `windBarbs`, `levelReadout`,
+`createHodograph`, `hodographSegments`, `hodographMarkers`, `helicityArea`, `buildTimeHeight`
+and `barbSymbol`, with the `SOUNDING_SKEWT*`, `SOUNDING_HODOGRAPH*` and barb constants they default
+to. Lengths are viewBox units; the caller scales the drawing. Functions that read a constant take an
+optional override. The science entry stays free of this geometry.
 
 ## API
 

@@ -105,3 +105,9 @@ export const SOUNDING_BRN_TOP_M = 6000;
 
 /** Memoisation of `analyzeSounding` results per column hash. */
 export const SOUNDING_ANALYSIS_CACHE_SIZE = 32;
+
+/* Column construction from raw model levels (`buildColumn`). */
+/** A pressure level this close to the surface pressure (or closer) duplicates the surface row and is dropped. */
+export const SOUNDING_SURFACE_GAP_HPA = 0.5;
+/** Mean lapse rate of the hypsometric surface-pressure estimate below the lowest level, K m⁻¹ (US Standard Atmosphere). */
+export const SOUNDING_STANDARD_LAPSE_K_PER_M = 0.0065;

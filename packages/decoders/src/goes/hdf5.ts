@@ -1,3 +1,4 @@
+import { inflate } from './inflate.ts';
 import type { ByteSource } from './source.ts';
 
 /**
@@ -11,6 +12,9 @@ const UNDEF = -1;
 /** Entries per v1 B-tree node HDF5 writes by default (2 × K, K = 32); larger nodes cost a second read. */
 const V1_BTREE_GUESS_ENTRIES = 64;
 const TEXT = new TextDecoder();
+/** Chunks whose bytes lie closer than this are fetched in one request, up to `MAX_REQUEST_BYTES`. */
+const CHUNK_GAP_BYTES = 64 * 1024;
+const MAX_REQUEST_BYTES = 4 * 1024 * 1024;
 
 export class Hdf5FormatError extends Error {
     constructor(message: string) {
@@ -98,6 +102,14 @@ export type Layout =
     | { kind: 'chunked'; btree: number; chunk: number[] };
 
 export type AttrValue = string | number[];
+
+/** A dataset's shape, type, layout and filter pipeline, from its object header. */
+export interface Hdf5Dataset {
+    dims: readonly number[];
+    type: Datatype;
+    layout: Layout;
+    filters: readonly Filter[];
+}
 
 export interface ChunkRef {
     /** Element offset of the chunk's first element in each dimension. */
@@ -428,6 +440,174 @@ export class Hdf5File {
         return btree === UNDEF ? [] : walk(btree);
     }
 
+    // ---- Float datasets ------------------------------------------------------------------------
+
+    /** The dataset whose object header is at `address`. */
+    async dataset(address: number): Promise<Hdf5Dataset> {
+        let dims: number[] | null | undefined, type: Datatype | undefined, layout: Layout | undefined;
+        let filters: Filter[] = [];
+        for (const m of await this.messages(address)) {
+            if (m.type === 0x01) dims = this.parseDataspace(m.body);
+            else if (m.type === 0x03) type = parseDatatype(m.body);
+            else if (m.type === 0x08) layout = this.parseLayout(m.body);
+            else if (m.type === 0x0b) filters = this.parseFilters(m.body);
+        }
+        if (!dims || !type || !layout) throw new Hdf5FormatError('The object is not a dataset');
+        return { dims, type, layout, filters };
+    }
+
+    /**
+     * The values of a dataset as float32: the whole of a 1-D or 2-D one, or one `index` along the first
+     * axis of a 3-D one (a 2-D slab). Fill values are the caller's to interpret. Only the chunks that
+     * hold the slab are located and read, neighbouring chunks in one request.
+     */
+    async floats(ds: Hdf5Dataset, index?: number, signal?: AbortSignal): Promise<Float32Array> {
+        if (ds.type.cls !== 1 || ds.type.size !== 4 || ds.type.bigEndian)
+            throw new Hdf5FormatError('Only little-endian float32 datasets can be read as floats');
+        const slab = index === undefined ? ds.dims : ds.dims.slice(1);
+        const count = slab.reduce((a, b) => a * b, 1);
+        if (ds.layout.kind === 'compact') return toFloats(ds.layout.data.subarray(index === undefined ? 0 : index * count * 4), count);
+        if (ds.layout.kind === 'contiguous') {
+            const skip = index === undefined ? 0 : index * count * 4;
+            return toFloats(await this.read(ds.layout.address + skip, count * 4, signal), count);
+        }
+        return this.readChunkedFloats(ds, ds.layout, slab, index, signal);
+    }
+
+    private async readChunkedFloats(
+        ds: Hdf5Dataset,
+        layout: Extract<Layout, { kind: 'chunked' }>,
+        slab: readonly number[],
+        index: number | undefined,
+        signal?: AbortSignal,
+    ): Promise<Float32Array> {
+        const rank = ds.dims.length,
+            chunk = layout.chunk;
+        if (chunk.length !== rank) throw new Hdf5FormatError('Chunk dimensions do not match the dataspace');
+        // Offsets are compared across all axes, so a slab is the chunks whose first offset lies in one range.
+        const lo = new Array<number>(rank).fill(0),
+            hi = new Array<number>(rank).fill(index === undefined ? Infinity : 0);
+        if (index !== undefined) {
+            lo[0] = index - (index % chunk[0]);
+            hi[0] = lo[0] + chunk[0];
+        }
+        const refs = await this.chunkRefsInRange(layout.btree, rank, lo, hi);
+        const out = new Float32Array(slab.reduce((a, b) => a * b, 1));
+        const dimsInSlab = index === undefined ? rank : rank - 1;
+        const first = index === undefined ? 0 : 1;
+        const stride = new Array<number>(dimsInSlab).fill(1);
+        for (let d = dimsInSlab - 2; d >= 0; d--) stride[d] = stride[d + 1] * slab[d + 1];
+        const chunkStride = new Array<number>(rank).fill(1);
+        for (let d = rank - 2; d >= 0; d--) chunkStride[d] = chunkStride[d + 1] * chunk[d + 1];
+        const chunkValues = chunkStride[0] * chunk[0];
+
+        const fetched = await this.fetchChunkRuns(refs, signal);
+        for (let k = 0; k < refs.length; k++) {
+            const ref = refs[k];
+            if (ref.filterMask !== 0) throw new Hdf5FormatError('A chunk with a skipped filter is not supported');
+            let bytes = fetched[k];
+            for (const f of [...ds.filters].reverse()) {
+                if (f.id === 1) {
+                    const scratch = new Uint8Array(chunkValues * 4);
+                    const n = inflate(bytes, scratch);
+                    if (n < chunkValues * 4) throw new Hdf5FormatError('A chunk decoded short');
+                    bytes = scratch;
+                } else if (f.id === 2) bytes = unshuffle(bytes, ds.type.size);
+                else throw new Hdf5FormatError(`Filter ${f.id} is not supported`);
+            }
+            if (bytes.byteLength < chunkValues * 4) throw new Hdf5FormatError('A chunk decoded short');
+            const values = toFloats(bytes, chunkValues);
+            // Copy this chunk's cells that fall inside the slab; edge chunks are stored whole and may overhang.
+            const base = index === undefined ? 0 : (index - ref.offset[0]) * chunkStride[0];
+            copyBlock(values, base, chunkStride.slice(first), chunk.slice(first), out, stride, slab, ref.offset.slice(first));
+        }
+        return out;
+    }
+
+    /** The chunks whose offsets lie in `[lo, hi)`, found by descending the v1 B-tree and pruning by key. */
+    private async chunkRefsInRange(
+        btree: number,
+        rank: number,
+        lo: readonly number[],
+        hi: readonly number[],
+    ): Promise<ChunkRef[]> {
+        if (btree === UNDEF) return [];
+        const keySize = 8 + 8 * (rank + 1);
+        const headSize = 8 + 2 * this.offsetSize;
+        const nodeSize = (entries: number) => headSize + entries * (keySize + this.offsetSize) + keySize;
+        const seen = new Set<number>();
+        const walk = async (addr: number): Promise<ChunkRef[]> => {
+            if (seen.has(addr)) throw new Hdf5FormatError('Cyclic HDF5 chunk B-tree');
+            seen.add(addr);
+            let b = await this.read(addr, nodeSize(V1_BTREE_GUESS_ENTRIES));
+            const head = this.cursor(b);
+            head.sig('TREE');
+            if (head.u8() !== 1) throw new Hdf5FormatError('Expected a chunk (type 1) B-tree node');
+            const level = head.u8(),
+                entries = head.u16();
+            if (nodeSize(entries) > b.length) b = await this.read(addr, nodeSize(entries));
+            const c = this.cursor(b, headSize);
+            const keys: number[][] = [],
+                sizes: number[] = [],
+                masks: number[] = [],
+                children: number[] = [];
+            for (let i = 0; i <= entries; i++) {
+                const size = c.u32(),
+                    mask = c.u32();
+                const offset: number[] = [];
+                for (let d = 0; d < rank; d++) offset.push(c.uN(8));
+                c.p += 8; // the element-size "dimension"
+                keys.push(offset);
+                sizes.push(size);
+                masks.push(mask);
+                if (i < entries) children.push(c.addr());
+            }
+            const found: Promise<ChunkRef[]>[] = [];
+            for (let i = 0; i < entries; i++) {
+                if (level > 0) {
+                    // A child covers the offsets from its key up to the next one.
+                    if (compareOffsets(keys[i + 1], lo) > 0 && compareOffsets(keys[i], hi) < 0) found.push(walk(children[i]));
+                } else if (compareOffsets(keys[i], lo) >= 0 && compareOffsets(keys[i], hi) < 0) {
+                    found.push(
+                        Promise.resolve([{ offset: keys[i], address: children[i], size: sizes[i], filterMask: masks[i] }]),
+                    );
+                }
+            }
+            return (await Promise.all(found)).flat();
+        };
+        return walk(btree);
+    }
+
+    /** The bytes of every chunk, neighbouring chunks in one request. */
+    private async fetchChunkRuns(refs: readonly ChunkRef[], signal?: AbortSignal): Promise<Uint8Array[]> {
+        const order = refs.map((_, k) => k).sort((a, b) => refs[a].address - refs[b].address);
+        const out = new Array<Uint8Array>(refs.length);
+        const requests: Promise<void>[] = [];
+        for (let i = 0; i < order.length; ) {
+            const start = refs[order[i]].address;
+            let end = start + refs[order[i]].size,
+                j = i + 1;
+            while (
+                j < order.length &&
+                refs[order[j]].address - end <= CHUNK_GAP_BYTES &&
+                refs[order[j]].address + refs[order[j]].size - start <= MAX_REQUEST_BYTES
+            ) {
+                end = Math.max(end, refs[order[j]].address + refs[order[j]].size);
+                j++;
+            }
+            const members = order.slice(i, j);
+            requests.push(
+                this.read(start, end - start, signal).then((block) => {
+                    for (const k of members)
+                        out[k] = block.subarray(refs[k].address - start, refs[k].address - start + refs[k].size);
+                }),
+            );
+            i = j;
+        }
+        await Promise.all(requests);
+        return out;
+    }
+
     // ---- v2 B-trees ----------------------------------------------------------------------------
 
     /** Raw records of a v2 B-tree, in key order. */
@@ -618,4 +798,55 @@ export function decodeValues(b: Uint8Array, t: Datatype, count: number): AttrVal
         }
     }
     return out;
+}
+
+function compareOffsets(a: readonly number[], b: readonly number[]): number {
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i] ? -1 : 1;
+    return 0;
+}
+
+/** `count` little-endian float32s from the start of `bytes`, copied so they are aligned whatever the view's offset. */
+function toFloats(bytes: Uint8Array, count: number): Float32Array {
+    const copy = new Uint8Array(count * 4);
+    copy.set(bytes.subarray(0, count * 4));
+    return new Float32Array(copy.buffer);
+}
+
+function unshuffle(bytes: Uint8Array, width: number): Uint8Array {
+    const count = Math.floor(bytes.length / width),
+        out = new Uint8Array(bytes.length);
+    for (let b = 0; b < width; b++) for (let i = 0; i < count; i++) out[i * width + b] = bytes[b * count + i];
+    out.set(bytes.subarray(count * width), count * width);
+    return out;
+}
+
+/** Copy the part of one chunk that lies inside the slab, row by row along the last axis. */
+function copyBlock(
+    values: Float32Array,
+    base: number,
+    chunkStride: readonly number[],
+    chunkDims: readonly number[],
+    out: Float32Array,
+    stride: readonly number[],
+    slab: readonly number[],
+    origin: readonly number[],
+): void {
+    const rank = slab.length;
+    const extent = chunkDims.map((n, d) => Math.max(0, Math.min(n, slab[d] - origin[d])));
+    const index = new Array<number>(rank).fill(0);
+    const rows = extent.slice(0, -1).reduce((a, b) => a * b, 1);
+    for (let r = 0; r < rows; r++) {
+        let from = base,
+            to = 0;
+        for (let d = 0; d < rank - 1; d++) {
+            from += index[d] * chunkStride[d];
+            to += (origin[d] + index[d]) * stride[d];
+        }
+        to += origin[rank - 1];
+        out.set(values.subarray(from, from + extent[rank - 1]), to);
+        for (let d = rank - 2; d >= 0; d--) {
+            if (++index[d] < extent[d]) break;
+            index[d] = 0;
+        }
+    }
 }
