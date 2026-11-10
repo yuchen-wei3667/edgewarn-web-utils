@@ -1,0 +1,18 @@
+{
+  "source": "https://ecmwf-open-data.storage.googleapis.com/20261025/00z/ifs/0p25/enfo/20261025000000-12h-enfo-ef.grib2",
+  "measured": "2026-10-26",
+  "grid": {
+    "projection": "latlon",
+    "nx": 1440,
+    "ny": 721,
+    "lat1": 90,
+    "lon1": 180,
+    "dlat": 0.25,
+    "dlon": 0.25,
+    "scanMode": 0,
+    "radiusM": 6371229
+  },
+  "drt": [
+    42
+  ]
+}

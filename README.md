@@ -29,6 +29,7 @@ Use the entry point for the functionality you need:
 | `@edgewarn/web-utils/goes` | GOES ABI/HDF5 byte-source readers, band/sector/composite tables and geostationary projection |
 | `@edgewarn/web-utils/goes/feed` | GOES bucket listings, range-read sources, band cache and tile pyramid planning |
 | `@edgewarn/web-utils/mrms` | MRMS bucket listing, product catalog, lightning, volume geometry and cached downloads |
+| `@edgewarn/web-utils/models` | Model engine: grid projections, field math, GRIB2/NetCDF sources, dataset registry and configs, comparison math, HAFS tracks |
 
 ```ts
 import { distanceMiles } from '@edgewarn/web-utils/geo';
@@ -43,9 +44,10 @@ const field = await decoder.decode(messageBytes, {
 The [geometry, time and clients manual](packages/core/README.md) and
 [decoder manual](packages/decoders/README.md) and
 [alerts manual](packages/alerts/README.md) and
-[sounding science manual](packages/met/README.md) describe the contracts, supported
+[sounding science manual](packages/met/README.md) and
+[models manual](packages/models/README.md) describe the contracts, supported
 subsets, explicit codec registration, memory accounting and cancellation.
-The `packages/core`, `packages/alerts` , `packages/decoders` and `packages/met` directories are internal source/build
+The `packages/core`, `packages/alerts` , `packages/decoders`, `packages/met`, `packages/sources` and `packages/models` directories are internal source/build
 boundaries. They are shipped together and cannot be published independently.
 Format entry points remain isolated; the root decoder loads formats on demand.
 Private implementation paths are not exported.

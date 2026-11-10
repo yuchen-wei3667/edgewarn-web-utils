@@ -1,0 +1,127 @@
+import { RRFS_SATELLITE_FIELDS } from '../fields/satellite.ts';
+import { RRFS_NA_EXTRA_FIELDS } from '../fields/rrfsNaExtras.ts';
+import { defineDataset, pad } from '../types.ts';
+import { RRFS_LEVELS, RRFS_OPS_BUCKET } from '../shared.ts';
+import {
+    HRRR_DPT_2M,
+    HRRR_GUST_SFC,
+    HRRR_MSLP,
+    HRRR_RH_2M,
+    HRRR_THETAE_2M,
+    HRRR_TCDC,
+    HRRR_TMP_2M,
+    HRRR_TMP_SFC,
+    HRRR_VIS,
+    HRRR_WIND_10M,
+} from '../fields/surface.ts';
+import { HRRR_ABSV_500MB, pressureFields } from '../fields/pressure.ts';
+import {
+    HRRR_BLI,
+    HRRR_CAPE_03KM,
+    HRRR_FRZLVL,
+    HRRR_LFTX,
+    HRRR_MLCAPE,
+    HRRR_MLCIN,
+    HRRR_MUCAPE,
+    HRRR_MUCIN,
+    HRRR_MXUPHL_25KM,
+    HRRR_REFC,
+    HRRR_SBCAPE,
+    HRRR_SBCIN,
+    HRRR_SRH_01KM,
+    HRRR_SRH_03KM,
+    HRRR_STORM_MOTION,
+} from '../fields/severe.ts';
+import { HRRR_ASNOW_TOTAL, HRRR_SNOD, HRRR_WEASD } from '../fields/winter.ts';
+import { HRRR_APCP_1H, HRRR_PRATE, HRRR_PTYPE, HRRR_PWAT } from '../fields/precip.ts';
+import { HRRR_EHI_01KM, HRRR_EHI_03KM, PRESSURE_LEVEL_DIAGNOSTICS } from '../fields/diagnostics.ts';
+import { NCEP_CAM_LEVELS, NCEP_CAM_SECTION_LEVELS, PROFILE_SURFACE_WITH_HEIGHT } from '../profiles.ts';
+
+const object = (name: '2dfld' | 'prslev', serves: 'sfc' | 'prs') => ({
+    serves: [serves] as const,
+    url: ({ date, cycle, step }: { date: string; cycle: number; step: number }) =>
+        `rrfs.${date}/${pad(cycle, 2)}/rrfs.t${pad(cycle, 2)}z.${name}.3km.f${pad(step, 3)}.conus.grib2`,
+});
+
+export const rrfs = defineDataset({
+    id: 'rrfs',
+    label: 'RRFS',
+    shortLabel: 'RRFS',
+    docs: { runs: 'Every 3 hours', length: '84 hours' },
+    about: { provider: 'NOAA', category: 'convection-allowing' },
+    access: { corsVerifiedOn: '2026-10-26' },
+    surfaces: ['map', 'viewer'],
+    profiles: {
+        levels: NCEP_CAM_LEVELS,
+        sectionLevels: NCEP_CAM_SECTION_LEVELS,
+        column: { kind: 'open-meteo', model: 'ncep_rrfs_conus' },
+        native: { file: 'prs', moisture: 'DPT', omega: 'DZDT', surface: PROFILE_SURFACE_WITH_HEIGHT },
+    },
+    bucket: RRFS_OPS_BUCKET,
+    objects: { surface: object('2dfld', 'sfc'), levels: object('prslev', 'prs') },
+    gate: ['surface', 'levels'],
+    products: [{ id: 'mean', label: 'Mean' }],
+    cycles: [0, 3, 6, 9, 12, 15, 18, 21],
+    time: { stepMinutes: 60, idxUnit: 'hour', firstStep: 0, fileIndex: { kind: 'forecast-hour' } },
+    runs: [{ steps: [{ from: 0, to: 84 * 60, every: 60 }] }],
+    grid: {
+        projection: 'lambert',
+        nx: 1799,
+        ny: 1059,
+        lat1: 21.138123,
+        lon1: 237.280472,
+        lov: 262.5,
+        latin1: 38.5,
+        latin2: 38.5,
+        dx: 3000,
+        dy: 3000,
+        scanMode: 0x40,
+        radiusM: 6371229,
+    },
+    levelTargetsKm: [3, 6, 9],
+    idx: { variables: { MSLMA: 'MSLET' }, levels: RRFS_LEVELS },
+    defaultField: HRRR_TMP_2M,
+    isobars: { field: HRRR_MSLP },
+    fields: [
+        ...RRFS_SATELLITE_FIELDS,
+        HRRR_TMP_2M,
+        HRRR_DPT_2M,
+        HRRR_RH_2M,
+        HRRR_TMP_SFC,
+        HRRR_THETAE_2M,
+        HRRR_MSLP,
+        HRRR_WIND_10M,
+        HRRR_GUST_SFC,
+        HRRR_VIS,
+        HRRR_TCDC,
+        ...pressureFields(),
+        HRRR_ABSV_500MB,
+        HRRR_REFC,
+        HRRR_SBCAPE,
+        HRRR_SBCIN,
+        HRRR_MLCAPE,
+        HRRR_MLCIN,
+        HRRR_MUCAPE,
+        HRRR_MUCIN,
+        HRRR_CAPE_03KM,
+        HRRR_SRH_01KM,
+        HRRR_SRH_03KM,
+        HRRR_MXUPHL_25KM,
+        HRRR_STORM_MOTION,
+        HRRR_LFTX,
+        HRRR_BLI,
+        HRRR_FRZLVL,
+        HRRR_SNOD,
+        HRRR_WEASD,
+        HRRR_ASNOW_TOTAL,
+        HRRR_PTYPE,
+        HRRR_APCP_1H,
+        HRRR_PRATE,
+        HRRR_PWAT,
+        ...PRESSURE_LEVEL_DIAGNOSTICS,
+        HRRR_EHI_01KM,
+        HRRR_EHI_03KM,
+    ],
+    // The 13 km North America grid lists the further records of this object; the 3 km grid keeps to its set.
+    notOffered: RRFS_NA_EXTRA_FIELDS,
+});

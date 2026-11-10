@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-cfs-pds.s3.amazonaws.com/cfs.20261031/12/6hrly_grib_01/pgbf2026110106.01.2026103112.grb2",
+  "measured": "2026-11-01",
+  "grid": { "projection": "latlon", "nx": 360, "ny": 181, "lat1": 90, "lon1": 0, "dlat": 1, "dlon": 1, "scanMode": 0, "radiusM": 6371229 },
+  "drt": [40]
+}

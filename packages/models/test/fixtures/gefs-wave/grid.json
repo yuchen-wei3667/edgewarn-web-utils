@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-gefs-pds.s3.amazonaws.com/gefs.20261031/12/wave/gridded/gefs.wave.t12z.c00.global.0p25.f006.grib2",
+  "measured": "2026-11-01",
+  "grid": { "projection": "latlon", "nx": 1440, "ny": 721, "lat1": 90, "lon1": 0, "dlat": 0.25, "dlon": 0.25, "scanMode": 0, "radiusM": 6371229 },
+  "drt": [40]
+}

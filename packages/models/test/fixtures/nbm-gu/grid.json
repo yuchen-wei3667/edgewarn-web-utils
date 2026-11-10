@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20261031/12/core/blend.t12z.core.f012.gu.grib2",
+  "measured": "2026-11-01",
+  "grid": { "projection": "mercator", "nx": 193, "ny": 193, "lat1": 12.349884, "lon1": 143.686538, "latD": 20, "dx": 2500, "dy": 2500, "scanMode": 80, "radiusM": 6371200 },
+  "drt": [2, 3]
+}

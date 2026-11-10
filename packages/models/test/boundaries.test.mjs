@@ -10,6 +10,13 @@ test('source stays portable: no DOM storage, no website imports, only self-refer
   const ast=ts.createSourceFile(fileURLToPath(path),source,ts.ScriptTarget.Latest,true);
   const visit=node=>{
    if(ts.isIdentifier(node)) assert.ok(!['window','document','localStorage'].includes(node.text),`${path}: ${node.text}`);
+   // A dynamic import is held to the same rule as a static one: relative, or through the package name.
+   if(ts.isCallExpression(node) && node.expression.kind===ts.SyntaxKind.ImportKeyword) {
+    const spec=node.arguments[0];
+    assert.ok(ts.isStringLiteral(spec),`${path}: dynamic import with a computed specifier`);
+    assert.ok(spec.text.startsWith('.') ? spec.text.endsWith('.ts') : spec.text.startsWith('@edgewarn/web-utils/'),`${path}: ${spec.text}`);
+    assert.ok(!/(^|\/)om(\/|$)|openmeteo/.test(spec.text),`${path}: GPL reader import ${spec.text}`);
+   }
    ts.forEachChild(node,visit);
   };
   visit(ast);
@@ -23,3 +30,11 @@ test('source stays portable: no DOM storage, no website imports, only self-refer
   }
  }
 });
+test('the GPL-2.0 Open-Meteo reader and its adapter never enter the package',()=>{
+ for(const path of files(new URL('../src/',import.meta.url))) {
+  assert.ok(!/(^|\/)om(\/|\.ts$)/.test(fileURLToPath(path)),`${path} is OM reader code`);
+  const specifiers=[...readFileSync(path,'utf8').matchAll(/(?:from|import\()\s*['"]([^'"]+)['"]/g)].map(m=>m[1]);
+  for(const specifier of specifiers) assert.ok(!/(^|\/)om(\/|$)|openmeteo\//i.test(specifier),`${path}: ${specifier}`);
+ }
+});
+

@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20261031/12/core/blend.t12z.core.f012.ak.grib2",
+  "measured": "2026-11-01",
+  "grid": { "projection": "polarStereo", "nx": 1649, "ny": 1105, "lat1": 40.53, "lon1": 181.429, "latD": 60, "lov": 210, "dx": 2976.56, "dy": 2976.56, "scanMode": 80, "radiusM": 6371200 },
+  "drt": [2, 3]
+}

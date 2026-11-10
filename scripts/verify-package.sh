@@ -35,6 +35,7 @@ const colormap = await import('@edgewarn/web-utils/colormap');
 const mrms = await import('@edgewarn/web-utils/mrms');
 const goesFeed = await import('@edgewarn/web-utils/goes/feed');
 const nexradFeed = await import('@edgewarn/web-utils/nexrad/feed');
+const models = await import('@edgewarn/web-utils/models');
 const metPlot = await import('@edgewarn/web-utils/met/plot');
 const met = await import('@edgewarn/web-utils/met');
 const column = { validMs: 0, p: Float32Array.of(1000, 900), z: Float32Array.of(0, 1000), t: Float32Array.of(20, 10), td: Float32Array.of(10, 0), u: new Float32Array(2), v: new Float32Array(2), surface: {p:1000,z:0,t:20,td:10,u:0,v:0} };
@@ -71,6 +72,10 @@ assert.equal(nexrad.NEXRAD_SITE_BY_ID.get('KTLX').name,'Norman');
 assert.equal(nexrad.formatAngle(0.48),'0.5°');
 assert.equal(mrms.getMrmsProduct(mrms.DEFAULT_MRMS_PRODUCT).group,'reflectivity');
 assert.equal(met.convertKnots(1,'kts'),1);
+assert.ok(models.MODEL_IDS.includes('hrrr'));
+assert.equal(models.projectionFor(models.getDataset('hrrr').grid).kind,'lambert');
+assert.equal(models.checkExpr('a - b',[{id:'a',units:'K',scale:1,offset:0,ratioScale:false,valueKind:'absolute'},{id:'b',units:'K',scale:1,offset:0,ratioScale:false,valueKind:'absolute'}]).units,'K');
+await assert.rejects(models.loadSourceAdapter({kind:'om',manifest:'meta.json'}),/om. adapter loader/);
 assert.equal(grib.packedOf(5,{R:0,E:0,D:0}),5);
 for (const path of ['@edgewarn/web-utils/cache','@edgewarn/web-utils/net/normalize','@edgewarn/web-utils/alerts/alert-id','@edgewarn/web-utils/alerts/dist/index.js','@edgewarn/web-utils/packages/alerts/dist/index.js']) {
   await assert.rejects(import(path), {code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
@@ -98,7 +103,7 @@ assert.equal((await decoder.decode(bytes('tvs-kemx.bin'),{format:'nexrad',level:
 assert.deepEqual(grib.BUILT_IN_PACKINGS,[0,2,3]);
 for (const name of ['fromHalf','toHalf','HALF_NAN','levelFromValues']) assert.ok(name in grib,`${name} is exported from /grib2`);
 assert.equal(typeof goes.inflate,'function');
-for(const name of ['@edgewarn/web-utils/packages/core/dist/net/index.js','@edgewarn/web-utils/packages/decoders/dist/index.js','@edgewarn/web-utils/grib2/models/grib2','@edgewarn/web-utils/internal/memory','@edgewarn/web-utils/nexrad/decoder/decoder','@edgewarn/web-utils/met/raob','@edgewarn/web-utils/met/plot/skew-t','@edgewarn/web-utils/nexrad/feed/listing','@edgewarn/web-utils/goes/feed/listing','@edgewarn/web-utils/mrms/listing','@edgewarn/web-utils/mrms/volume/geometry','@edgewarn/web-utils/goes/hdf5']) await assert.rejects(import(name),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
+for(const name of ['@edgewarn/web-utils/packages/core/dist/net/index.js','@edgewarn/web-utils/packages/decoders/dist/index.js','@edgewarn/web-utils/grib2/models/grib2','@edgewarn/web-utils/internal/memory','@edgewarn/web-utils/nexrad/decoder/decoder','@edgewarn/web-utils/met/raob','@edgewarn/web-utils/met/plot/skew-t','@edgewarn/web-utils/nexrad/feed/listing','@edgewarn/web-utils/goes/feed/listing','@edgewarn/web-utils/mrms/listing','@edgewarn/web-utils/mrms/volume/geometry','@edgewarn/web-utils/goes/hdf5','@edgewarn/web-utils/models/configs','@edgewarn/web-utils/models/om']) await assert.rejects(import(name),{code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 JS
 cat > consumer.ts <<'TS'
 import { analyzeSounding, surfaceParcelDef, liftColumn } from '@edgewarn/web-utils/met';
@@ -152,6 +157,15 @@ import { NEXRAD_SITES, buildSweeps, groupTilts } from '@edgewarn/web-utils/nexra
 import type { Sweep, NexradSite } from '@edgewarn/web-utils/nexrad';
 import { GOES_SECTORS, getGoesBand, lonLatToPixel, pyramidFromWire } from '@edgewarn/web-utils/goes';
 import type { PyramidGrid, GoesBand } from '@edgewarn/web-utils/goes';
+import { projectionFor, getDataset, ModelMessageCache, loadSourceAdapter } from '@edgewarn/web-utils/models';
+import type { GridProjection, ModelDataset, SourceAdapter, ModelByteCache } from '@edgewarn/web-utils/models';
+const modelGrid: GridProjection = projectionFor(getDataset('hrrr').grid);
+const dataset: ModelDataset = getDataset('hrrr');
+declare const modelStore: ResponseStore;
+const messageCache: ModelByteCache = new ModelMessageCache({ store: modelStore, memoryBytes: 1 });
+const sourceAdapter: Promise<SourceAdapter> = loadSourceAdapter(dataset.source);
+// @ts-expect-error the store must satisfy ResponseStore
+new ModelMessageCache({ store: {}, memoryBytes: 1 });
 import { convertKnots } from '@edgewarn/web-utils/met';
 import type { WindSpeedUnit } from '@edgewarn/web-utils/met';
 import { EdgeWARNAPI, NWSAPI, createNWSClient, createWWAClient, normalizeStormcellFeatures, toNWSFeature, extractNWSAlertItems } from '@edgewarn/web-utils/net';

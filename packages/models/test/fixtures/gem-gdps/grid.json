@@ -1,0 +1,14 @@
+{
+  "source": "https://openmeteo.s3.amazonaws.com/data_spatial/cmc_gem_gdps_15km/2026/11/01/1200Z/2026-11-01T1800.om",
+  "grid": {
+    "projection": "latlon",
+    "nx": 2400,
+    "ny": 1201,
+    "lat1": -90,
+    "lon1": 180,
+    "dlat": 0.15,
+    "dlon": 0.15,
+    "scanMode": 64,
+    "radiusM": 6371229
+  }
+}

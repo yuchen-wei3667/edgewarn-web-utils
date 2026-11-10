@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-nbm-grib2-pds.s3.amazonaws.com/blend.20261025/12/core/blend.t12z.core.f012.co.grib2",
+  "measured": "2026-10-26",
+  "grid": { "projection": "lambert", "nx": 2345, "ny": 1597, "lat1": 19.229, "lon1": 233.7234, "lov": 265, "latin1": 25, "latin2": 25, "dx": 2539.703, "dy": 2539.703, "scanMode": 80, "radiusM": 6371200 },
+  "drt": [2, 3]
+}

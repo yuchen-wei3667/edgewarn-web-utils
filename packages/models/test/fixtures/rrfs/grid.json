@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-rrfs-ops-pds.s3.amazonaws.com/rrfs.20261025/12/rrfs.t12z.2dfld.3km.f006.conus.grib2",
+  "measured": "2026-10-26",
+  "grid": { "projection": "lambert", "nx": 1799, "ny": 1059, "lat1": 21.138123, "lon1": 237.280472, "lov": 262.5, "latin1": 38.5, "latin2": 38.5, "dx": 3000, "dy": 3000, "scanMode": 64, "radiusM": 6371229 },
+  "drt": [2, 3]
+}

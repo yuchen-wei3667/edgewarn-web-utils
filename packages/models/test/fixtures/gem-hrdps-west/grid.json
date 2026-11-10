@@ -1,0 +1,18 @@
+{
+  "source": "https://openmeteo.s3.amazonaws.com/data_spatial/cmc_gem_hrdps_west/2026/11/02/1200Z/2026-11-02T1500.om",
+  "grid": {
+    "projection": "latlon",
+    "nx": 1330,
+    "ny": 1180,
+    "lat1": -5.299602,
+    "lon1": 337.815115,
+    "dlat": 0.00899,
+    "dlon": 0.00899,
+    "scanMode": 64,
+    "radiusM": 6371229,
+    "rotation": {
+      "southPoleLat": -33.443382,
+      "southPoleLon": 266.46358
+    }
+  }
+}

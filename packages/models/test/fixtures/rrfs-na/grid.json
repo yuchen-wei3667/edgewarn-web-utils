@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-rrfs-ops-pds.s3.amazonaws.com/rrfs.20261102/12/rrfs.t12z.2dfld.13km.f006.na.grib2",
+  "measured": "2026-11-02",
+  "grid": { "projection": "latlon", "nx": 1127, "ny": 683, "lat1": -36.9303, "lon1": 299, "dlat": 0.1083, "dlon": 0.1083, "scanMode": 64, "radiusM": 6371229, "rotation": { "southPoleLat": -35, "southPoleLon": 247 } },
+  "drt": [2, 3]
+}

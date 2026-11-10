@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.20261031/alaska/hrrr.t12z.wrfsfcf06.ak.grib2",
+  "measured": "2026-11-01",
+  "grid": { "projection": "polarStereo", "nx": 1299, "ny": 919, "lat1": 41.612949, "lon1": 185.117126, "latD": 60, "lov": 225, "dx": 3000, "dy": 3000, "scanMode": 64, "radiusM": 6371229 },
+  "drt": [0, 3]
+}

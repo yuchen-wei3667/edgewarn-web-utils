@@ -25,7 +25,9 @@
         "packages/met/dist",
         "packages/met/README.md",
         "packages/sources/dist",
-        "packages/sources/README.md"
+        "packages/sources/README.md",
+        "packages/models/dist",
+        "packages/models/README.md"
     ],
     "exports": {
         ".": {
@@ -88,6 +90,10 @@
         "./met/plot": {
             "types": "./packages/met/dist/plot/index.d.ts",
             "default": "./packages/met/dist/plot/index.js"
+        },
+        "./models": {
+            "types": "./packages/models/dist/index.d.ts",
+            "default": "./packages/models/dist/index.js"
         }
     },
     "scripts": {

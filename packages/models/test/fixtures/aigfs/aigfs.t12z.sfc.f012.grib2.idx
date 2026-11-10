@@ -1,0 +1,12 @@
+1:0:d=2026102512:UGRD:100 m above ground:12 hour fcst:
+2:880295:d=2026102512:VGRD:100 m above ground:12 hour fcst:
+3:1762640:d=2026102512:UGRD:10 m above ground:12 hour fcst:
+4:2622846:d=2026102512:VGRD:10 m above ground:12 hour fcst:
+5:3481622:d=2026102512:DPT:2 m above ground:12 hour fcst:
+6:3960251:d=2026102512:TMP:2 m above ground:12 hour fcst:
+7:4439139:d=2026102512:ACPCP:surface:6-12 hour acc fcst:
+8:4439373:d=2026102512:PRMSL:mean sea level:12 hour fcst:
+9:5471347:d=2026102512:TMP:surface:12 hour fcst:
+10:6040985:d=2026102512:PRES:surface:12 hour fcst:
+11:6945614:d=2026102512:APCP:surface:6-12 hour acc fcst:
+12:7262734:d=2026102512:APCP:surface:0-12 hour acc fcst:

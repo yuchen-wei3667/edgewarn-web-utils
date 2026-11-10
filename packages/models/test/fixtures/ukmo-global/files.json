@@ -1,0 +1,56 @@
+{
+  "source": "ListObjectsV2 of global-deterministic-10km/<run>/ on the Met Office bucket, 2026-11-02. Steps are forecast hours. A name not in `restricted` is published at every step of its run; `{window}` stands for PT01H to 54 h, PT03H to 144 h, then PT06H.",
+  "runs": {
+    "0": {
+      "init": "2026-11-02T00:00:00Z",
+      "steps": [{ "from": 0, "to": 54, "every": 1 }, { "from": 57, "to": 144, "every": 3 }, { "from": 150, "to": 168, "every": 6 }]
+    },
+    "6": {
+      "init": "2026-11-02T06:00:00Z",
+      "steps": [{ "from": 0, "to": 54, "every": 1 }, { "from": 57, "to": 69, "every": 3 }]
+    }
+  },
+  "names": [
+    "temperature_at_screen_level", "relative_humidity_at_screen_level", "wind_speed_at_10m", "wind_direction_at_10m", "wind_gust_at_10m",
+    "cloud_amount_of_total_cloud", "cloud_amount_of_low_cloud", "cloud_amount_of_medium_cloud", "cloud_amount_of_high_cloud",
+    "fog_fraction_at_screen_level", "pressure_at_mean_sea_level", "temperature_at_surface", "visibility_at_screen_level",
+    "precipitation_rate", "CAPE_surface", "CIN_surface", "snow_depth_water_equivalent",
+    "temperature_of_dew_point_at_screen_level", "radiation_flux_in_shortwave_total_downward_at_surface",
+    "radiation_flux_in_shortwave_direct_downward_at_surface", "radiation_flux_in_longwave_downward_at_surface",
+    "radiation_flux_in_uv_downward_at_surface", "pressure_at_tropopause", "temperature_at_tropopause",
+    "cloud_amount_below_1000ft_ASL", "cloud_amount_of_total_convective_cloud",
+    "CAPE_mixed_layer_lowest_500m", "CIN_mixed_layer_lowest_500m", "CAPE_most_unstable_below_500hPa", "CIN_most_unstable_below_500hPa",
+    "rainfall_rate", "snowfall_rate", "rainfall_rate_from_convection", "snowfall_rate_from_convection",
+    "rainfall_rate_from_convection_max-{window}", "snowfall_rate_from_convection_max-{window}", "snowfall_rate_from_convection_mean-{window}",
+    "precipitation_accumulation-{window}", "rainfall_accumulation-{window}", "latent_heat_flux_at_surface_mean-{window}",
+    "temperature_at_screen_level_max-{window}", "temperature_at_screen_level_min-{window}", "wind_gust_at_10m_max-{window}",
+    "temperature_on_pressure_levels", "relative_humidity_on_pressure_levels", "geopotential_height_on_pressure_levels",
+    "wind_speed_on_pressure_levels", "wind_direction_on_pressure_levels",
+    "wet_bulb_potential_temperature_on_pressure_levels", "wind_vertical_velocity_on_pressure_levels", "cloud_amount_on_height_levels"
+  ],
+  "restricted": {
+    "radiation_flux_in_longwave_downward_at_surface": {
+      "0": [{ "from": 0, "to": 54, "every": 1 }, { "from": 57, "to": 144, "every": 3 }, { "from": 150, "to": 162, "every": 6 }],
+      "6": [{ "from": 0, "to": 54, "every": 1 }, { "from": 57, "to": 66, "every": 3 }]
+    },
+    "radiation_flux_in_uv_downward_at_surface": {
+      "0": [{ "from": 0, "to": 144, "every": 3 }, { "from": 150, "to": 162, "every": 6 }],
+      "6": [{ "from": 0, "to": 66, "every": 3 }]
+    },
+    "windowed": {
+      "0": [{ "from": 1, "to": 54, "every": 1 }, { "from": 57, "to": 144, "every": 3 }, { "from": 150, "to": 168, "every": 6 }],
+      "6": [{ "from": 1, "to": 54, "every": 1 }, { "from": 57, "to": 69, "every": 3 }]
+    }
+  },
+  "knownMissingMinutes": {
+    "source": "The longwave and UV files of the 06 and 18 UTC runs stop at 66 h while the run goes on to 69 h; field steps are the same for every cycle, so those two fields have no frame at +69 h of those runs.",
+    "radiation_flux_in_longwave_downward_at_surface": { "6": [4140] },
+    "radiation_flux_in_uv_downward_at_surface": { "6": [4140] }
+  },
+  "pressureLevelsPa": {
+    "default": [100000, 97500, 95000, 92500, 90000, 85000, 80000, 75000, 70000, 65000, 60000, 55000, 50000, 45000, 40000, 37500, 35000, 32500, 30000, 27500, 25000, 22500, 20000, 17500, 15000, 12500, 10000, 7000, 5000, 4000, 3000, 2000, 1000, 500, 200, 100, 40],
+    "wet_bulb_potential_temperature_on_pressure_levels": [100000, 97500, 95000, 92500, 90000, 85000, 80000, 75000, 70000, 65000, 60000, 55000, 50000, 45000, 40000, 37500, 35000, 32500, 30000, 27500, 25000, 22500, 20000, 17500, 15000, 12500, 10000],
+    "wind_vertical_velocity_on_pressure_levels": [100000, 97500, 95000, 92500, 90000, 85000, 80000, 75000, 70000, 65000, 60000, 55000, 50000, 45000, 40000, 37500, 35000, 32500, 30000, 27500, 25000, 22500, 20000, 17500, 15000, 12500, 10000, 7000, 5000, 4000, 3000, 2000, 1000]
+  },
+  "heightsM": [5, 10, 20, 30, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000, 4500, 5000, 5500, 6000]
+}

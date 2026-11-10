@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-nws-hafs-pds.s3.amazonaws.com/hfsb/20261029/18/22e.2026102918.hfsb.storm.atm.f000.grb2",
+  "measured": "2026-10-31",
+  "grid": { "projection": "latlon", "nx": 1001, "ny": 801, "lat1": 14.01, "lon1": 241.447, "dlat": 0.019999, "dlon": 0.019999, "scanMode": 64, "radiusM": 6371229 },
+  "drt": [3]
+}

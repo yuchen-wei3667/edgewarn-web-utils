@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-rap-pds.s3.amazonaws.com/rap.20261031/rap.t12z.awp130pgrbf06.grib2",
+  "measured": "2026-11-01",
+  "grid": { "projection": "lambert", "nx": 451, "ny": 337, "lat1": 16.281, "lon1": 233.862, "lov": 265, "latin1": 25, "latin2": 25, "dx": 13545, "dy": 13545, "scanMode": 64, "radiusM": 6371229 },
+  "drt": [40]
+}

@@ -1,0 +1,14 @@
+{
+  "source": "https://openmeteo.s3.amazonaws.com/data_spatial/meteofrance_arpege_world025/2026/11/02/1200Z/2026-11-02T1500.om",
+  "grid": {
+    "projection": "latlon",
+    "nx": 1440,
+    "ny": 721,
+    "lat1": -90,
+    "lon1": 180,
+    "dlat": 0.25,
+    "dlon": 0.25,
+    "scanMode": 64,
+    "radiusM": 6371229
+  }
+}

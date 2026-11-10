@@ -1,0 +1,146 @@
+import { HRRR_SATELLITE_FIELDS } from '../fields/satellite.ts';
+import { defineDataset, pad } from '../types.ts';
+import { ALL_HOURS, HRRR_BUCKET } from '../shared.ts';
+import {
+    HRRR_DPT_2M,
+    HRRR_GUST_SFC,
+    HRRR_MSLP,
+    HRRR_RH_2M,
+    HRRR_THETAE_2M,
+    HRRR_TCDC,
+    HRRR_TMP_2M,
+    HRRR_TMP_SFC,
+    HRRR_VIS,
+    HRRR_WIND_10M,
+} from '../fields/surface.ts';
+import { HRRR_ABSV_500MB, pressureFields } from '../fields/pressure.ts';
+import {
+    HRRR_BLI,
+    HRRR_CAPE_03KM,
+    HRRR_FRZLVL,
+    HRRR_HAIL,
+    HRRR_LFTX,
+    HRRR_LTNG,
+    HRRR_MLCAPE,
+    HRRR_MLCIN,
+    HRRR_MUCAPE,
+    HRRR_MUCIN,
+    HRRR_MXUPHL_25KM,
+    HRRR_REFC,
+    HRRR_SBCAPE,
+    HRRR_SBCIN,
+    HRRR_SHEAR_06KM,
+    HRRR_SRH_01KM,
+    HRRR_SRH_03KM,
+    HRRR_STORM_MOTION,
+} from '../fields/severe.ts';
+import { HRRR_ASNOW_TOTAL, HRRR_SNOD, HRRR_WEASD } from '../fields/winter.ts';
+import { HRRR_APCP_1H, HRRR_PRATE, HRRR_PTYPE, HRRR_PWAT } from '../fields/precip.ts';
+import {
+    HRRR_EHI_01KM,
+    HRRR_EHI_03KM,
+    HRRR_STP_FIXED,
+    PRESSURE_LEVEL_DIAGNOSTICS,
+    STORM_RELATIVE_DIAGNOSTICS,
+} from '../fields/diagnostics.ts';
+import { HRRR_POINT_SERIES } from '../openMeteo.ts';
+import { NCEP_CAM_LEVELS, NCEP_CAM_SECTION_LEVELS, PROFILE_SURFACE_WITH_HEIGHT } from '../profiles.ts';
+
+const object = (kind: 'sfc' | 'prs') => ({
+    serves: [kind] as const,
+    url: ({ date, cycle, step }: { date: string; cycle: number; step: number }) =>
+        `hrrr.${date}/conus/hrrr.t${pad(cycle, 2)}z.wrf${kind}f${pad(step, 2)}.grib2`,
+});
+
+/** HRRR gives the 00/06/12/18 cycles 48 hours and the rest 18. */
+const LONG_RUN_CYCLES = [0, 6, 12, 18];
+
+export const hrrr = defineDataset({
+    id: 'hrrr',
+    label: 'HRRR',
+    shortLabel: 'HRRR',
+    docs: { runs: 'Every hour', length: '18 hours, 48 hours at 00, 06, 12 and 18 UTC' },
+    about: { provider: 'NOAA', category: 'convection-allowing' },
+    access: { corsVerifiedOn: '2026-10-26' },
+    surfaces: ['map', 'viewer'],
+    pointSeries: HRRR_POINT_SERIES,
+    profiles: {
+        levels: NCEP_CAM_LEVELS,
+        sectionLevels: NCEP_CAM_SECTION_LEVELS,
+        column: { kind: 'open-meteo', model: 'ncep_hrrr_conus' },
+        native: { file: 'prs', moisture: 'DPT', omega: 'VVEL', surface: PROFILE_SURFACE_WITH_HEIGHT },
+    },
+    bucket: HRRR_BUCKET,
+    objects: { sfc: object('sfc'), prs: object('prs') },
+    gate: ['sfc', 'prs'],
+    products: [{ id: 'mean', label: 'Mean' }],
+    cycles: ALL_HOURS,
+    time: { stepMinutes: 60, idxUnit: 'hour', firstStep: 0, fileIndex: { kind: 'forecast-hour' } },
+    runs: [
+        { cycles: LONG_RUN_CYCLES, steps: [{ from: 0, to: 48 * 60, every: 60 }] },
+        { steps: [{ from: 0, to: 18 * 60, every: 60 }] },
+    ],
+    grid: {
+        projection: 'lambert',
+        nx: 1799,
+        ny: 1059,
+        lat1: 21.138123,
+        lon1: 237.280472,
+        lov: 262.5,
+        latin1: 38.5,
+        latin2: 38.5,
+        dx: 3000,
+        dy: 3000,
+        scanMode: 0x40,
+        radiusM: 6371229,
+    },
+    levelTargetsKm: [3, 6, 9],
+    idx: {},
+    defaultField: HRRR_TMP_2M,
+    isobars: { field: HRRR_MSLP },
+    fields: [
+        ...HRRR_SATELLITE_FIELDS,
+        HRRR_TMP_2M,
+        HRRR_DPT_2M,
+        HRRR_RH_2M,
+        HRRR_TMP_SFC,
+        HRRR_THETAE_2M,
+        HRRR_MSLP,
+        HRRR_WIND_10M,
+        HRRR_GUST_SFC,
+        HRRR_VIS,
+        HRRR_TCDC,
+        ...pressureFields(),
+        HRRR_ABSV_500MB,
+        HRRR_REFC,
+        HRRR_SBCAPE,
+        HRRR_SBCIN,
+        HRRR_MLCAPE,
+        HRRR_MLCIN,
+        HRRR_MUCAPE,
+        HRRR_MUCIN,
+        HRRR_CAPE_03KM,
+        HRRR_SRH_01KM,
+        HRRR_SRH_03KM,
+        HRRR_MXUPHL_25KM,
+        HRRR_HAIL,
+        HRRR_LTNG,
+        HRRR_SHEAR_06KM,
+        HRRR_STORM_MOTION,
+        HRRR_LFTX,
+        HRRR_BLI,
+        HRRR_FRZLVL,
+        HRRR_SNOD,
+        HRRR_WEASD,
+        HRRR_ASNOW_TOTAL,
+        HRRR_PTYPE,
+        HRRR_APCP_1H,
+        HRRR_PRATE,
+        HRRR_PWAT,
+        ...PRESSURE_LEVEL_DIAGNOSTICS,
+        ...STORM_RELATIVE_DIAGNOSTICS,
+        HRRR_STP_FIXED,
+        HRRR_EHI_01KM,
+        HRRR_EHI_03KM,
+    ],
+});

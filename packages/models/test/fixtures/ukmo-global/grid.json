@@ -1,0 +1,14 @@
+{
+  "source": "https://met-office-atmospheric-model-data.s3.eu-west-2.amazonaws.com/global-deterministic-10km/20261102T0000Z/20261102T0300Z-PT0003H00M-temperature_at_screen_level.nc",
+  "grid": {
+    "projection": "latlon",
+    "nx": 2560,
+    "ny": 1920,
+    "lat1": -89.953125,
+    "lon1": 180.0703125,
+    "dlat": 0.09375,
+    "dlon": 0.140625,
+    "scanMode": 64,
+    "radiusM": 6371229
+  }
+}

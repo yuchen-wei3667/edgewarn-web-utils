@@ -1,0 +1,6 @@
+{
+  "source": "https://noaa-nws-graphcastgfs-pds.s3.amazonaws.com/aigfs.20261025/12/model/atmos/grib2/aigfs.t12z.sfc.f006.grib2",
+  "measured": "2026-10-26",
+  "grid": { "projection": "latlon", "nx": 1440, "ny": 721, "lat1": 90, "lon1": 0, "dlat": 0.25, "dlon": 0.25, "scanMode": 0, "radiusM": 6371229 },
+  "drt": [3]
+}

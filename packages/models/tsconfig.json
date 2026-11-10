@@ -16,6 +16,9 @@
       "path": "../decoders"
     },
     {
+      "path": "../met"
+    },
+    {
       "path": "../sources"
     }
   ]
