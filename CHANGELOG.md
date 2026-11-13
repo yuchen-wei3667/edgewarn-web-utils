@@ -6,7 +6,7 @@ Versions are hand-bumped CalVer prereleases (`YYYY.MM.DD-alpha.N`); the
 releases are published from git tags (see the release section in
 `README.md`).
 
-## Unreleased
+## 2026.11.12-alpha.1
 
 - Add `/colormap`: `Colormap` types, `mapValueToRgba`, `createColormapTextureData`, `findColormapByKey`, `normalizeColormapKey`, `isValidRgb`, `extractColormaps` and legend helpers.
 - Add `/geo` `distanceMeters` and solar helpers (`solarPosition`, `declinationDeg`, `dayOfYear`, `pathFraction`, `oppositeAltitude`).
@@ -24,6 +24,7 @@ releases are published from git tags (see the release section in
 - Add `/net` `ResponseStore`, the injected persistent byte cache type.
 - Add `/net` per-instance SPC, WPC (including surface analysis and winter precipitation probabilities), IEM reports, Open-Meteo and NHC clients with injected fetch, upstream URLs and request identity; METAR normalization and public-feed response types. Open-Meteo persistence is opt-in through injected storage; PWPF geometry processing is caller-owned.
 - Add `/mrms`: bucket listing, product catalog, lightning sampling, volume geometry and profile sampling, and `GzCache` over an injected `ResponseStore`.
+- Add `/models`: grid projections with GLSL, wind rotation, gradients, trajectories, isobars, recipes and tiling, `ModelFetcher`/`RangeSource`/`ModelMessageCache` (over an injected `ResponseStore`) with GRIB2 index and NetCDF adapters on the `/goes` HDF5 reader, the dataset registry with its configs (`MODEL_CONFIGS`, `getDataset`, `validateConfigs`), comparison math and HAFS storm tracks. An `om` source needs a host-supplied adapter loader: the Open-Meteo reader is GPL-2.0 and not included.
 
 ## 2026.11.8-alpha.3
 
