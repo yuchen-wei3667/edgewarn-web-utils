@@ -6,6 +6,10 @@ Versions are hand-bumped CalVer prereleases (`YYYY.MM.DD-alpha.N`); the
 releases are published from git tags (see the release section in
 `README.md`).
 
+## 2026.11.22-alpha.1
+
+- Fix `/goes` `AbiFile.readRows` and `bandRange` on tiled chunks (MCMIP bands, e.g. 250×250 CONUS, 226×226 Full Disk), which threw `row reads need full-width chunks`. Tiles are stitched into full rows; columns with no stored chunk read as fill.
+
 ## 2026.11.12-alpha.1
 
 - Add `/colormap`: `Colormap` types, `mapValueToRgba`, `createColormapTextureData`, `findColormapByKey`, `normalizeColormapKey`, `isValidRgb`, `extractColormaps` and legend helpers.
