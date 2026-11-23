@@ -115,6 +115,13 @@ interface VarMeta {
 const num = (v: AttrValue | undefined, fallback: number) => (Array.isArray(v) && v.length ? v[0] : fallback);
 const str = (v: AttrValue | undefined) => (typeof v === 'string' ? v : '');
 
+/** The stored code of `_FillValue`, masked to the element size when the variable is `_Unsigned`. */
+function fillCode(m: VarMeta): number | null {
+    const raw = m.attrs.get('_FillValue');
+    if (!Array.isArray(raw) || !raw.length) return null;
+    return str(m.attrs.get('_Unsigned')) === 'true' ? raw[0] & ((1 << (8 * m.dtype.size)) - 1) : raw[0];
+}
+
 /**
  * A GOES-R ABI L1b/L2 NetCDF-4 file opened for windowed reads. Metadata (links, attributes, chunk
  * index) is parsed once and cached, so repeated reads over pans and zooms cost only the chunks
@@ -339,15 +346,7 @@ export class AbiFile {
     /** Size, packing, fixed-grid axes and projection of a 2-D image variable, without reading pixels. */
     async gridInfo(variable: string): Promise<AbiGridInfo> {
         const m = await this.imageMeta(variable);
-        const es = m.dtype.size;
-        const unsigned = str(m.attrs.get('_Unsigned')) === 'true';
-        const rawFill = m.attrs.get('_FillValue');
-        const fill =
-            Array.isArray(rawFill) && rawFill.length
-                ? unsigned
-                    ? rawFill[0] & ((1 << (8 * es)) - 1)
-                    : rawFill[0]
-                : null;
+        const fill = fillCode(m);
         // MCMIP names its axes per band only at the file level, so x/y are shared by every variable.
         const [x, y, projection, time] = await Promise.all([
             this.axis('x', 0, 1),
@@ -393,7 +392,7 @@ export class AbiFile {
             r1 = Math.min(H, rows[1]);
         if (r1 <= r0) throw new RangeError('Empty row window');
         const B = Math.max(ch, options.bandRows ?? H);
-        const byRow = [...m.chunks].sort((a, b) => a.offset[0] - b.offset[0]);
+        const byRow = [...m.chunks].sort((a, b) => a.offset[0] - b.offset[0] || a.offset[1] - b.offset[1]);
         const needed = byRow.filter((c) => c.offset[0] < r1 && c.offset[0] + ch > r0);
         const bandOf = (c: ChunkRef) => Math.floor(c.offset[0] / B);
         const fullBands = new Set<number>();
@@ -427,10 +426,11 @@ export class AbiFile {
     }
 
     /**
-     * Decode rows [r0, r1) of a full-width-strip image from caller-supplied bytes, handing each
-     * chunk's rows to `sink` in row order. `open(range)` yields the bytes of one `bandRange` result as
-     * pieces of any size (cache or network). One inflate buffer, one staging buffer and one row
-     * buffer are reused throughout; the row view passed to the sink is only valid during the call.
+     * Decode rows [r0, r1) of a chunked image from caller-supplied bytes, handing each chunk row's
+     * full-width rows to `sink` in row order. Tiled chunks (MCMIP) are stitched across the row first;
+     * columns with no stored chunk read as fill. `open(range)` yields the bytes of one `bandRange`
+     * result as pieces of any size (cache or network). One inflate buffer, one staging buffer and one
+     * row buffer are reused throughout; the row view passed to the sink is only valid during the call.
      */
     async readRows(
         variable: string,
@@ -458,6 +458,12 @@ export class AbiFile {
         const deflateIdx = m.filters.findIndex((f) => f.id === FILTER_DEFLATE);
         let chunksDecoded = 0,
             bytesInflated = 0;
+        // Chunks still to arrive per chunk row; a row goes to the sink once its last chunk lands.
+        const inRow = new Map<number, number>();
+        for (const r of ranges)
+            for (const c of r.chunks) inRow.set(c.offset[0], (inRow.get(c.offset[0]) ?? 0) + 1);
+        const pending = new Map(inRow);
+        const fill = fillCode(m) ?? 0;
 
         const decode = (c: ChunkRef, raw: Uint8Array) => {
             let plain = raw;
@@ -471,24 +477,29 @@ export class AbiFile {
                 plain = scratch;
             }
             const shuffled = es > 1 && shuffleIdx >= 0 && !(c.filterMask & (1 << shuffleIdx));
-            const cr = c.offset[0];
+            const [cr, cc] = c.offset;
             const a = Math.max(cr, r0),
                 b = Math.min(cr + ch, r1);
             if (b <= a) return;
-            const plane = ch * cw;
+            const left = pending.get(cr)!;
+            // First chunk of a row whose index lacks some columns: those columns read as fill.
+            if (left === inRow.get(cr) && left < Math.ceil(W / cw)) rowBuf.fill(fill, 0, (b - a) * W);
+            const plane = ch * cw,
+                n = Math.min(cw, W - cc);
             for (let r = a; r < b; r++) {
                 const src = (r - cr) * cw,
-                    dst = (r - a) * W;
-                if (es === 1) for (let i = 0; i < W; i++) rowBuf[dst + i] = plain[src + i];
+                    dst = (r - a) * W + cc;
+                if (es === 1) for (let i = 0; i < n; i++) rowBuf[dst + i] = plain[src + i];
                 else if (shuffled)
-                    for (let i = 0; i < W; i++)
+                    for (let i = 0; i < n; i++)
                         rowBuf[dst + i] = plain[src + i] | (plain[plane + src + i] << 8);
                 else
-                    for (let i = 0; i < W; i++)
+                    for (let i = 0; i < n; i++)
                         rowBuf[dst + i] = plain[2 * (src + i)] | (plain[2 * (src + i) + 1] << 8);
             }
             chunksDecoded++;
-            sink.rows(a, rowBuf.subarray(0, (b - a) * W), W, b - a);
+            pending.set(cr, left - 1);
+            if (left === 1) sink.rows(a, rowBuf.subarray(0, (b - a) * W), W, b - a);
         };
 
         for (const range of ranges) {
@@ -541,8 +552,6 @@ export class AbiFile {
             if (f.id !== FILTER_DEFLATE && f.id !== FILTER_SHUFFLE)
                 throw new Hdf5FormatError(`${variable}: filter ${f.id} not supported`);
         }
-        if (m.layout.chunk[1] !== m.dims[1])
-            throw new Hdf5FormatError(`${variable}: row reads need full-width chunks`);
         return m;
     }
 
@@ -655,14 +664,7 @@ export class AbiFile {
 
         const finish = async (net: { requests: number; bytesFetched: number }): Promise<AbiGrid> => {
             const attrs = m.attrs;
-            const unsigned = str(attrs.get('_Unsigned')) === 'true';
-            const rawFill = attrs.get('_FillValue');
-            const fill =
-                Array.isArray(rawFill) && rawFill.length
-                    ? unsigned
-                        ? rawFill[0] & ((1 << (8 * es)) - 1)
-                        : rawFill[0]
-                    : null;
+            const fill = fillCode(m);
             const [x, y, projection, time] = await extras;
             return {
                 variable,

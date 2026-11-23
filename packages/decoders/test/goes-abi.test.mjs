@@ -165,6 +165,47 @@ test('bandRange covers exactly the needed chunks and groups whole bands under on
     assert.deepEqual(again.map((r) => r.key), [ranges[1].key]);
 });
 
+test('readRows stitches tiled (MCMIP-style) chunks into full rows, missing chunks as fill', async () => {
+    const file = await AbiFile.open(new BytesSource(FIXTURE));
+    const rad = await file.gridInfo('Rad').then(() => file.vars.get('Rad'));
+    // 60×90 in 16×25 tiles: 4 chunk rows × 4 chunk columns, the last of each ragged. Tile (16, 50) is unstored.
+    const ch = 16, cw = 25, missing = '16,50';
+    const parts = [], chunks = [];
+    let address = 0;
+    // Stored column-major, so addresses fall within a chunk row, as real files may.
+    for (let cc = 0; cc < W; cc += cw) {
+        for (let cr = 0; cr < H; cr += ch) {
+            if (`${cr},${cc}` === missing) continue;
+            const plain = new Uint8Array(2 * ch * cw);
+            for (let r = 0; r < ch; r++) for (let c = 0; c < cw; c++) {
+                const v = cr + r < H && cc + c < W ? code(cr + r, cc + c) : 0;
+                plain[r * cw + c] = v & 0xff;
+                plain[ch * cw + r * cw + c] = v >> 8;
+            }
+            const packed = new Uint8Array(zlib.deflateSync(plain));
+            chunks.push({ offset: [cr, cc], address, size: packed.length, filterMask: 0 });
+            parts.push(packed);
+            address += packed.length;
+        }
+    }
+    const bytes = new Uint8Array(address);
+    parts.reduce((at, p) => (bytes.set(p, at), at + p.length), 0);
+    file.vars.set('Tiled', Promise.resolve({ ...rad, name: 'Tiled', layout: { ...rad.layout, chunk: [ch, cw] }, chunks }));
+
+    for (const rows of [[0, H], [10, 40], [59, 60]]) {
+        for (const step of [1, 333, Infinity]) {
+            const sink = rowCollector(W, H);
+            const { chunksDecoded } = await file.readRows('Tiled', rows, sink, servePieces(bytes, step), { bandRows: 32 });
+            for (let r = rows[0]; r < rows[1]; r++) for (let c = 0; c < W; c++) {
+                const want = r >= 16 && r < 32 && c >= 50 && c < 75 ? FILL : code(r, c);
+                assert.equal(sink.image[r * W + c], want, `(${r}, ${c}) of ${rows}`);
+            }
+            const chunkRows = Math.ceil(rows[1] / ch) - Math.floor(rows[0] / ch);
+            assert.equal(chunksDecoded, chunkRows * 4 - (rows[0] < 32 && rows[1] > 16 ? 1 : 0));
+        }
+    }
+});
+
 test('readRows rejects a truncated range and stops when aborted', async () => {
     const file = await AbiFile.open(new BytesSource(FIXTURE));
     const short = (range) => (async function* () { yield FIXTURE.subarray(range.start, range.end - 5); })();
